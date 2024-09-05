@@ -7,18 +7,18 @@
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="{{ asset('assets/media/logos/favicon.ico') }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!--begin::Fonts(mandatory for all pages)-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
     <!--end::Fonts-->
-    <!--begin::Vendor Stylesheets(used for this page only)-->
-    <link href="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.css') }}" rel="stylesheet"
-        type="text/css" />
-    <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet"
-        type="text/css" />
-    <!--end::Vendor Stylesheets-->
     <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
     <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet"
+        type="text/css" />
+
+    {{-- <link rel="stylesheet" href="https://cdn.datatables.net/2.1.5/css/dataTables.dataTables.css"> --}}
     <!--end::Global Stylesheets Bundle-->
     <script>
         // Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }
@@ -80,6 +80,35 @@
                 @yield('auth')
                 @endauth
 
+                @if($errors->any())
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        toastr.options = {
+                            "closeButton": true,
+                            "debug": false,
+                            "newestOnTop": false,
+                            "progressBar": true,
+                            "preventDuplicates": false,
+                            "onclick": null,
+                            "showDuration": "300",
+                            "hideDuration": "1000",
+                            "timeOut": "5000",
+                            "extendedTimeOut": "1000",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        };
+
+                        // Trigger Toastr for each error
+                        @foreach($errors - > all() as $error)
+                        toastr.error("{{ $error }}");
+                        @endforeach
+                    });
+
+                </script>
+                @endif
+
                 @if(session('success') || session('error'))
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
@@ -88,7 +117,6 @@
                             "debug": false,
                             "newestOnTop": false,
                             "progressBar": true,
-                            // "positionClass": "toast-top-right",
                             "preventDuplicates": false,
                             "onclick": null,
                             "showDuration": "300",
@@ -109,6 +137,7 @@
 
                 </script>
                 @endif
+
             </div>
             <!--end::Wrapper-->
 
@@ -131,17 +160,20 @@
         var hostUrl = '{{ asset("assets/")}}';
 
     </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->
     <script src="{{ asset('assets/plugins/global/plugins.bundle.js')}}"></script>
     <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
     <!--end::Global Javascript Bundle-->
     <!--begin::Vendors Javascript(used for this page only)-->
-
+    <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
     <!--end::Vendors Javascript-->
     <!--begin::Custom Javascript(used for this page only)-->
-    <script src="assets/js/custom/authentication/sign-in/general.js"></script>
+    <script src="{{ asset('assets/js/custom/apps/user-management/company/table.js') }}"></script>
 
     <!--end::Custom Javascript-->
+
     <!--end::Javascript-->
 </body>
 <!--end::Body-->

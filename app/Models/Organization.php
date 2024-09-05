@@ -11,11 +11,11 @@ class Organization extends Model
     protected $table = 'organizations';
     protected $fillable = [
         'org_name',
-        'org_member',
+        'org_number',
         'reg_date',
         'org_address',
         'org_place',
-        'nature_of_bussiness',
+        'nature_of_business',
         'is_operation',
         'is_parent',
     ];

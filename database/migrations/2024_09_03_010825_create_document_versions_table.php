@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('created_by');
             $table->timestamps();
 
-            $table->foreign('doc_guid')->references('doc_id')->on('documents')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('doc_guid')->references('id')->on('documents')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onUpdate('cascade');
         });
     }

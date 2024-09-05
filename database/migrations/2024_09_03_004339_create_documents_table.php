@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('documents', function (Blueprint $table) {
-            $table->id('doc_id');
+            $table->id();
             $table->string('doc_name');
             $table->text('doc_description');
             $table->longText('doc_summary');
@@ -26,9 +26,9 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('upload_by')->references('id')->on('users')->onUpdate('cascade');
-            $table->foreign('folder_guid')->references('folder_id')->on('folders')->onDelete('cascade');
-            $table->foreign('org_guid')->references('org_id')->on('organizations')->onUpdate('cascade');
-            $table->foreign('tag_guid')->references('tag_id')->on('tags')->onUpdate('cascade');
+            $table->foreign('folder_guid')->references('id')->on('folders')->onDelete('cascade');
+            $table->foreign('org_guid')->references('id')->on('organizations')->onUpdate('cascade');
+            $table->foreign('tag_guid')->references('id')->on('tags')->onUpdate('cascade');
         });
     }
 

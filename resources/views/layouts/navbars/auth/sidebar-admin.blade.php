@@ -38,7 +38,7 @@
                     data-kt-menu="true" data-kt-menu-expand="false">
                     <div class="menu-item">
                         <!--begin:Menu link-->
-                        <a class="menu-link active" href="{{ route('dashboard.admin') }}">
+                        <a class="menu-link {{ (Request::is('admin/dashboard') ? 'active' : '') }}" href="{{ route('dashboard.admin') }}">
                             <span class="menu-icon">
                                 <i class="ki-duotone ki-element-11 fs-2">
                                     <span class="path1"></span>
@@ -58,9 +58,9 @@
                         </div>
                         <!--end:Menu content-->
                     </div>
-                    <div class="menu-item">
+                    <div class="menu-item {{ (Request::is('admin/advance-search') ? 'active' : '') }}">
                         <!--begin:Menu link-->
-                        <a class="menu-link" href="{{ route('dashboard.admin') }}">
+                        <a class="menu-link" href="/">
                             <span class="menu-icon">
                                 <i class="ki-duotone ki-magnifier fs-2">
                                     <span class="path1"></span>
@@ -81,10 +81,10 @@
                         </div>
                         <!--end:Menu content-->
                     </div>
-                    
-                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (Request::is('admin/company-list') ? 'hover show' : '') }}">
                         <!--begin:Menu link-->
-                        <span class="menu-link">
+                        <span class="menu-link {{ (Request::is('admin/company-list') ? 'active' : '') }}">
                             <span class="menu-icon">
                                 <i class="ki-duotone ki-user fs-2">
                                     <span class="path1"></span>
@@ -101,11 +101,11 @@
                             <!--begin:Menu item-->
                             <div class="menu-item">
                                 <!--begin:Menu link-->
-                                <a class="menu-link" href="pages/social/feeds.html">
+                                <a class="menu-link {{ (Request::is('admin/company-list') ? 'active' : '') }}" href="{{ route('company.index') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                                    <span class="menu-title">User List</span>
+                                    <span class="menu-title">Company List</span>
                                 </a>
                                 <!--end:Menu link-->
                                 <!--begin:Menu link-->
@@ -113,9 +113,10 @@
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                                    <span class="menu-title">Company List</span>
+                                    <span class="menu-title">User List</span>
                                 </a>
                                 <!--end:Menu link-->
+
                                 <!--begin:Menu link-->
                                 <a class="menu-link" href="pages/social/feeds.html">
                                     <span class="menu-bullet">

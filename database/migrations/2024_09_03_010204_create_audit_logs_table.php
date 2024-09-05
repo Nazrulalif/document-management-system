@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('audit_logs', function (Blueprint $table) {
-            $table->id('log_id');
+            $table->id();
             $table->unsignedBigInteger('user_guid');
             $table->string('action');
             $table->unsignedBigInteger('doc_guid');
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('user_guid')->references('id')->on('users')->onUpdate('cascade');
-            $table->foreign('doc_guid')->references('doc_id')->on('documents')->onUpdate('cascade');
+            $table->foreign('doc_guid')->references('id')->on('documents')->onUpdate('cascade');
         });
     }
 

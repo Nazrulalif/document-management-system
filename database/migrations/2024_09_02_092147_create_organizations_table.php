@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('organizations', function (Blueprint $table) {
-            $table->id('org_id');
+            $table->id();
             $table->string('org_name');
             $table->string('org_number')->nullable();
             $table->date('reg_date')->nullable();
             $table->string('org_address')->nullable();
             $table->string('org_place')->nullable();
-            $table->string('nature_of_bussiness')->nullable();
+            $table->string('nature_of_business')->nullable();
             $table->string('is_operation')->nullable();
             $table->string('is_parent')->nullable();
             $table->timestamps();

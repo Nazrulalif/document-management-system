@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('folders', function (Blueprint $table) {
-            $table->id('folder_id');
+            $table->id();
             $table->string('folder_name');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('org_guid')->nullable();
@@ -20,9 +20,9 @@ return new class extends Migration
             $table->string('is_meeting')->nullable();
             $table->timestamps();
 
-            $table->foreign('parent_folder_guid')->references('folder_id')->on('folders')->onDelete('cascade');
+            $table->foreign('parent_folder_guid')->references('id')->on('folders')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onUpdate('cascade');
-            $table->foreign('org_guid')->references('org_id')->on('organizations')->onUpdate('cascade');
+            $table->foreign('org_guid')->references('id')->on('organizations')->onUpdate('cascade');
         });
     }
 
