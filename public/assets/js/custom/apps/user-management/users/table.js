@@ -9,7 +9,7 @@ var KTDatatablesServerSide = function () {
 
     // Private functions
     var initDatatable = function () {
-        dt = $("#kt_datatable_example_1").DataTable({
+        dt = $("#kt_datatable_example_2").DataTable({
             searchDelay: 500,
             // processing: true,
             serverSide: true,
@@ -23,22 +23,22 @@ var KTDatatablesServerSide = function () {
                 className: 'row-selected'
             },
             ajax: {
-                url: "/admin/company-list",
+                url: "/admin/user-list",
             },
             columns: [{
                     data: 'id'
                 },
                 {
+                    data: 'full_name'
+                },
+                {
+                    data: 'email'
+                },
+                {
+                    data: 'role_name'
+                },
+                {
                     data: 'org_name'
-                },
-                {
-                    data: 'org_place'
-                },
-                {
-                    data: 'org_number'
-                },
-                {
-                    data: 'nature_of_business'
                 },
                 {
                     data: 'formatted_date'
@@ -101,8 +101,8 @@ var KTDatatablesServerSide = function () {
 
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-docs-table-filter="delete_row" data-id="${data.id}">
-                                        Delete
+                                    <a href="#" class="menu-link px-3" data-kt-docs-table-filter="deactive_row" data-id="${data.id}">
+                                        Deactive
                                     </a>
                                 </div>
                                 <!--end::Menu item-->
@@ -125,7 +125,7 @@ var KTDatatablesServerSide = function () {
             initToggleToolbar();
             toggleToolbars();
             handleEditRows()
-            handleDeleteRows();
+            handleDeactiveRows();
             KTMenu.createInstances();
         });
     }
@@ -149,7 +149,7 @@ var KTDatatablesServerSide = function () {
 
                 // Make an AJAX request to get data for the specific id
                 $.ajax({
-                    url: `/admin/company-show/${rowId}`, // URL to your endpoint
+                    url: `/admin/user-show/${rowId}`, // URL to your endpoint
                     method: 'GET',
                     success: function (response) {
                         // Check if there was an error
@@ -163,21 +163,24 @@ var KTDatatablesServerSide = function () {
 
                         // Populate the form with row data
                         document.getElementById('editId').value = rowData.id;
-                        document.getElementById('org_name').value = rowData.org_name;
-                        document.getElementById('reg_date').value = rowData.reg_date;
-                        document.getElementById('org_place').value = rowData.org_place;
-                        document.getElementById('org_number').value = rowData.org_number;
-                        document.getElementById('org_address').value = rowData.org_address;
-                        document.getElementById('nature_of_business').value = rowData.nature_of_business;
+                        document.getElementById('full_name').value = rowData.full_name;
+                        document.getElementById('email').value = rowData.email;
+                        document.getElementById('ic_number').value = rowData.ic_number;
+                        document.getElementById('nationality').value = rowData.nationality;
+                        document.getElementById('race').value = rowData.race;
+                        document.getElementById('genders').value = rowData.gender;
+                        document.getElementById('org_name').value = rowData.org_guid;
+                        document.getElementById('position').value = rowData.position;
+                        document.getElementById('role_name').value = rowData.role_guid;
                         // Add other fields as necessary
 
                         // Show the modal
-                        new bootstrap.Modal(document.getElementById('kt_modal_edit_company')).show();
+                        new bootstrap.Modal(document.getElementById('kt_modal_edit_user')).show();
                     },
                     error: function (xhr) {
                         console.error('Failed to fetch data:', xhr.responseText);
                         Swal.fire({
-                            text: "There was an error retrieving the company details. Please try again.",
+                            text: "There was an error retrieving the user details. Please try again.",
                             icon: "error",
                             buttonsStyling: false,
                             confirmButtonText: "Ok, got it!",
@@ -193,7 +196,7 @@ var KTDatatablesServerSide = function () {
 
     var handleEditFormSubmission = () => {
         // Get the form element
-        const editForm = document.getElementById('kt_modal_edit_company_form');
+        const editForm = document.getElementById('kt_modal_edit_user_form');
 
         if (!editForm) {
             console.error('Edit form not found!');
@@ -209,7 +212,7 @@ var KTDatatablesServerSide = function () {
 
             // Perform AJAX request
             $.ajax({
-                url: `/admin/company-update/${id}`, // URL for updating company details
+                url: `/admin/user-update/${id}`, // URL for updating company details
                 method: 'post',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token
@@ -220,7 +223,7 @@ var KTDatatablesServerSide = function () {
                 success: function (response) {
                     // Show success message
                     Swal.fire({
-                        text: "Company details updated successfully!",
+                        text: "User details updated successfully!",
                         icon: "success",
                         buttonsStyling: false,
                         confirmButtonText: "Ok, got it!",
@@ -232,7 +235,7 @@ var KTDatatablesServerSide = function () {
                         dt.draw(); // If you have a DataTable
 
                         // Hide the modal
-                        const editModal = document.getElementById('kt_modal_edit_company');
+                        const editModal = document.getElementById('kt_modal_edit_user');
                         if (editModal) {
                             const modalInstance = bootstrap.Modal.getInstance(editModal);
                             if (modalInstance) {
@@ -244,7 +247,7 @@ var KTDatatablesServerSide = function () {
                 error: function (xhr, error) {
                     console.log(xhr);
                     Swal.fire({
-                        text: "There was an error updating the company details. Please try again.",
+                        text: "There was an error updating the user details. Please try again.",
                         icon: "error",
                         buttonsStyling: false,
                         confirmButtonText: "Ok, got it!",
@@ -258,10 +261,10 @@ var KTDatatablesServerSide = function () {
     }
 
     // Delete organization by row 
-    var handleDeleteRows = () => {
+    var handleDeactiveRows = () => {
 
         // Select all delete buttons
-        const deleteButtons = document.querySelectorAll('[data-kt-docs-table-filter="delete_row"]');
+        const deleteButtons = document.querySelectorAll('[data-kt-docs-table-filter="deactive_row"]');
         // console.log(deleteButtons);
 
         deleteButtons.forEach(d => {
@@ -276,17 +279,17 @@ var KTDatatablesServerSide = function () {
                 const parent = e.target.closest('tr');
 
                 // Get customer name
-                const companyName = parent.querySelectorAll('td')[1].innerText;
+                const userName = parent.querySelectorAll('td')[1].innerText;
 
-                // console.log(rowId);
+                console.log(rowId);
 
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: "Are you sure you want to delete " + companyName + "?",
+                    text: "Are you sure you want to deactivated " + userName + "?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
-                    confirmButtonText: "Yes, delete!",
+                    confirmButtonText: "Yes, Deactive!",
                     cancelButtonText: "No, cancel",
                     customClass: {
                         confirmButton: "btn fw-bold btn-danger",
@@ -297,15 +300,15 @@ var KTDatatablesServerSide = function () {
 
                         // Send the delete request to the server
                         $.ajax({
-                            url: `/admin/company-destroy/${rowId}`, // Assuming RESTful API convention
-                            method: 'DELETE',
+                            url: `/admin/user-deactive/${rowId}`, // Assuming RESTful API convention
+                            method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
                             success: function (response) {
                                 // Show success message
                                 Swal.fire({
-                                    text: "You have deleted " + companyName + "!",
+                                    text: "You have deactivated  " + userName + "!",
                                     icon: "success",
                                     buttonsStyling: false,
                                     confirmButtonText: "Ok, got it!",
@@ -322,7 +325,7 @@ var KTDatatablesServerSide = function () {
                             error: function (xhr) {
                                 // Handle the error
                                 Swal.fire({
-                                    text: "There was an error deleting " + companyName + ". Please try again.",
+                                    text: "There was an error deactivated  " + userName + ". Please try again.",
                                     icon: "error",
                                     buttonsStyling: false,
                                     confirmButtonText: "Ok, got it!",
@@ -334,7 +337,7 @@ var KTDatatablesServerSide = function () {
                         });
                     } else if (result.dismiss === 'cancel') {
                         Swal.fire({
-                            text: companyName + " was not deleted.",
+                            text: userName + " was not deactivated .",
                             icon: "error",
                             buttonsStyling: false,
                             confirmButtonText: "Ok, got it!",
@@ -350,7 +353,7 @@ var KTDatatablesServerSide = function () {
 
     // Init toggle toolbar
     var initToggleToolbar = function () {
-        const container = document.querySelector('#kt_datatable_example_1');
+        const container = document.querySelector('#kt_datatable_example_2');
         const checkboxes = container.querySelectorAll('[type="checkbox"]');
         const deleteSelected = document.querySelector('[data-kt-docs-table-select="delete_selected"]');
 
@@ -375,7 +378,7 @@ var KTDatatablesServerSide = function () {
 
             if (selectedIds.length === 0) {
                 Swal.fire({
-                    text: "No companies selected.",
+                    text: "No user selected.",
                     icon: "info",
                     buttonsStyling: false,
                     confirmButtonText: "Ok, got it!",
@@ -388,12 +391,12 @@ var KTDatatablesServerSide = function () {
 
             // SweetAlert2 pop up
             Swal.fire({
-                text: "Are you sure you want to delete selected companies?",
+                text: "Are you sure you want to deactive selected users?",
                 icon: "warning",
                 showCancelButton: true,
                 buttonsStyling: false,
                 showLoaderOnConfirm: true,
-                confirmButtonText: "Yes, delete!",
+                confirmButtonText: "Yes, Deactive!",
                 cancelButtonText: "No, cancel",
                 customClass: {
                     confirmButton: "btn fw-bold btn-danger",
@@ -403,18 +406,18 @@ var KTDatatablesServerSide = function () {
                 if (result.value) {
                     // Send the delete request to the server
                     $.ajax({
-                        url: '/admin/company-bulk-destroy', // Modify URL as needed
+                        url: '/admin/user-bulk-deactive', // Modify URL as needed
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        method: 'delete',
+                        method: 'POST',
                         data: {
                             ids: selectedIds
                         },
                         success: function (response) {
                             // console.log(response);
                             Swal.fire({
-                                text: "You have deleted all selected companies!",
+                                text: "You have deactive all selected users!",
                                 icon: "success",
                                 buttonsStyling: false,
                                 confirmButtonText: "Ok, got it!",
@@ -431,7 +434,7 @@ var KTDatatablesServerSide = function () {
                         },
                         error: function () {
                             Swal.fire({
-                                text: "There was an error deleting selected companies. Please try again.",
+                                text: "There was an error deactive selected users. Please try again.",
                                 icon: "error",
                                 buttonsStyling: false,
                                 confirmButtonText: "Ok, got it!",
@@ -443,7 +446,7 @@ var KTDatatablesServerSide = function () {
                     });
                 } else if (result.dismiss === 'cancel') {
                     Swal.fire({
-                        text: "Selected companies were not deleted.",
+                        text: "Selected users were not deactive.",
                         icon: "error",
                         buttonsStyling: false,
                         confirmButtonText: "Ok, got it!",
@@ -460,7 +463,7 @@ var KTDatatablesServerSide = function () {
     // Toggle toolbars
     var toggleToolbars = function () {
         // Define variables
-        const container = document.querySelector('#kt_datatable_example_1');
+        const container = document.querySelector('#kt_datatable_example_2');
         const toolbarBase = document.querySelector('[data-kt-docs-table-toolbar="base"]');
         const toolbarSelected = document.querySelector('[data-kt-docs-table-toolbar="selected"]');
         const selectedCount = document.querySelector('[data-kt-docs-table-select="selected_count"]');
@@ -498,7 +501,7 @@ var KTDatatablesServerSide = function () {
             handleSearchDatatable();
             initToggleToolbar();
             handleEditRows();
-            handleDeleteRows();
+            handleDeactiveRows();
             handleEditFormSubmission();
         }
     }

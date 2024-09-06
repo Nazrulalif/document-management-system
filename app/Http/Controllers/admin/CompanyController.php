@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Organization;
+use App\Models\Role;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -28,6 +29,7 @@ class CompanyController extends Controller
                 ->make(true);
         }
 
+
         return view('admin.company.company-list');
     }
 
@@ -43,20 +45,8 @@ class CompanyController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update($id)
     {
-        // Validate the incoming request
-        // $validatedData = $request->validate([
-        //     'org_name' => 'required|string|max:255',
-        //     'org_address' => 'required|string|max:255',
-        //     'org_place' => 'required|string|max:255',
-        //     'nature_of_business' => 'required|string|max:255',
-        //     'org_number' => 'required|string|max:255|unique:organizations,org_number',
-        //     'reg_date' => 'required|date',
-        // ], [
-        //     'org_number.unique' => 'The company registration number have taken.',
-        // ]);
-
         // Find the company by ID
         $company = Organization::find($id);
 
@@ -147,5 +137,13 @@ class CompanyController extends Controller
 
         // Redirect back to the form
         return redirect()->back();
+    }
+
+    public function view($uuid)
+    {
+        $data = Organization::where('uuid', $uuid)->firstOrFail();
+        return view('admin.company.view-company', [
+            'data' => $data,
+        ]);
     }
 }

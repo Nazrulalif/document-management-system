@@ -15,24 +15,13 @@
     <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
     <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet"
-        type="text/css" />
-
-    {{-- <link rel="stylesheet" href="https://cdn.datatables.net/2.1.5/css/dataTables.dataTables.css"> --}}
+    <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
     <!--end::Global Stylesheets Bundle-->
-    <script>
-        // Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }
 
-    </script>
     <style>
 
     </style>
 </head>
-<!--end::Head-->
-<!--begin::Body-->
-
-
-
 <body id="kt_app_body" data-kt-app-layout="light-sidebar" data-kt-app-header-fixed="true"
     data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true"
     data-kt-app-sidebar-push-header="true" data-kt-app-sidebar-push-toolbar="true"
@@ -60,12 +49,7 @@
         }
 
     </script>
-    <!--end::Theme mode setup on page load-->
-    <!--begin::App-->
-
-
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
-
 
         @guest
         @yield('guest')
@@ -99,17 +83,16 @@
                             "showMethod": "fadeIn",
                             "hideMethod": "fadeOut"
                         };
-
+            
                         // Trigger Toastr for each error
-                        @foreach($errors - > all() as $error)
-                        toastr.error("{{ $error }}");
+                        @foreach($errors->all() as $error)
+                            toastr.error("{{ $error }}");
                         @endforeach
                     });
-
                 </script>
-                @endif
-
-                @if(session('success') || session('error'))
+            @endif
+            
+            @if(session('success') || session('error'))
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
                         toastr.options = {
@@ -128,16 +111,15 @@
                             "showMethod": "fadeIn",
                             "hideMethod": "fadeOut"
                         };
-
+            
                         // Triggering Toastr
                         var type = "{{ session('success') ? 'success' : 'error' }}";
                         var message = "{{ session('success') ?? session('error') }}";
                         toastr[type](message);
                     });
-
                 </script>
-                @endif
-
+            @endif
+            
             </div>
             <!--end::Wrapper-->
 
@@ -161,19 +143,13 @@
 
     </script>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-
+    
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->
     <script src="{{ asset('assets/plugins/global/plugins.bundle.js')}}"></script>
     <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
     <!--end::Global Javascript Bundle-->
     <!--begin::Vendors Javascript(used for this page only)-->
     <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
-    <!--end::Vendors Javascript-->
-    <!--begin::Custom Javascript(used for this page only)-->
-    <script src="{{ asset('assets/js/custom/apps/user-management/company/table.js') }}"></script>
-
-    <!--end::Custom Javascript-->
-
     <!--end::Javascript-->
 </body>
 <!--end::Body-->

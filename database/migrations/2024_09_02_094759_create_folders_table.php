@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('folders', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique()->nullable();
             $table->string('folder_name');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('org_guid')->nullable();

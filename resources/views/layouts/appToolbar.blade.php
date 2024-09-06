@@ -4,7 +4,23 @@
 
     <!--begin::Title-->
     <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 align-items-center my-0">
-        Dashboard
+        @php
+        function formatPath($path) {
+            // Split the path into segments
+            $segments = explode('/', $path);
+        
+            // If there's more than one segment, remove the last one
+            if (count($segments) > 2) {
+                array_pop($segments);
+            }
+        
+            // Join the remaining segments and replace dashes with spaces
+            $formattedPath = str_replace(['admin','-', '*'], ' ', implode(' ', $segments));
+            return ucwords(strtolower($formattedPath));
+        }
+        @endphp
+        
+        {{ formatPath(Request::path()) }}
     </h1>
     <!--end::Title-->
 
@@ -28,7 +44,8 @@
 
         <!--begin::Item-->
         <li class="breadcrumb-item text-muted">
-            Dashboards </li>
+            {{ formatPath(Request::path()) }}
+        </li>
         <!--end::Item-->
 
     </ul>

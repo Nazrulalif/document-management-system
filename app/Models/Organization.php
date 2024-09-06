@@ -4,12 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Organization extends Model
 {
     use HasFactory;
     protected $table = 'organizations';
     protected $fillable = [
+        'id',
+        'uuid',
         'org_name',
         'org_number',
         'reg_date',
@@ -19,4 +22,19 @@ class Organization extends Model
         'is_operation',
         'is_parent',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->uuid = (string) Str::uuid();
+        });
+    }
+
+    // Use 'uuid' for route model binding
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
 }

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('document_versions', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique()->nullable();
             $table->unsignedBigInteger('doc_guid');
             $table->string('version_number');
             $table->string('file_path');
