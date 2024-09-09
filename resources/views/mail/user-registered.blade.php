@@ -59,7 +59,7 @@
 
                 </style>
                 <div id="#kt_app_body_content"
-                    style="background-color:#D5D9E2; font-family:Arial,Helvetica,sans-serif; line-height: 1.5; min-height: 100%; font-weight: normal; font-size: 15px; color: #2F3044; margin:0; padding:0; width:100%;">
+                    style="background-color:#D5D9E2; font-family:Arial,Helvetica,sans-serif; line-height: 1.5; min-height: 100%; font-weight: normal; font-size: 15px; color: #2F3044; margin:0; padding:10px; width:100%;">
                     <div
                         style="background-color:#ffffff; padding: 45px 0 34px 0; border-radius: 24px; margin:40px auto; max-width: 600px;">
                         <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" height="auto"
@@ -85,25 +85,25 @@
                                             <!--begin:Text-->
                                             <div
                                                 style="font-size: 14px; font-weight: 500; margin-bottom: 27px; font-family:Arial,Helvetica,sans-serif;">
-                                                <p
+                                                    <p
                                                     style="margin-bottom:9px; color:#181C32; font-size: 22px; font-weight:700">
-                                                    Hey Marcus,</p>
+                                                    {{ $user->full_name }},</p>
                                                 <p
                                                     style="margin-bottom:9px; color:#181C32; font-size: 22px; font-weight:700">
                                                     Your account has been successfully registered!</p>
                                                 <p style="margin-bottom:7px; color:#7E8299">You can now log in using the
                                                     following credentials:</p>
-                                                <p style="margin-bottom:2px; color:#232429 "> <strong> Email:</strong>
-                                                    super@gmail.com</p>
-                                                <p style="margin-bottom:7px; color:#232429"><strong> Password:</strong>
-                                                    basdhbajsd</p>
+                                                    <p style="margin-bottom:2px; color:#232429 "> <strong> Email:</strong>
+                                                        {{ $user->email }} </p>
+                                                    <p style="margin-bottom:7px; color:#232429"><strong> Password:</strong>
+                                                        {{ $generatedPassword }}</p>
                                                 <p style="margin-bottom:2px; color:#7E8299">To access your account,
                                                     click the button below:</p>
 
                                             </div>
                                             <!--end:Text-->
                                             <!--begin:Action-->
-                                            <a href='authentication/general/welcome.html' target="_blank"
+                                            <a href='{{ route('login') }}' target="_blank"
                                                 style="background-color:#50cd89; border-radius:6px;display:inline-block; padding:11px 19px; color: #FFFFFF; font-size: 14px; font-weight:500;">Login
                                                 Now</a>
                                             <!--begin:Action-->

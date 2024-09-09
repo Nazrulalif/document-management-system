@@ -5,7 +5,10 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\mail\UserRegisteredController;
+use App\Mail\UserRegistered;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,13 +62,14 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
     Route::post('/user-deactive/{id}', [UserController::class, 'deactive'])->name('user.deactive');
     Route::post('/user-deactive/{id}', [UserController::class, 'deactive'])->name('user.deactive');
     //bulk deactive user
+    route::get('/download-template', [UserController::class, 'downloadTemplate'])->name('download.template');
     Route::post('/user-bulk-deactive', [UserController::class, 'bulk_deactive'])->name('user.bulk.deactive');
     //user update
     Route::get('/user-show/{id}', [UserController::class, 'show'])->name('user.show');
     Route::post('/user-update/{id}', [UserController::class, 'update'])->name('user.update');
 
     //user account registered email
-    Route::get('/registered', [UserController::class, 'user_registered'])->name('email.registered');
+    Route::get('/user-registered-mail', [UserRegisteredController::class, 'user_registered'])->name('email.registered');
 });
 
 // User Routes

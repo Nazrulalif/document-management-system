@@ -11,7 +11,6 @@ class Organization extends Model
     use HasFactory;
     protected $table = 'organizations';
     protected $fillable = [
-        'id',
         'uuid',
         'org_name',
         'org_number',

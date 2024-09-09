@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Imports\UsersImport;
+use App\Mail\UserRegistered;
 use App\Models\Organization;
 use App\Models\Role;
 use App\Models\User;
@@ -11,9 +12,11 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class UserController extends Controller
 {
@@ -66,7 +69,7 @@ class UserController extends Controller
 
         $generatedPassword = Str::random(10);
         // Attempt to create the organization
-        User::create([
+        $user = User::create([
             'full_name' => $validatedData['full_name'],
             'email' => $validatedData['email'],
             'ic_number' => $validatedData['ic_number'],
@@ -79,6 +82,9 @@ class UserController extends Controller
             'password' => Hash::make($generatedPassword),
             'is_active' => 'Y',
         ]);
+
+        Mail::to($user->email)
+            ->later(30, new UserRegistered($user, $generatedPassword));
 
         // Set a success message
         session()->flash('success', 'New User Successfully added!');
@@ -150,27 +156,100 @@ class UserController extends Controller
         return response()->json(['message' => 'User details updated successfully']);
     }
 
+
+    public function downloadTemplate()
+    {
+        // Fetch companies and roles from the database
+        $companies = Organization::pluck('org_name')->toArray(); // Fetch company names
+        $roles = Role::pluck('role_name')->toArray();            // Fetch role names
+
+        // Create a new Spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Add headers to the main sheet
+        $sheet->setCellValue('A1', 'full_name');
+        $sheet->setCellValue('B1', 'email');
+        $sheet->setCellValue('C1', 'ic_number');
+        $sheet->setCellValue('D1', 'gender');
+        $sheet->setCellValue('E1', 'nationality');
+        $sheet->setCellValue('F1', 'race');
+        $sheet->setCellValue('G1', 'org_guid');  // Dropdown for company name
+        $sheet->setCellValue('H1', 'position');
+        $sheet->setCellValue('I1', 'role_guid');   // Dropdown for system role
+
+        // Create a hidden sheet for company and role data
+        $hiddenSheet = $spreadsheet->createSheet();
+        $hiddenSheet->setTitle('DropdownData');
+
+        // Populate hidden sheet with company names
+        $row = 1;
+        foreach ($companies as $company) {
+            $hiddenSheet->setCellValue('A' . $row, $company);
+            $row++;
+        }
+
+        // Populate hidden sheet with role names
+        $row = 1;
+        foreach ($roles as $role) {
+            $hiddenSheet->setCellValue('B' . $row, $role);
+            $row++;
+        }
+
+        // Define the range for the dropdown values (company names and role names)
+        $companyRange = 'DropdownData!$A$1:$A$' . count($companies);
+        $roleRange = 'DropdownData!$B$1:$B$' . count($roles);
+
+        // Set data validation (dropdown) for Company (Column G)
+        for ($row = 2; $row <= 100; $row++) {
+            $companyCell = 'G' . $row;
+            $validation = $sheet->getCell($companyCell)->getDataValidation();
+            $validation->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST);
+            $validation->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP);
+            $validation->setAllowBlank(false);
+            $validation->setShowInputMessage(true);
+            $validation->setShowDropDown(true);
+            $validation->setFormula1($companyRange);
+            $sheet->getCell($companyCell)->setDataValidation($validation);
+        }
+
+        // Set data validation (dropdown) for Role (Column I)
+        for ($row = 2; $row <= 100; $row++) {
+            $roleCell = 'I' . $row;
+            $validation = $sheet->getCell($roleCell)->getDataValidation();
+            $validation->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST);
+            $validation->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP);
+            $validation->setAllowBlank(false);
+            $validation->setShowInputMessage(true);
+            $validation->setShowDropDown(true);
+            $validation->setFormula1($roleRange);
+            $sheet->getCell($roleCell)->setDataValidation($validation);
+        }
+
+        // Hide the dropdown data sheet (DropdownData)
+        $spreadsheet->setActiveSheetIndex(0);
+        $hiddenSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
+
+        // Save the file as a downloadable Excel file
+        $fileName = 'user_registration_template.xlsx';
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+
+        // Output the file to the browser for download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=\"$fileName\"");
+        $writer->save('php://output');
+    }
+
+
     public function import(Request $request)
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv|max:10240',
-            'org_name' => 'required',
-            'role_name' => 'required',
         ]);
 
-        // Retrieve the parameters
-        $orgGuid = $request->input('org_name');
-        $roleGuid = $request->input('role_name');
+        Excel::import(new UsersImport, $request->file('file'));
 
-        // Import the Excel file and pass organization and role data
-        Excel::import(new UsersImport($orgGuid, $roleGuid), $request->file('file'));
-        // Excel::import(new UsersImport, $request->file('file'));
         session()->flash('success', 'New User Successfully added!');
         return response()->json(['success' => true, 'message' => 'Users imported successfully!']);
-    }
-
-    public function user_registered()
-    {
-        return view('email.user-registered');
     }
 }
