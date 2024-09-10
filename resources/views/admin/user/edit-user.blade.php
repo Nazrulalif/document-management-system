@@ -6,7 +6,7 @@
             <!--begin::Modal header-->
             <div class="modal-header" id="kt_modal_add_user_header">
                 <!--begin::Modal title-->
-                <h2 class="fw-bold">Add User</h2>
+                <h2 class="fw-bold">Edit User</h2>
                 <!--end::Modal title-->
                 <!--begin::Close-->
                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
@@ -102,10 +102,8 @@
                                 <label class="required fw-semibold fs-6 mb-2">Gender</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <select class="form-select form-control form-select-solid mb-3 mb-lg-0"
-                                data-control="select2" name="gender" id="genders" data-placeholder="Select a gender"
-                                data-hide-search="true" required>
-                                    <option></option>
+                                <select class="form-select form-select-solid mb-3 mb-lg-0" 
+                                 name="gender" id="genders" data-placeholder="Select a gender" required>
                                     <option value="male">male</option>
                                     <option value="female">female</option>
                                 </select>
@@ -152,11 +150,11 @@
                                 <label class="required fw-semibold fs-6 mb-2">Role</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <select class="form-select form-control form-select-solid mb-3 mb-lg-0"
-                                    data-control="select2" name="role_name" id="role_name" data-placeholder="Select a role"
-                                    data-hide-search="true" required>
-                                    @foreach ($role as $role )
-                                    <option value="{{ $role->id }}">{{ $role->role_name }}</option>
+                                {{-- <input type="text" name="role_guid" id="role_guid" class="form-control form-control-solid mb-3 mb-lg-0"
+                                     required /> --}}
+                                <select class="form-select form-select-solid mb-3 mb-lg-0" name="role_guid" id="role_guid" data-placeholder="Select a role" required>
+                                    @foreach ($role as $role)
+                                        <option value="{{ $role->id }}">{{ $role->role_name }}</option>
                                     @endforeach
                                 </select>
                                 <!--end::Input-->
@@ -203,7 +201,7 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('kt_modal_add_user_form');
+        const form = document.getElementById('kt_modal_edit_user_form');
         const submitButton = document.getElementById('kt_button_submit');
 
         form.addEventListener('submit', function (event) {

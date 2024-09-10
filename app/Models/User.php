@@ -34,6 +34,11 @@ class User extends Authenticatable
         'org_guid',
     ];
 
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_guid'); // Assuming role_guid is the foreign key
+    }
+
     protected static function boot()
     {
         parent::boot();

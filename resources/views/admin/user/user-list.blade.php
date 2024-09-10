@@ -103,7 +103,7 @@
 </div>
 
 <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
-<script src="{{ asset('assets/js/custom/apps/user-management/users/table.js') }}"></script>
+<script src="{{ asset('assets/js/custom/apps/user-management/users/table-user.js') }}"></script>
 
 
 

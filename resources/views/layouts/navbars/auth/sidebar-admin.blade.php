@@ -84,10 +84,10 @@
                     </div>
 
                     <div data-kt-menu-trigger="click"
-                        class="menu-item menu-accordion {{ (Request::is('admin/company-list', 'admin/company-detail/*', 'admin/user-list', 'admin/user-detail/*') ? 'hover show' : '') }}">
+                        class="menu-item menu-accordion {{ (Request::is('admin/company-list', 'admin/company-detail/*', 'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*') ? 'hover show' : '') }}">
                         <!--begin:Menu link-->
                         <span
-                            class="menu-link {{ (Request::is('admin/company-list', 'admin/company-detail/*', 'admin/user-list', 'admin/user-detail/*') ? 'active' : '') }}">
+                            class="menu-link {{ (Request::is('admin/company-list', 'admin/company-detail/*', 'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*') ? 'active' : '') }}">
                             <span class="menu-icon">
                                 <i class="ki-duotone ki-user fs-2">
                                     <span class="path1"></span>
@@ -123,7 +123,7 @@
                                 <!--end:Menu link-->
 
                                 <!--begin:Menu link-->
-                                <a class="menu-link" href="pages/social/feeds.html">
+                                <a class="menu-link {{ (Request::is('admin/role-list', 'admin/view-role/*') ? 'active' : '') }}" href="{{ route('role.index') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>

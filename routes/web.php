@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\admin\CompanyController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\AuthController;
@@ -59,7 +60,7 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
     Route::post('/create-user', [UserController::class, 'create'])->name('user.create');
     Route::post('/import-user', [UserController::class, 'import'])->name('user.import');
     //Deactive User
-    Route::post('/user-deactive/{id}', [UserController::class, 'deactive'])->name('user.deactive');
+    // Route::post('/user-deactive/{id}', [UserController::class, 'deactive'])->name('user.deactive');
     Route::post('/user-deactive/{id}', [UserController::class, 'deactive'])->name('user.deactive');
     //bulk deactive user
     route::get('/download-template', [UserController::class, 'downloadTemplate'])->name('download.template');
@@ -70,6 +71,13 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
 
     //user account registered email
     Route::get('/user-registered-mail', [UserRegisteredController::class, 'user_registered'])->name('email.registered');
+
+    //role list
+    Route::get('/role-list', [RoleController::class, 'index'])->name('role.index');
+    Route::get('/role-show/{id}', [RoleController::class, 'show'])->name('company.show');
+    Route::post('/role-update/{id}', [RoleController::class, 'update'])->name('role.update');
+    //view role
+    Route::get('/view-role/{uuid}', [RoleController::class, 'view'])->name('role.view');
 });
 
 // User Routes

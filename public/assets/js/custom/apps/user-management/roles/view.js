@@ -7,9 +7,11 @@ var KTDatatablesServerSide = function () {
     var dt;
     var filterPayment;
 
+    const roleDataElement = document.getElementById('role-data');
+    const uuid = roleDataElement.getAttribute('data-uuid');
     // Private functions
     var initDatatable = function () {
-        dt = $("#kt_datatable_example_2").DataTable({
+        dt = $("#kt_roles_view_table").DataTable({
             searchDelay: 500,
             // processing: true,
             serverSide: true,
@@ -23,7 +25,8 @@ var KTDatatablesServerSide = function () {
                 className: 'row-selected'
             },
             ajax: {
-                url: "/admin/user-list",
+                url: `/admin/view-role/${uuid}`,
+                type: 'GET',
             },
             columns: [{
                     data: 'id'
@@ -31,15 +34,7 @@ var KTDatatablesServerSide = function () {
                 {
                     data: 'full_name'
                 },
-                {
-                    data: 'email'
-                },
-                {
-                    data: 'role_name'
-                },
-                {
-                    data: 'org_name'
-                },
+                
                 {
                     data: 'formatted_date'
                 },
@@ -93,7 +88,7 @@ var KTDatatablesServerSide = function () {
 
                             <!--begin::Menu item-->
                                 <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3" data-kt-docs-table-filter="edit_row" data-id="${data.id}">
+                                    <a href="#" class="menu-link px-3" data-kt-docs-table-filter="edit_row_user" data-id="${data.id}">
                                         Edit
                                     </a>
                                 </div>
@@ -140,7 +135,7 @@ var KTDatatablesServerSide = function () {
 
     var handleEditRows = () => {
         // Select all edit buttons
-        const editButtons = document.querySelectorAll('[data-kt-docs-table-filter="edit_row"]');
+        const editButtons = document.querySelectorAll('[data-kt-docs-table-filter="edit_row_user"]');
 
         editButtons.forEach(button => {
             button.addEventListener('click', function (e) {
@@ -171,8 +166,7 @@ var KTDatatablesServerSide = function () {
                         document.getElementById('genders').value = rowData.gender;
                         document.getElementById('org_name').value = rowData.org_guid;
                         document.getElementById('position').value = rowData.position;
-                        document.getElementById('role_name').value = rowData.role_guid;
-                        // Add other fields as necessary
+                        document.getElementById('role_guid').value = rowData.role_guid;
 
                         // Show the modal
                         new bootstrap.Modal(document.getElementById('kt_modal_edit_user')).show();
@@ -353,7 +347,7 @@ var KTDatatablesServerSide = function () {
 
     // Init toggle toolbar
     var initToggleToolbar = function () {
-        const container = document.querySelector('#kt_datatable_example_2');
+        const container = document.querySelector('#kt_roles_view_table');
         const checkboxes = container.querySelectorAll('[type="checkbox"]');
         const deleteSelected = document.querySelector('[data-kt-docs-table-select="delete_selected"]');
 
@@ -463,7 +457,7 @@ var KTDatatablesServerSide = function () {
     // Toggle toolbars
     var toggleToolbars = function () {
         // Define variables
-        const container = document.querySelector('#kt_datatable_example_2');
+        const container = document.querySelector('#kt_roles_view_table');
         const toolbarBase = document.querySelector('[data-kt-docs-table-toolbar="base"]');
         const toolbarSelected = document.querySelector('[data-kt-docs-table-toolbar="selected"]');
         const selectedCount = document.querySelector('[data-kt-docs-table-select="selected_count"]');
