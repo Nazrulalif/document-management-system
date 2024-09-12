@@ -16,9 +16,23 @@ class Folder extends Model
         'folder_name',
         'created_by',
         'org_guid',
-        'folder_parent_guid',
+        'parent_folder_guid',
         'is_meeting',
     ];
+
+    public function parent()
+    {
+        return $this->belongsTo(Folder::class, 'parent_folder_guid');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Folder::class, 'parent_folder_guid', 'id');
+    }
+    public function documents()
+    {
+        return $this->hasMany(Document::class, 'folder_guid', 'id');
+    }
 
     protected static function boot()
     {

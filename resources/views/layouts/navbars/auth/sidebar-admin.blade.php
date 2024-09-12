@@ -138,7 +138,7 @@
 
                     <div class="menu-item">
                         <!--begin:Menu link-->
-                        <a class="menu-link" href="{{ route('dashboard.admin') }}">
+                        <a class="menu-link {{ (Request::is('admin/file-manager', 'admin/folder/*') ? 'active' : '') }}" href="{{ route('fileManager.index') }}">
                             <span class="menu-icon">
                                 <i class="ki-duotone ki-switch fs-2">
                                     <span class="path1"></span>

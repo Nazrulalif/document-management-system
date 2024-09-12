@@ -139,7 +139,7 @@
 
     <!--begin::Javascript-->
     <script>
-        var hostUrl = '{{ asset("assets/")}}';
+        // var hostUrl = '{{ asset("/assets/")}}';
 
     </script>
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>

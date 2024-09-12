@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class documentVersion extends Model
 {
     use HasFactory;
-    protected $table = 'documert_version';
+    protected $table = 'document_versions';
     protected $fillable = [
         'id',
         'uuid',
@@ -18,6 +18,8 @@ class documentVersion extends Model
         'file_path',
         'change_description',
         'created_by',
+        'doc_content',
+
     ];
 
     protected static function boot()

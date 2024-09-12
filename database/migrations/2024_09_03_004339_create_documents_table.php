@@ -15,15 +15,15 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique()->nullable();
             $table->string('doc_name');
-            $table->text('doc_description');
-            $table->longText('doc_summary');
-            $table->string('doc_type');
-            $table->string('doc_author');
-            $table->unsignedBigInteger('upload_by');
-            $table->unsignedBigInteger('folder_guid');
-            $table->unsignedBigInteger('org_guid');
-            $table->unsignedBigInteger('tag_guid');
-            $table->unsignedBigInteger('latest_version_guid');
+            $table->text('doc_description')->nullable();
+            $table->longText('doc_summary')->nullable();
+            $table->string('doc_type')->nullable();
+            $table->string('doc_author')->nullable();
+            $table->unsignedBigInteger('upload_by')->nullable();
+            $table->unsignedBigInteger('folder_guid')->nullable();
+            $table->unsignedBigInteger('org_guid')->nullable();
+            $table->unsignedBigInteger('tag_guid')->nullable();
+            $table->unsignedBigInteger('latest_version_guid')->nullable();
             $table->timestamps();
 
             $table->foreign('upload_by')->references('id')->on('users')->onUpdate('cascade');

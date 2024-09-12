@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('document_versions', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique()->nullable();
-            $table->unsignedBigInteger('doc_guid');
-            $table->string('version_number');
-            $table->string('file_path');
-            $table->string('change_description');
-            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('doc_guid')->nullable();
+            $table->string('version_number')->nullable();
+            $table->string('file_path')->nullable();
+            $table->string('change_description')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->longText('doc_content')->nullable();
             $table->timestamps();
 
             $table->foreign('doc_guid')->references('id')->on('documents')->onUpdate('cascade')->onDelete('cascade');

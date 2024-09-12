@@ -25,6 +25,11 @@ class Document extends Model
         'lates_version_guid',
     ];
 
+    public function folder()
+    {
+        return $this->belongsTo(Folder::class, 'folder_guid', 'id');
+    }
+
     protected static function boot()
     {
         parent::boot();
