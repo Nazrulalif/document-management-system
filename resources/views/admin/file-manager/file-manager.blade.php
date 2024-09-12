@@ -343,6 +343,14 @@
                                                     All</a>
                                             </div>
                                             <!--end::Controls-->
+                                            <!-- Progress bar -->
+                                            <div class="progress mt-3" style="display: none">
+                                                <div id="progress-bar" class="progress-bar" role="progressbar"
+                                                    style="width: 0%" aria-valuenow="0" aria-valuemin="0"
+                                                    aria-valuemax="100">0%</div>
+                                            </div>
+                                            <!-- Status text -->
+                                            <div id="status-text" class="mt-2"></div>
                                             <!--begin::Items-->
                                             <div class="dropzone-items wm-200px">
                                                 <div class="dropzone-item p-5" style="display:none">
@@ -396,6 +404,7 @@
                                             file.</span>
                                         <!--end::Hint-->
                                     </div>
+
                                     <!--end::Input group-->
                                 </div>
                                 <!--end::Modal body-->
@@ -494,17 +503,13 @@
         url: "{{ route('file.upload') }}",
         parallelUploads: 20,
         previewTemplate: previewTemplate,
-        maxFilesize: 1,
-        autoQueue: false,
+        maxFilesize: 1, // Limit to 1MB
+        autoQueue: false, // Prevent auto-upload
         previewsContainer: id + " .dropzone-items",
         clickable: id + " .dropzone-select"
     });
 
     myDropzone.on("addedfile", function (file) {
-        // Hookup the start button
-        file.previewElement.querySelector(id + " .dropzone-start").onclick = function () {
-            myDropzone.enqueueFile(file);
-        };
         const dropzoneItems = dropzone.querySelectorAll('.dropzone-item');
         dropzoneItems.forEach(dropzoneItem => {
             dropzoneItem.style.display = '';
@@ -513,68 +518,126 @@
         dropzone.querySelector('.dropzone-remove-all').style.display = "inline-block";
     });
 
+    // Function to perform OCR on image files
+    function startOCR(file, callback) {
+        const corePath = window.navigator.userAgent.indexOf("Edge") > -1 ?
+            '{{ asset('assets/js/tesseract-core.asm.js') }}' : '{{ asset('assets/js/tesseract-core.wasm.js') }}';
+
+        const worker = new Tesseract.TesseractWorker({
+            corePath: corePath,
+        });
+
+        $('.progress').show();
+        $('#status-text').text('Processing...');
+
+        worker.recognize(file, 'eng') // Perform OCR with English language
+            .progress(function (packet) {
+                if (packet.status === 'recognizing text') {
+                    var progress = Math.round(packet.progress * 100);
+                    $('#progress-bar').css('width', progress + '%').attr('aria-valuenow', progress).text(progress + '%');
+                    $('#status-text').text('Recognizing text: ' + progress + '%');
+                }
+            })
+            .then(function (result) {
+                $('#status-text').text('OCR Complete! Uploading...');
+                $('#progress-bar').css('width', '100%').attr('aria-valuenow', 100).text('100%');
+                callback(result.text); // Pass the OCR text to the callback
+            })
+            .catch(function (error) {
+                console.error('OCR error:', error);
+                $('#status-text').text('An error occurred during OCR.');
+                callback(null); // No text extracted if an error occurs
+            });
+    }
+
+    // Setup the upload button to start OCR and upload process
+    dropzone.querySelector(".dropzone-upload").addEventListener('click', function () {
+        const files = myDropzone.getFilesWithStatus(Dropzone.ADDED);
+
+        let remainingFiles = files.length;
+        let filesProcessed = 0;
+
+        files.forEach((file) => {
+            const extension = file.name.split('.').pop().toLowerCase();
+            if (['jpeg', 'jpg', 'png'].includes(extension)) {
+                // Perform OCR for image files
+                startOCR(file, function (ocrText) {
+                    file.ocrText = ocrText; // Attach OCR result to the file
+                    myDropzone.enqueueFile(file); // Enqueue the file for upload
+                    filesProcessed++;
+                    if (filesProcessed === remainingFiles) {
+                        myDropzone.processQueue(); // Start uploading when all files are processed
+                    }
+                });
+            } else {
+                // Enqueue non-image files directly
+                myDropzone.enqueueFile(file);
+                filesProcessed++;
+                if (filesProcessed === remainingFiles) {
+                    myDropzone.processQueue(); // Start uploading when all files are processed
+                }
+            }
+        });
+    });
+
     // Update the total progress bar
     myDropzone.on("totaluploadprogress", function (progress) {
         const progressBars = dropzone.querySelectorAll('.progress-bar');
         progressBars.forEach(progressBar => {
             progressBar.style.width = progress + "%";
         });
+
+        $('.progress').show();
+        $('#status-text').text('Processing...');
+
+        $('#progress-bar').css('width', progress + '%').attr('aria-valuenow', progress).text(progress + '%');
     });
 
-    myDropzone.on("sending", function (file) {
+    myDropzone.on("sending", function (file, xhr, formData) {
         // Show the total progress bar when upload starts
         const progressBars = dropzone.querySelectorAll('.progress-bar');
         progressBars.forEach(progressBar => {
             progressBar.style.opacity = "1";
         });
-        // And disable the start button
-        file.previewElement.querySelector(id + " .dropzone-start").setAttribute("disabled", "disabled");
+
+        // Append OCR content to the form if available
+        if (file.ocrText) {
+            formData.append("ocr_content", file.ocrText);
+        }
     });
 
     // Hide the total progress bar when nothing's uploading anymore
-    myDropzone.on("complete", function (progress) {
+    myDropzone.on("queuecomplete", function () {
         const progressBars = dropzone.querySelectorAll('.dz-complete');
 
         setTimeout(function () {
             progressBars.forEach(progressBar => {
                 progressBar.querySelector('.progress-bar').style.opacity = "0";
                 progressBar.querySelector('.progress').style.opacity = "0";
-                progressBar.querySelector('.dropzone-start').style.opacity = "0";
             });
-        }, 300);
-
-        location.reload();
+            // Reload the page after all files are processed
+            window.location.reload();
+        }, 500);
     });
 
-    // Setup the buttons for all transfers
-    dropzone.querySelector(".dropzone-upload").addEventListener('click', function () {
-        myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED));
-    });
-
-    // Setup the button for remove all files
+    // Setup the button for removing all files
     dropzone.querySelector(".dropzone-remove-all").addEventListener('click', function () {
         dropzone.querySelector('.dropzone-upload').style.display = "none";
         dropzone.querySelector('.dropzone-remove-all').style.display = "none";
         myDropzone.removeAllFiles(true);
     });
 
-    // On all files completed upload
-    myDropzone.on("queuecomplete", function (progress) {
-        const uploadIcons = dropzone.querySelectorAll('.dropzone-upload');
-        uploadIcons.forEach(uploadIcon => {
-            uploadIcon.style.display = "none";
-        });
-    });
-
-    // On all files removed
-    myDropzone.on("removedfile", function (file) {
+    // Handle file removal
+    myDropzone.on("removedfile", function () {
         if (myDropzone.files.length < 1) {
             dropzone.querySelector('.dropzone-upload').style.display = "none";
             dropzone.querySelector('.dropzone-remove-all').style.display = "none";
         }
     });
-
 </script>
+
+
+
 
 
 {{-- Rename Folder --}}
@@ -684,7 +747,7 @@
             $('#select_all').prop('checked', allChecked);
         });
 
-       
+
 
         // Handle "Delete Selected" button click
         $('#kt_file_manager_delete_selected').on('click', function () {
@@ -1007,7 +1070,8 @@
 
                     // Send the delete request to the server
                     $.ajax({
-                        url: `/admin/file-destroy/` + documentId, // Assuming RESTful API convention
+                        url: `/admin/file-destroy/` +
+                            documentId, // Assuming RESTful API convention
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

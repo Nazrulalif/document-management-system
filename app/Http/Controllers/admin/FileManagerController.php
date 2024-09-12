@@ -225,6 +225,11 @@ class FileManagerController extends Controller
                 $docContent = $this->extractTextFromExcel(storage_path('app/' . $filePath)); // Extract text from Excel
             }
 
+            // Check if OCR content was sent for images
+            if (in_array($extension, ['jpeg', 'jpg', 'png']) && $request->has('ocr_content')) {
+                $docContent = $request->input('ocr_content'); // Use the extracted OCR content from the request
+            }
+
             // Store file information in the database
             $newFile = Document::create([
                 'doc_name' => $originalFileName,
