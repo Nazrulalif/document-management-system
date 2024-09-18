@@ -7,9 +7,10 @@
         <!--begin::Logo image-->
         <a href="index.html">
             <img alt="Logo" src="{{ asset('assets/media/logos/default.svg') }}"
-                class="h-25px app-sidebar-logo-default" />
+                class="h-25px app-sidebar-logo-default theme-light-show" />
             <img alt="Logo" src="{{ asset('assets/media/logos/default-small.svg') }}"
                 class="h-20px app-sidebar-logo-minimize" />
+                <img alt="Logo" src="{{ asset('assets/media/logos/default-dark.svg') }}" class="h-25px app-sidebar-logo-default theme-dark-show">
         </a>
         <div id="kt_app_sidebar_toggle"
             class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate"
@@ -41,8 +42,7 @@
                         <a class="menu-link {{ (Request::is('admin/dashboard') ? 'active' : '') }}"
                             href="{{ route('dashboard.admin') }}">
                             <span class="menu-icon">
-                                <i class="ki-duotone ki-element-11 fs-2">
-                                    <span class="path1"></span>
+                                <i class="ki-outline ki-element-11 fs-2">
                                     <span class="path2"></span>
                                     <span class="path3"></span>
                                     <span class="path4"></span>
@@ -63,8 +63,7 @@
                         <!--begin:Menu link-->
                         <a class="menu-link" href="/">
                             <span class="menu-icon">
-                                <i class="ki-duotone ki-magnifier fs-2">
-                                    <span class="path1"></span>
+                                <i class="ki-outline ki-magnifier fs-2">
                                     <span class="path2"></span>
                                     <span class="path3"></span>
                                     <span class="path4"></span>
@@ -89,8 +88,7 @@
                         <span
                             class="menu-link {{ (Request::is('admin/company-list', 'admin/company-detail/*', 'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*') ? 'active' : '') }}">
                             <span class="menu-icon">
-                                <i class="ki-duotone ki-user fs-2">
-                                    <span class="path1"></span>
+                                <i class="ki-outline ki-user fs-2">
                                     <span class="path2"></span>
                                 </i>
                             </span>
@@ -138,10 +136,9 @@
 
                     <div class="menu-item">
                         <!--begin:Menu link-->
-                        <a class="menu-link {{ (Request::is('admin/file-manager', 'admin/folder/*') ? 'active' : '') }}" href="{{ route('fileManager.index') }}">
+                        <a class="menu-link {{ (Request::is('admin/file-manager', 'admin/folder/*', 'admin/file-details/*') ? 'active' : '') }}" href="{{ route('fileManager.index') }}">
                             <span class="menu-icon">
-                                <i class="ki-duotone ki-switch fs-2">
-                                    <span class="path1"></span>
+                                <i class="ki-outline ki-switch fs-2">
                                     <span class="path2"></span>
                                 </i>
                             </span>
@@ -154,8 +151,7 @@
                         <!--begin:Menu link-->
                         <a class="menu-link" href="{{ route('dashboard.admin') }}">
                             <span class="menu-icon">
-                                <i class="ki-duotone ki-file fs-2">
-                                    <span class="path1"></span>
+                                <i class="ki-outline ki-file fs-2">
                                     <span class="path2"></span>
                                 </i>
                             </span>
@@ -176,8 +172,7 @@
                         <!--begin:Menu link-->
                         <a class="menu-link" href="{{ route('logout') }}">
                             <span class="menu-icon">
-                                <i class="ki-duotone ki-exit-left fs-2">
-                                    <span class="path1"></span>
+                                <i class="ki-outline ki-exit-left fs-2">
                                     <span class="path2"></span>
                                 </i>
                             </span>

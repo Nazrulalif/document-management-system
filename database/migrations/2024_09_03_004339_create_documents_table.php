@@ -15,21 +15,22 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique()->nullable();
             $table->string('doc_name');
+            $table->string('doc_title')->nullable();
             $table->text('doc_description')->nullable();
             $table->longText('doc_summary')->nullable();
             $table->string('doc_type')->nullable();
             $table->string('doc_author')->nullable();
+            $table->string('doc_keyword')->nullable();
             $table->unsignedBigInteger('upload_by')->nullable();
             $table->unsignedBigInteger('folder_guid')->nullable();
             $table->unsignedBigInteger('org_guid')->nullable();
-            $table->unsignedBigInteger('tag_guid')->nullable();
-            $table->unsignedBigInteger('latest_version_guid')->nullable();
+            $table->char('latest_version_guid')->nullable();
+            $table->integer('version_limit')->nullable();
             $table->timestamps();
 
             $table->foreign('upload_by')->references('id')->on('users')->onUpdate('cascade');
             $table->foreign('folder_guid')->references('id')->on('folders')->onDelete('cascade');
             $table->foreign('org_guid')->references('id')->on('organizations')->onUpdate('cascade');
-            $table->foreign('tag_guid')->references('id')->on('tags')->onUpdate('cascade');
         });
     }
 

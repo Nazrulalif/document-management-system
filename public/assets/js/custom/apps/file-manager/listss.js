@@ -48,7 +48,7 @@ var KTFileManagerList = function () {
             const n = document.querySelector('[data-kt-filemanager-table-select="delete_selected"]');
             o.forEach((e => {
                 e.addEventListener("click", (function () {
-                     setTimeout((function () {
+                    setTimeout((function () {
                         s()
                     }), 50)
                 }))
@@ -227,183 +227,105 @@ var KTFileManagerList = function () {
     return {
         init: function () {
             (t = document.querySelector("#kt_file_manager_list")) && (o = document.querySelector('[data-kt-filemanager-template="upload"]'), n = document.querySelector('[data-kt-filemanager-template="rename"]'), r = document.querySelector('[data-kt-filemanager-template="action"]'), a = document.querySelector('[data-kt-filemanager-template="checkbox"]'), (() => {
-                t.querySelectorAll("tbody tr").forEach((e => {
-                    const t = e.querySelectorAll("td")[3],
-                        o = moment(t.innerHTML, "DD MMM YYYY, LT").format();
-                    t.setAttribute("data-order", o)
-                }));
-                const o = {
-                        info: !1,
-                        order: [],
-                        scrollY: "700px",
-                        scrollCollapse: !0,
-                        paging: !1,
-                        ordering: !1,
-                        columns: [{
-                            data: "checkbox"
-                        }, {
-                            data: "name"
-                        }, {
-                            data: "size"
-                        }, {
-                            data: "date"
-                        }, {
-                            data: "action"
-                        }],
-                        language: {
-                            emptyTable: `<div class="d-flex flex-column flex-center">\n                    <img src="${hostUrl}media/illustrations/sketchy-1/5.png" class="mw-400px" />\n                    <div class="fs-1 fw-bolder text-dark">No items found.</div>\n                    <div class="fs-6">Start creating new folders or uploading a new file!</div>\n                </div>`
-                        }
-                    },
-                    n = {
-                        info: !1,
-                        order: [],
-                        pageLength: 10,
-                        lengthChange: !1,
-                        ordering: !1,
-                        columns: [{
-                            data: "checkbox"
-                        }, {
-                            data: "name"
-                        }, {
-                            data: "size"
-                        }, {
-                            data: "date"
-                        }, {
-                            data: "action"
-                        }],
-                        language: {
-                            emptyTable: `<div class="d-flex flex-column flex-center">\n                    <img src="${hostUrl}media/illustrations/sketchy-1/5.png" class="mw-400px" />\n                    <div class="fs-1 fw-bolder text-dark mb-4">No items found.</div>\n                    <div class="fs-6">Start creating new folders or uploading a new file!</div>\n                </div>`
+                    t.querySelectorAll("tbody tr").forEach((e => {
+                        const t = e.querySelectorAll("td")[3],
+                            o = moment(t.innerHTML, "DD MMM YYYY, LT").format();
+                        t.setAttribute("data-order", o)
+                    }));
+                    const o = {
+                            info: !1,
+                            order: [],
+                            scrollY: "700px",
+                            scrollCollapse: !0,
+                            paging: !1,
+                            ordering: !1,
+                            columns: [{
+                                data: "checkbox"
+                            }, {
+                                data: "name"
+                            }, {
+                                data: "size"
+                            }, {
+                                data: "date"
+                            }, {
+                                data: "action"
+                            }],
+                            language: {
+                                emptyTable: `<div class="d-flex flex-column flex-center">\n                    <img src="${hostUrl}media/illustrations/sketchy-1/5.png" class="mw-400px" />\n                    <div class="fs-1 fw-bolder text-dark">No items found.</div>\n                    <div class="fs-6">Start creating new folders or uploading a new file!</div>\n                </div>`
+                            }
                         },
-                        conditionalPaging: !0
-                    };
-                var r;
-                r = "folders" === t.getAttribute("data-kt-filemanager-table") ? o : n, (e = $(t).DataTable(r)).on("draw", (function () {
-                    i(), l(), s(), c(), KTMenu.createInstances(), m(), f(), d()
-                }))
-            })(), i(), document.querySelector('[data-kt-filemanager-table-filter="search"]').addEventListener("keyup", (function (t) {
-                e.search(t.target.value).draw()
-            })), l(), document.getElementById("kt_file_manager_new_folder").addEventListener("click", (n => {
-                if (n.preventDefault(), t.querySelector("#kt_file_manager_new_folder_row")) return;
-                const l = t.querySelector("tbody"),
-                    i = o.cloneNode(!0);
-                l.prepend(i);
-                const s = i.querySelector("#kt_file_manager_add_folder_form"),
-                    d = i.querySelector("#kt_file_manager_add_folder"),
-                    u = i.querySelector("#kt_file_manager_cancel_folder"),
-                    m = i.querySelector("#kt_file_manager_folder_icon"),
-                    f = i.querySelector('[name="new_folder_name"]');
-                var p = FormValidation.formValidation(s, {
-                    fields: {
-                        new_folder_name: {
-                            validators: {
-                                notEmpty: {
-                                    message: "Folder name is required"
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        trigger: new FormValidation.plugins.Trigger,
-                        bootstrap: new FormValidation.plugins.Bootstrap5({
-                            rowSelector: ".fv-row",
-                            eleInvalidClass: "",
-                            eleValidClass: ""
-                        })
-                    }
-                });
-                d.addEventListener("click", (t => {
-                    t.preventDefault(), d.setAttribute("data-kt-indicator", "on"), p && p.validate().then((function (t) {
-                        console.log("validated!"), "Valid" == t ? setTimeout((function () {
-                            const t = document.createElement("a");
-                            t.setAttribute("href", "?page=apps/file-manager/blank"), t.classList.add("text-gray-800", "text-hover-primary"), t.innerText = f.value;
-                            const o = e.row.add({
-                                checkbox: a.innerHTML,
-                                name: m.outerHTML + t.outerHTML,
-                                size: "-",
-                                date: "-",
-                                action: r.innerHTML
-                            }).node();
-                            $(o).find("td").eq(4).attr("data-kt-filemanager-table", "action_dropdown"), $(o).find("td").eq(4).addClass("text-end");
-                            for (var n, l = e.row(0).index(), i = e.data().length - 1, s = e.row(i).data(), c = i; c > l; c--) n = e.row(c - 1).data(), e.row(c).data(n), e.row(c - 1).data(s);
-                            toastr.options = {
-                                closeButton: !0,
-                                debug: !1,
-                                newestOnTop: !1,
-                                progressBar: !1,
-                                positionClass: "toastr-top-right",
-                                preventDuplicates: !1,
-                                showDuration: "300",
-                                hideDuration: "1000",
-                                timeOut: "5000",
-                                extendedTimeOut: "1000",
-                                showEasing: "swing",
-                                hideEasing: "linear",
-                                showMethod: "fadeIn",
-                                hideMethod: "fadeOut"
-                            }, toastr.success(f.value + " was created!"), d.removeAttribute("data-kt-indicator"), f.value = "", e.draw(!1)
-                        }), 2e3) : d.removeAttribute("data-kt-indicator")
+                        n = {
+                            info: !1,
+                            order: [],
+                            pageLength: 10,
+                            lengthChange: !1,
+                            ordering: !1,
+                            columns: [{
+                                data: "checkbox"
+                            }, {
+                                data: "name"
+                            }, {
+                                data: "size"
+                            }, {
+                                data: "date"
+                            }, {
+                                data: "action"
+                            }],
+                            language: {
+                                emptyTable: `<div class="d-flex flex-column flex-center">\n                    <img src="${hostUrl}media/illustrations/sketchy-1/5.png" class="mw-400px" />\n                    <div class="fs-1 fw-bolder text-dark mb-4">No items found.</div>\n                    <div class="fs-6">Start creating new folders or uploading a new file!</div>\n                </div>`
+                            },
+                            conditionalPaging: !0
+                        };
+                    var r;
+                    r = "folders" === t.getAttribute("data-kt-filemanager-table") ? o : n, (e = $(t).DataTable(r)).on("draw", (function () {
+                        i(), l(), s(), c(), KTMenu.createInstances(), m(), f(), d()
                     }))
-                })), u.addEventListener("click", (e => {
-                    e.preventDefault(), u.setAttribute("data-kt-indicator", "on"), setTimeout((function () {
-                        u.removeAttribute("data-kt-indicator"), toastr.options = {
-                            closeButton: !0,
-                            debug: !1,
-                            newestOnTop: !1,
-                            progressBar: !1,
-                            positionClass: "toastr-top-right",
-                            preventDuplicates: !1,
-                            showDuration: "300",
-                            hideDuration: "1000",
-                            timeOut: "5000",
-                            extendedTimeOut: "1000",
-                            showEasing: "swing",
-                            hideEasing: "linear",
-                            showMethod: "fadeIn",
-                            hideMethod: "fadeOut"
-                        }, toastr.error("Cancelled new folder creation"), c()
-                    }), 1e3)
-                }))
-            })), 
-                 m(), d(), (() => {
-                const e = document.querySelector("#kt_modal_move_to_folder"),
-                    t = e.querySelector("#kt_modal_move_to_folder_form"),
-                    o = t.querySelector("#kt_modal_move_to_folder_submit"),
-                    n = new bootstrap.Modal(e);
-                var r = FormValidation.formValidation(t, {
-                    fields: {
-                        move_to_folder: {
-                            validators: {
-                                notEmpty: {
-                                    message: "Please select a folder."
+                })(), i(), document.querySelector('[data-kt-filemanager-table-filter="search"]').addEventListener("keyup", (function (t) {
+                    e.search(t.target.value).draw()
+                })), l(), document.getElementById("kt_file_manager_new_folder").addEventListener("click", (n => {
+                    if (n.preventDefault(), t.querySelector("#kt_file_manager_new_folder_row")) return;
+                    const l = t.querySelector("tbody"),
+                        i = o.cloneNode(!0);
+                    l.prepend(i);
+                    const s = i.querySelector("#kt_file_manager_add_folder_form"),
+                        d = i.querySelector("#kt_file_manager_add_folder"),
+                        u = i.querySelector("#kt_file_manager_cancel_folder"),
+                        m = i.querySelector("#kt_file_manager_folder_icon"),
+                        f = i.querySelector('[name="new_folder_name"]');
+                    var p = FormValidation.formValidation(s, {
+                        fields: {
+                            new_folder_name: {
+                                validators: {
+                                    notEmpty: {
+                                        message: "Folder name is required"
+                                    }
                                 }
                             }
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger,
+                            bootstrap: new FormValidation.plugins.Bootstrap5({
+                                rowSelector: ".fv-row",
+                                eleInvalidClass: "",
+                                eleValidClass: ""
+                            })
                         }
-                    },
-                    plugins: {
-                        trigger: new FormValidation.plugins.Trigger,
-                        bootstrap: new FormValidation.plugins.Bootstrap5({
-                            rowSelector: ".fv-row",
-                            eleInvalidClass: "",
-                            eleValidClass: ""
-                        })
-                    }
-                });
-                o.addEventListener("click", (e => {
-                    e.preventDefault(), o.setAttribute("data-kt-indicator", "on"), r && r.validate().then((function (e) {
-                        console.log("validated!"), "Valid" == e ? setTimeout((function () {
-                            Swal.fire({
-                                text: "Are you sure you would like to move to this folder",
-                                icon: "warning",
-                                showCancelButton: !0,
-                                buttonsStyling: !1,
-                                confirmButtonText: "Yes, move it!",
-                                cancelButtonText: "No, return",
-                                customClass: {
-                                    confirmButton: "btn btn-primary",
-                                    cancelButton: "btn btn-active-light"
-                                }
-                            }).then((function (e) {
-                                e.isConfirmed ? (t.reset(), n.hide(), toastr.options = {
+                    });
+                    d.addEventListener("click", (t => {
+                        t.preventDefault(), d.setAttribute("data-kt-indicator", "on"), p && p.validate().then((function (t) {
+                            console.log("validated!"), "Valid" == t ? setTimeout((function () {
+                                const t = document.createElement("a");
+                                t.setAttribute("href", "?page=apps/file-manager/blank"), t.classList.add("text-gray-800", "text-hover-primary"), t.innerText = f.value;
+                                const o = e.row.add({
+                                    checkbox: a.innerHTML,
+                                    name: m.outerHTML + t.outerHTML,
+                                    size: "-",
+                                    date: "-",
+                                    action: r.innerHTML
+                                }).node();
+                                $(o).find("td").eq(4).attr("data-kt-filemanager-table", "action_dropdown"), $(o).find("td").eq(4).addClass("text-end");
+                                for (var n, l = e.row(0).index(), i = e.data().length - 1, s = e.row(i).data(), c = i; c > l; c--) n = e.row(c - 1).data(), e.row(c).data(n), e.row(c - 1).data(s);
+                                toastr.options = {
                                     closeButton: !0,
                                     debug: !1,
                                     newestOnTop: !1,
@@ -418,20 +340,31 @@ var KTFileManagerList = function () {
                                     hideEasing: "linear",
                                     showMethod: "fadeIn",
                                     hideMethod: "fadeOut"
-                                }, toastr.success("1 item has been moved."), o.removeAttribute("data-kt-indicator")) : (Swal.fire({
-                                    text: "Your action has been cancelled!.",
-                                    icon: "error",
-                                    buttonsStyling: !1,
-                                    confirmButtonText: "Ok, got it!",
-                                    customClass: {
-                                        confirmButton: "btn btn-primary"
-                                    }
-                                }), o.removeAttribute("data-kt-indicator"))
-                            }))
-                        }), 500) : o.removeAttribute("data-kt-indicator")
+                                }, toastr.success(f.value + " was created!"), d.removeAttribute("data-kt-indicator"), f.value = "", e.draw(!1)
+                            }), 2e3) : d.removeAttribute("data-kt-indicator")
+                        }))
+                    })), u.addEventListener("click", (e => {
+                        e.preventDefault(), u.setAttribute("data-kt-indicator", "on"), setTimeout((function () {
+                            u.removeAttribute("data-kt-indicator"), toastr.options = {
+                                closeButton: !0,
+                                debug: !1,
+                                newestOnTop: !1,
+                                progressBar: !1,
+                                positionClass: "toastr-top-right",
+                                preventDuplicates: !1,
+                                showDuration: "300",
+                                hideDuration: "1000",
+                                timeOut: "5000",
+                                extendedTimeOut: "1000",
+                                showEasing: "swing",
+                                hideEasing: "linear",
+                                showMethod: "fadeIn",
+                                hideMethod: "fadeOut"
+                            }, toastr.error("Cancelled new folder creation"), c()
+                        }), 1e3)
                     }))
-                }))
-            })(), f(), KTMenu.createInstances())
+                })),
+                m(), d(), f(), KTMenu.createInstances())
         }
     }
 }();

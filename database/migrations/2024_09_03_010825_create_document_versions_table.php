@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('document_versions', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique()->nullable();
+            $table->string('change_title')->nullable();
             $table->unsignedBigInteger('doc_guid')->nullable();
             $table->string('version_number')->nullable();
             $table->string('file_path')->nullable();

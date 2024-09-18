@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\admin\CompanyController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\admin\FileController;
 use App\Http\Controllers\admin\FileManagerController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
@@ -96,6 +97,17 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
     route::post('/file-destroy/{id}', [FileManagerController::class, 'destroy_file'])->name('file.destroy');
     //delete file
     route::post('/file/delete-selected', [FileManagerController::class, 'file_deleteSelected']);
+
+    //view file page
+    route::get('/file-details/{uuid}', [FileController::class, 'index'])->name('file.index');
+    //update file detail
+    route::post('/file-update/{uuid}', [FileController::class, 'update'])->name('file.update');
+    //generate summary with AI
+    route::get('/generate-summary/{uuid}', [FileController::class, 'generate_summary'])->name('generate.summary');
+    //Add new version
+    Route::post('/add-version', [FileController::class, 'add_version'])->name('file.add.version');
+    //destroy file
+    route::get('/file-detail-destroy/{uuid}', [FileController::class, 'destroy_file'])->name('file.detail.destroy');
 });
 
 // User Routes

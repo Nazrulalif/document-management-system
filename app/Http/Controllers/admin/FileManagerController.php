@@ -14,6 +14,7 @@ use PhpOffice\PhpWord\IOFactory; // For Word documents
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\Element\Text;
 use PhpOffice\PhpSpreadsheet\IOFactory as SpreadsheetIOFactory;
+use Illuminate\Support\Facades\DB;
 
 class FileManagerController extends Controller
 {
@@ -30,6 +31,22 @@ class FileManagerController extends Controller
             ->join('users', 'users.id', '=', 'documents.upload_by')
             ->get();
 
+        // Get the latest version for each document
+        // $rootDocuments = Document::select(
+        //     'documents.*',
+        //     'document_versions.file_path',
+        //     'document_versions.version_number',
+        //     'document_versions.change_title',
+        //     'document_versions.change_description',
+        // )
+        //     ->join('document_versions', function ($join) {
+        //         $join->on('documents.id', '=', 'document_versions.doc_guid')
+        //             ->whereColumn('document_versions.id', '=', DB::raw('(SELECT MAX(id) FROM document_versions WHERE doc_guid = documents.id)'));
+        //     })
+        //     ->get();
+
+        // dd($latestVersions);
+
 
         return view('admin.file-manager.file-manager', [
             'folders' => $folders,
@@ -45,7 +62,8 @@ class FileManagerController extends Controller
         $path = $this->getFolderPath($folder);
 
         // $document = Document::where('folder_guid', '=', $uuid)->get();
-        $document = Document::join('folders', 'folders.id', '=', 'documents.folder_guid')
+        $document = Document::select('*', 'documents.id as id')
+            ->join('folders', 'folders.id', '=', 'documents.folder_guid')
             ->where('folders.uuid', '=', $uuid)
             ->get();
 
@@ -93,17 +111,56 @@ class FileManagerController extends Controller
 
     public function destroy($id)
     {
-
+        // Find the folder by ID
         $folder = Folder::find($id);
 
         if ($folder) {
+            // Recursively delete all documents, files, and subfolders
+            $this->deleteFolderContents($folder);
+
+            // Finally, delete the folder itself
             $folder->delete();
 
-            return response()->json(['success' => true, 'message' => 'Folder deleted successfully']);
+            return response()->json(['success' => true, 'message' => 'Folder and its contents deleted successfully']);
         }
 
         return response()->json(['success' => false, 'message' => 'Folder not found']);
     }
+
+    private function deleteFolderContents($folder)
+    {
+        // Get all documents related to this folder
+        $documents = Document::join('document_versions', 'document_versions.doc_guid', '=', 'documents.id')
+            ->where('documents.folder_guid', '=', $folder->id)
+            ->get();
+
+        foreach ($documents as $doc) {
+            $filePath = $doc->file_path;
+
+            // Delete the file from storage if it exists
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
+
+            // Delete associated document versions
+            DocumentVersion::where('doc_guid', $doc->id)->delete();
+
+            // Delete the document itself
+            $doc->delete();
+        }
+
+        // Find all subfolders of the current folder
+        $subfolders = Folder::where('parent_folder_guid', $folder->id)->get();
+
+        // Recursively delete each subfolder and its contents
+        foreach ($subfolders as $subfolder) {
+            $this->deleteFolderContents($subfolder); // Recursive call to delete subfolder contents
+            $subfolder->delete(); // Delete the subfolder itself
+        }
+    }
+
+
+
 
     public function rename(Request $request, $id)
     {
@@ -121,10 +178,25 @@ class FileManagerController extends Controller
 
     public function deleteSelected(Request $request)
     {
+        // Get the array of selected folder IDs from the request
         $ids = $request->input('ids');
-        Folder::whereIn('id', $ids)->delete();
 
-        return response()->json(['success' => true, 'message' => 'Folders deleted successfully']);
+        if (!$ids || !is_array($ids) || empty($ids)) {
+            return response()->json(['success' => false, 'message' => 'No folders selected for deletion']);
+        }
+
+        // Find all folders that match the selected IDs
+        $folders = Folder::whereIn('id', $ids)->get();
+
+        foreach ($folders as $folder) {
+            // Recursively delete folder contents (files, documents, subfolders)
+            $this->deleteFolderContents($folder);
+
+            // Finally, delete the folder itself
+            $folder->delete();
+        }
+
+        return response()->json(['success' => true, 'message' => 'Selected folders and their contents deleted successfully']);
     }
 
     public function file_deleteSelected(Request $request)
@@ -141,9 +213,9 @@ class FileManagerController extends Controller
         foreach ($documents as $document) {
             $filePath = $document->file_path;
 
-            // Delete the associated file if it exists in storage
-            if (Storage::exists($filePath)) {
-                Storage::delete($filePath); // Delete the file using Laravel's Storage facade
+            // Assuming $filePath is relative to the 'public' disk (e.g., 'uploads/myfile.pdf')
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath); // Delete the file from 'public' disk
             }
 
             // Find the document in the documents table and delete it
@@ -165,16 +237,26 @@ class FileManagerController extends Controller
         // Check if the document exists
         if ($document) {
             // Get the file path in storage
-            $filePath = $document->file_path;
+            // Get all versions of the document using the document's ID or any identifier that links to versions
+            $allVersions = documentVersion::where('doc_guid', '=', $documentId->id)->get();
 
-            // Delete the associated file if it exists
-            if (Storage::exists($filePath)) {
-                Storage::delete($filePath);  // Delete file using Laravel's Storage facade
+            // Loop through all versions and delete associated files
+            foreach ($allVersions as $version) {
+                $filePath = $version->file_path;
+
+                // Assuming $filePath is relative to the 'public' disk (e.g., 'uploads/myfile.pdf')
+                if (Storage::disk('public')->exists($filePath)) {
+                    Storage::disk('public')->delete($filePath); // Delete the file from 'public' disk
+                }
+
+                // Delete the version record from the database
+                $version->delete();
             }
 
-            // Delete the document record from the database
+            // Now delete the main document record from the database
             $documentId->delete();
 
+            // Redirect back with a success message
             return response()->json(['success' => true, 'message' => 'File deleted successfully']);
         }
 
@@ -193,14 +275,16 @@ class FileManagerController extends Controller
         // Handle the uploaded file
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $originalFileName = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
+            $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
+            $originalName = $file->getClientOriginalName();
+
 
             // Define folder based on file extension
             $folder = $this->getFolderByFileType($extension); // Separate function to get the folder
 
             // Store the file in the corresponding folder in 'storage/app/uploads/{folder}'
-            $filePath = $file->storeAs('uploads/' . $folder, $originalFileName);
+            $filePath = $file->storeAs('uploads/' . $folder, $uniqueFileName, 'public');
 
             $folder_id = $request->folder_id;
 
@@ -210,19 +294,19 @@ class FileManagerController extends Controller
             // If the file is a PDF, extract its content
             if ($extension === 'pdf') {
                 $pdfParser = new Parser();
-                $pdf = $pdfParser->parseFile(storage_path('app/' . $filePath));
+                $pdf = $pdfParser->parseFile(public_path('storage/' . $filePath));
                 $docContent = $pdf->getText(); // Extract the text from the PDF
             }
 
             // If the file is a DOCX, extract its content using the method defined below
             if ($extension === 'docx') {
-                $docContent = $this->extractTextFromDocx(storage_path('app/' . $filePath)); // Extract text from DOCX
+                $docContent = $this->extractTextFromDocx(public_path('storage/' . $filePath)); // Extract text from DOCX
             }
 
 
             // Handle Excel file
             if (in_array($extension, ['xlsx', 'xls', 'csv'])) {
-                $docContent = $this->extractTextFromExcel(storage_path('app/' . $filePath)); // Extract text from Excel
+                $docContent = $this->extractTextFromExcel(public_path('storage/' . $filePath)); // Extract text from Excel
             }
 
             // Check if OCR content was sent for images
@@ -230,21 +314,34 @@ class FileManagerController extends Controller
                 $docContent = $request->input('ocr_content'); // Use the extracted OCR content from the request
             }
 
-            // Store file information in the database
-            $newFile = Document::create([
-                'doc_name' => $originalFileName,
-                'folder_guid' => $folder_id,
-                'doc_type' => $folder,
-                'upload_by' => Auth::user()->id,
-                'org_guid' => Auth::user()->org_guid, // Assuming you're storing the org_guid too
-            ]);
-
-            documentVersion::create([
-                'doc_guid' => $newFile->id,
+            $documentVersion = documentVersion::create([
+                'doc_guid' => null,
                 'file_path' => $filePath,
                 'doc_content' => $docContent, // Store the extracted document content
                 'created_by' => Auth::user()->id,
+                'version_number' => 'v1.0',
+                'change_description' => 'Not set',
             ]);
+
+            // Store file information in the database
+            $newFile = Document::create([
+                'doc_name' => $uniqueFileName,
+                'doc_title' => $originalName,
+                'folder_guid' => $folder_id,
+                'doc_type' => $folder,
+                'upload_by' => Auth::user()->id,
+                'org_guid' => Auth::user()->org_guid,
+                'doc_description' => 'Not set',
+                'doc_summary' => 'Not set',
+                'doc_author' => 'Not set',
+                'doc_keyword' => 'Not set',
+                'version_limit' => '5',
+                'latest_version_guid' => $documentVersion->uuid,
+            ]);
+
+            $documentVersion->doc_guid = $newFile->id;
+            $documentVersion->save();
+
 
             return back()->with('success', 'File uploaded successfully.');
         }

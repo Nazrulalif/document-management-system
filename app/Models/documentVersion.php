@@ -13,6 +13,7 @@ class documentVersion extends Model
     protected $fillable = [
         'id',
         'uuid',
+        'change_title',
         'doc_guid',
         'version_number',
         'file_path',
@@ -21,6 +22,11 @@ class documentVersion extends Model
         'doc_content',
 
     ];
+
+    public function document()
+    {
+        return $this->belongsTo(Document::class, 'doc_guid', 'id');
+    }
 
     protected static function boot()
     {
