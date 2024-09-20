@@ -126,7 +126,8 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <span class="icon-wrapper">
-                                                <i class="ki-outline ki-folder fs-2x text-primary me-4">
+                                                <i class="ki-duotone ki-folder fs-2x text-primary me-4">
+                                                    <span class="path1"></span>
                                                     <span class="path2"></span>
                                                 </i>
                                             </span>
@@ -142,7 +143,8 @@
                                             <button type="button"
                                                 class="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
                                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                                <i class="ki-outline ki-dots-square fs-5 m-0">
+                                                <i class="ki-duotone ki-dots-square fs-5 m-0">
+                                                    <span class="path1"></span>
                                                     <span class="path2"></span>
                                                     <span class="path3"></span>
                                                     <span class="path4"></span>
@@ -204,7 +206,8 @@
                                             <button type="button"
                                                 class="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
                                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                                <i class="ki-outline ki-dots-square fs-5 m-0">
+                                                <i class="ki-duotone ki-dots-square fs-5 m-0">
+                                                    <span class="path1"></span>
                                                     <span class="path2"></span>
                                                     <span class="path3"></span>
                                                     <span class="path4"></span>
@@ -242,7 +245,8 @@
                                 <div class="d-flex align-items-center">
                                     <!--begin::Folder icon-->
                                     <span id="kt_file_manager_folder_icon">
-                                        <i class="ki-outline ki-folder fs-2x text-primary me-4">
+                                        <i class="ki-duotone ki-folder fs-2x text-primary me-4">
+                                            <span class="path1"></span>
                                             <span class="path2"></span>
                                         </i>
                                     </span>

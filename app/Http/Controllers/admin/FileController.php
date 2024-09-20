@@ -56,11 +56,20 @@ class FileController extends Controller
         // return response()->json(['message' => $file]);
     }
 
-    public function update($uuid)
+    public function update(Request $request, $uuid)
     {
 
         // $file = Document::where('uuid', '=', $uuid)->first();
         $file = Document::where('latest_version_guid', '=', $uuid)->first();
+
+        // Process the doc_keyword field to save as comma-separated string
+        $keywords = $request->input('doc_keyword');
+        $processed_keywords = '';
+
+        if ($keywords) {
+            $tags = json_decode($keywords, true); // Decode JSON into array
+            $processed_keywords = implode(', ', array_column($tags, 'value')); // Convert to comma-separated string
+        }
 
         if (!$file) {
             return response()->json(['error' => 'File not found'], 404);
@@ -71,7 +80,7 @@ class FileController extends Controller
             'doc_description' => request('doc_description'),
             'doc_summary' => request('doc_summary'),
             'doc_author' => request('doc_author'),
-            'doc_keyword' => request('doc_keyword'),
+            'doc_keyword' => $processed_keywords,
             'version_limit' => request('version_limit'),
         ]);
 

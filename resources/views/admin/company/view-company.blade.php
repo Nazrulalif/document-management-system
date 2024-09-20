@@ -21,7 +21,7 @@
                                 <div class="d-flex flex-center flex-column mb-5">
                                     <!--begin::Avatar-->
                                     <div class="symbol symbol-100px symbol-circle mb-7">
-                                        <i class="ki-duotone ki-home " style="font-size: 5rem"></i>
+                                        <i class="ki-outline ki-home " style="font-size: 5rem"></i>
                                     </div>
                                     <!--end::Avatar-->
                                     <!--begin::Name-->

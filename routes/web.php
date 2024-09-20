@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\admin\FileController;
 use App\Http\Controllers\admin\FileManagerController;
 use App\Http\Controllers\admin\RoleController;
+use App\Http\Controllers\admin\SearchController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\AuthController;
@@ -82,6 +83,7 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
 
     //file manager
     Route::get('/file-manager', [FileManagerController::class, 'index'])->name('fileManager.index');
+    route::get('/file-manager/fetch-data', [FileManagerController::class, 'fetchData'])->name('fileManager.fetchData');
     route::get('/file-manager/{uuid}', [FileManagerController::class, 'show_folder'])->name('folder.show');
     //create folder
     Route::post('/create-folder', [FileManagerController::class, 'create'])->name('folder.create');
@@ -108,6 +110,9 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
     Route::post('/add-version', [FileController::class, 'add_version'])->name('file.add.version');
     //destroy file
     route::get('/file-detail-destroy/{uuid}', [FileController::class, 'destroy_file'])->name('file.detail.destroy');
+
+    //advance search
+    route::get('/advance-search', [SearchController::class, 'index'])->name('search.index');
 });
 
 // User Routes

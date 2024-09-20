@@ -16,7 +16,8 @@
                         <div class="card-title">
                             <!--begin::Search-->
                             <div class="d-flex align-items-center position-relative my-1">
-                                <i class="ki-outline ki-magnifier fs-1 position-absolute ms-6">
+                                <i class="ki-duotone ki-magnifier fs-1 position-absolute ms-6">
+                                    <span class="path1"></span>
                                     <span class="path2"></span>
                                 </i>
                                 <input type="text" data-kt-filemanager-table-filter="search"
@@ -36,7 +37,7 @@
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                     </i>New Folder</button>
-                                    
+
                                 <!--end::Export-->
                                 <!--begin::Add customer-->
                                 <button type="button" class="btn btn-flex btn-primary" data-bs-toggle="modal"
@@ -117,7 +118,8 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <span class="icon-wrapper">
-                                                <i class="ki-outline ki-folder fs-2x text-primary me-4">
+                                                <i class="ki-duotone ki-folder fs-2x text-primary me-4">
+                                                    <span class="path1"></span>
                                                     <span class="path2"></span>
                                                 </i>
                                             </span>
@@ -133,7 +135,8 @@
                                             <button type="button"
                                                 class="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
                                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                                <i class="ki-outline ki-dots-square fs-5 m-0">
+                                                <i class="ki-duotone ki-dots-square fs-5 m-0">
+                                                    <span class="path1"></span>
                                                     <span class="path2"></span>
                                                     <span class="path3"></span>
                                                     <span class="path4"></span>
@@ -174,15 +177,17 @@
                                         <div class="d-flex align-items-center">
                                             <span class="icon-wrapper">
                                                 @if ( $document->doc_type == 'pdf')
-                                                    <i class="fa-solid fa-file-pdf fs-2x me-4" style="color:red"></i>
+                                                <i class="fa-solid fa-file-pdf fs-2x me-4" style="color:red"></i>
                                                 @elseif ($document->doc_type == 'docx' ||$document->doc_type == 'doc' )
-                                                    <i class="fas fa-file-word text-primary fs-2x me-4"></i>
-                                                @elseif ( $document->doc_type == 'xlsx' || $document->doc_type == 'csv' )
-                                                <i class="fas fa-file-excel fs-2x me-4"  style="color:green"></i>
+                                                <i class="fas fa-file-word text-primary fs-2x me-4"></i>
+                                                @elseif ( $document->doc_type == 'xlsx' || $document->doc_type == 'csv'
+                                                )
+                                                <i class="fas fa-file-excel fs-2x me-4" style="color:green"></i>
                                                 @elseif ( $document->doc_type == 'pptx' )
-                                                    <i class="fa-solid fa-file-powerpoint fs-2x me-4" style="color: orange"></i>
+                                                <i class="fa-solid fa-file-powerpoint fs-2x me-4"
+                                                    style="color: orange"></i>
                                                 @elseif ( $document->doc_type == 'images' )
-                                                    <i class="fa-solid fa-image text-gray-800 fs-2x me-4"></i>
+                                                <i class="fa-solid fa-image text-gray-800 fs-2x me-4"></i>
                                                 @endif
                                             </span>
                                             <a href="{{ route('file.index', $document->latest_version_guid)}}"
@@ -196,7 +201,8 @@
                                             <button type="button"
                                                 class="btn btn-sm btn-icon btn-light btn-active-light-primary me-2"
                                                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                                <i class="ki-outline ki-dots-square fs-5 m-0">
+                                                <i class="ki-duotone ki-dots-square fs-5 m-0">
+                                                    <span class="path1"></span>
                                                     <span class="path2"></span>
                                                     <span class="path3"></span>
                                                     <span class="path4"></span>
@@ -205,7 +211,8 @@
                                             <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-150px py-4"
                                                 data-kt-menu="true">
                                                 <div class="menu-item px-3">
-                                                    <a href="{{ route('file.index', $document->latest_version_guid)}}" class="menu-link px-3">View</a>
+                                                    <a href="{{ route('file.index', $document->latest_version_guid)}}"
+                                                        class="menu-link px-3">View</a>
                                                 </div>
                                                 <div class="menu-item px-3">
                                                     <a href="#" class="menu-link text-danger px-3"
@@ -235,7 +242,8 @@
                                 <div class="d-flex align-items-center">
                                     <!--begin::Folder icon-->
                                     <span id="kt_file_manager_folder_icon">
-                                        <i class="ki-outline ki-folder fs-2x text-primary me-4">
+                                        <i class="ki-duotone ki-folder fs-2x text-primary me-4">
+                                            <span class="path1"></span>
                                             <span class="path2"></span>
                                         </i>
                                     </span>
@@ -441,6 +449,7 @@
 <script src="{{ asset('assets/js/custom/apps/file-manager/lists-2.js')}}"></script>
 
 
+
 {{-- Upload file dropzone --}}
 <script>
     const id = "#kt_modal_upload_dropzone";
@@ -476,7 +485,9 @@
     // Function to perform OCR on image files
     function startOCR(file, callback) {
         const corePath = window.navigator.userAgent.indexOf("Edge") > -1 ?
-            '{{ asset('assets/js/tesseract-core.asm.js') }}' : '{{ asset('assets/js/tesseract-core.wasm.js') }}';
+            '{{ asset('
+        assets / js / tesseract - core.asm.js ') }}': '{{ asset('
+        assets / js / tesseract - core.wasm.js ') }}';
 
         const worker = new Tesseract.TesseractWorker({
             corePath: corePath,
@@ -489,7 +500,8 @@
             .progress(function (packet) {
                 if (packet.status === 'recognizing text') {
                     var progress = Math.round(packet.progress * 100);
-                    $('#progress-bar').css('width', progress + '%').attr('aria-valuenow', progress).text(progress + '%');
+                    $('#progress-bar').css('width', progress + '%').attr('aria-valuenow', progress).text(progress +
+                        '%');
                     $('#status-text').text('Recognizing text: ' + progress + '%');
                 }
             })
@@ -521,7 +533,8 @@
                     myDropzone.enqueueFile(file); // Enqueue the file for upload
                     filesProcessed++;
                     if (filesProcessed === remainingFiles) {
-                        myDropzone.processQueue(); // Start uploading when all files are processed
+                        myDropzone
+                    .processQueue(); // Start uploading when all files are processed
                     }
                 });
             } else {
@@ -589,6 +602,7 @@
             dropzone.querySelector('.dropzone-remove-all').style.display = "none";
         }
     });
+
 </script>
 
 @endsection

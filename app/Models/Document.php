@@ -23,7 +23,6 @@ class Document extends Model
         'upload_by',
         'folder_guid',
         'org_guid',
-        'tag_guid',
         'latest_version_guid',
         'version_limit',
     ];

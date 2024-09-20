@@ -1,12 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <!--begin::Head-->
 
 <head>
     <title>DMS</title>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="shortcut icon" href="{{ asset('assets/media/logos/favicon.ico') }}" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!--begin::Fonts(mandatory for all pages)-->
@@ -18,6 +20,7 @@
     <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
     <!--end::Global Stylesheets Bundle-->
+    @livewireStyles
 
     <style>
 
@@ -26,8 +29,13 @@
 <body id="kt_app_body" data-kt-app-layout="light-sidebar" data-kt-app-header-fixed="true"
     data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="true"
     data-kt-app-sidebar-push-header="true" data-kt-app-sidebar-push-toolbar="true"
-    data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" class="app-default"
+    data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" class="app-default" data-kt-app-page-loading-enabled="true" data-kt-app-page-loading="on"
     >
+
+    <div class="page-loader flex-column bg-dark bg-opacity-25">
+        <span class="spinner-border text-primary" role="status"></span>
+        <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
+    </div>
 
     <!--begin::Theme mode setup on page load-->
     <script>
@@ -143,6 +151,8 @@
         // var hostUrl = '{{ asset("/assets/")}}';
 
     </script>
+    @livewireScripts
+
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->

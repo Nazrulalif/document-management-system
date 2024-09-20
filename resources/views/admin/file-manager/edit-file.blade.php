@@ -76,9 +76,11 @@
                                 <label class="required fw-semibold fs-6 mb-2">Keyword</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" name="doc_keyword" id="doc_keyword"
+                                {{-- <input type="text" name="doc_keyword" id="doc_keyword"
                                     class="form-control form-control-solid mb-3 mb-lg-0"
-                                    value='{{ $data->doc_keyword }}' required />
+                                    value='{{ $data->doc_keyword }}' required /> --}}
+                                <input class="form-control form-control-solid" name="doc_keyword"
+                                    value='{{ $data->doc_keyword }}' id="kt_tagify_2" />
                                 <!--end::Input-->
                                 @error('doc_keyword')
                                 <div class="text-danger">{{ $message }}</div>
@@ -102,13 +104,19 @@
                         <div class="fv-row mb-7">
                             <!--begin::Label-->
 
-                            <div class="d-flex" style="justify-content: space-between; align-items: center;">
+                            <div class="d-flex flex-stack">
                                 <label class="required fw-semibold fs-6 mb-2">Summary</label>
+
                                 @if ( $data->doc_type != 'images')
+
                                 <a type="button"
-                                    class="btn btn-sm mw-120px btn-active-color-info me-5 text-info hover-scale"
+                                    class="btn btn-sm mw-120px btn-active-color-info me-5 text-info hover-scale pulse"
                                     data-bs-toggle="tooltip" title="Generate summary with AI" id="generate-summary-btn">
-                                    <i class="ki-duotone ki-abstract-24 text-info">
+                                    <div id="spinner" class="spinner-border text-info" role="status" 
+                                        style="--bs-spinner-width: 0.9rem; --bs-spinner-height: 0.9rem; display:none">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <i class="ki-duotone ki-abstract-24 text-info" id="icon">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                     </i>
@@ -119,7 +127,8 @@
                             <!--end::Label-->
                             <!--begin::Input-->
                             <textarea class="form-control form-control form-control-solid" data-kt-autosize="true"
-                                name="doc_summary" id="doc_summary" required>{{ $data->doc_summary }}</textarea>
+                                name="doc_summary" id="doc_summary" required>{{ $data->doc_summary }}
+                            </textarea>
                             <!--end::Input-->
                             @error('doc_summary')
                             <div class="text-danger">{{ $message }}</div>
@@ -147,31 +156,60 @@
     <!--end::Modal dialog-->
 </div>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var input2 = document.querySelector("#kt_tagify_2");
+        var tagify = new Tagify(input2);
+
+        // If you need to handle Tagify changes
+        tagify.on('change', function (e) {
+            console.log('Tags changed:', e.detail.value);
+        });
+
+    });
+
+</script>
 <script>
     $(document).ready(function () {
         $('#generate-summary-btn').on('click', function (e) {
             e.preventDefault();
             let uuid = "{{ $data->uuid }}"; // Get the UUID from the document data
 
+            // Show the spinner
+            $('#spinner').show();
+            $('#icon').hide();
+
             $.ajax({
                 url: `/admin/generate-summary/${uuid}`, // Your route URL
                 type: 'GET', // Request type
+                beforeSend: function () {
+                    // Reset any previous state if needed
+                    $('#doc_summary').val(''); // Optional: Clear previous summary
+                },
                 success: function (data) {
                     if (data.success) {
                         $('#doc_summary').val(data
-                            .summary); // Populate the textarea with the generated summary
+                        .summary); // Populate the textarea with the generated summary
                     } else {
                         $('#doc_summary').val('Sorry, Unable to generate Summary');
                     }
                 },
                 error: function (xhr, status, error) {
                     $('#doc_summary').val('Sorry, Unable to generate Summary');
+                },
+                complete: function () {
+                    // Hide the spinner after the request completes
+                    $('#spinner').hide();
+                    $('#icon').show();
+
                 }
             });
         });
     });
 
 </script>
+
 <script>
     // Element to indecate
     var button = document.querySelector("#kt_button_submit");

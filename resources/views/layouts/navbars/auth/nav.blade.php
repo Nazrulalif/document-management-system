@@ -104,8 +104,7 @@
                     <div class="cursor-pointer symbol symbol-35px"
                         data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
                         data-kt-menu-placement="bottom-end">
-                            <i class="ki-duotone ki-profile-circle fs-3x">
-                                <span class="path1"></span>
+                            <i class="ki-outline ki-profile-circle fs-2hx">
                                 <span class="path2"></span>
                                 <span class="path3"></span>
                             </i>
@@ -118,8 +117,7 @@
                             <div class="menu-content d-flex align-items-center px-3">
                                 <!--begin::Avatar-->
                                 <div class="symbol symbol-50px me-5">
-                                    <i class="ki-duotone ki-profile-circle fs-4x">
-                                        <span class="path1"></span>
+                                    <i class="ki-outline ki-profile-circle fs-4x">
                                         <span class="path2"></span>
                                         <span class="path3"></span>
                                     </i>

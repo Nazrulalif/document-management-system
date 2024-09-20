@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Http\Controllers\admin;
+
+use App\Http\Controllers\Controller;
+
+class SearchController extends Controller
+{
+
+    public function index()
+    {
+        return view('admin.search.advandce-search');
+    }
+}

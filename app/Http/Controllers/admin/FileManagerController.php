@@ -31,28 +31,12 @@ class FileManagerController extends Controller
             ->join('users', 'users.id', '=', 'documents.upload_by')
             ->get();
 
-        // Get the latest version for each document
-        // $rootDocuments = Document::select(
-        //     'documents.*',
-        //     'document_versions.file_path',
-        //     'document_versions.version_number',
-        //     'document_versions.change_title',
-        //     'document_versions.change_description',
-        // )
-        //     ->join('document_versions', function ($join) {
-        //         $join->on('documents.id', '=', 'document_versions.doc_guid')
-        //             ->whereColumn('document_versions.id', '=', DB::raw('(SELECT MAX(id) FROM document_versions WHERE doc_guid = documents.id)'));
-        //     })
-        //     ->get();
-
-        // dd($latestVersions);
-
-
         return view('admin.file-manager.file-manager', [
             'folders' => $folders,
             'documents' => $rootDocuments
         ]);
     }
+
 
     public function show_folder($uuid)
     {

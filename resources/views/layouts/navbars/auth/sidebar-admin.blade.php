@@ -59,9 +59,9 @@
                         </div>
                         <!--end:Menu content-->
                     </div>
-                    <div class="menu-item {{ (Request::is('admin/advance-search') ? 'active' : '') }}">
+                    <div class="menu-item ">
                         <!--begin:Menu link-->
-                        <a class="menu-link" href="/">
+                        <a class="menu-link {{ (Request::is('admin/advance-search') ? 'active' : '') }}" href="{{ route('search.index') }}">
                             <span class="menu-icon">
                                 <i class="ki-outline ki-magnifier fs-2">
                                     <span class="path2"></span>
@@ -136,7 +136,7 @@
 
                     <div class="menu-item">
                         <!--begin:Menu link-->
-                        <a class="menu-link {{ (Request::is('admin/file-manager', 'admin/folder/*', 'admin/file-details/*') ? 'active' : '') }}" href="{{ route('fileManager.index') }}">
+                        <a class="menu-link {{ (Request::is('admin/file-manager','admin/file-manager/*', 'admin/folder/*', 'admin/file-details/*') ? 'active' : '') }}" href="{{ route('fileManager.index') }}">
                             <span class="menu-icon">
                                 <i class="ki-outline ki-switch fs-2">
                                     <span class="path2"></span>
