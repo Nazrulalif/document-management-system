@@ -28,9 +28,9 @@ return new class extends Migration
             $table->integer('version_limit')->nullable();
             $table->timestamps();
 
-            $table->foreign('upload_by')->references('id')->on('users')->onUpdate('cascade');
+            $table->foreign('upload_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('folder_guid')->references('id')->on('folders')->onDelete('cascade');
-            $table->foreign('org_guid')->references('id')->on('organizations')->onUpdate('cascade');
+            $table->foreign('org_guid')->references('id')->on('organizations')->onDelete('cascade');
         });
     }
 

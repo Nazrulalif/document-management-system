@@ -5,12 +5,15 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Imports\UsersImport;
 use App\Mail\UserRegistered;
+use App\Models\AuditLog;
 use App\Models\Organization;
 use App\Models\Role;
+use App\Models\Stat;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
@@ -29,6 +32,7 @@ class UserController extends Controller
                 ->leftjoin('organizations', 'organizations.id', '=', 'users.org_guid')
                 ->where('users.id', '!=', Auth::user()->id)
                 ->where('users.is_active', '=', 'Y')
+                ->orderBy('users.id', 'DESC')
                 ->get();
 
             // Format the date and time for each record
@@ -42,7 +46,7 @@ class UserController extends Controller
                 ->make(true);
         }
         $role = Role::all();
-        $company = Organization::all();
+        $company = Organization::where('is_operation', '=', 'Y')->get();
 
         return view('admin.user.user-list', [
             'role' => $role,
@@ -83,6 +87,23 @@ class UserController extends Controller
             'is_active' => 'Y',
         ]);
 
+        // Get current counts
+        $userCount = User::where('is_active', '=', 'Y')->count();
+        // Get today's stat entry (or create a new one if it doesn't exist)
+        $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+        if (!$todayStats) {
+            // Create a new stat entry for today if it doesn't exist
+            Stat::create([
+                'user_count' => $userCount,
+            ]);
+        } else {
+            // Update today's counts if the entry already exists
+            $todayStats->update([
+                'user_count' => $userCount,
+            ]);
+        }
+
         Mail::to($user->email)
             ->later(30, new UserRegistered($user, $generatedPassword));
 
@@ -100,6 +121,23 @@ class UserController extends Controller
         $user->is_active = 'N';
         $user->save();
 
+        // Get current counts
+        $userCount = User::where('is_active', '=', 'Y')->count();
+        // Get today's stat entry (or create a new one if it doesn't exist)
+        $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+        if (!$todayStats) {
+            // Create a new stat entry for today if it doesn't exist
+            Stat::create([
+                'user_count' => $userCount,
+            ]);
+        } else {
+            // Update today's counts if the entry already exists
+            $todayStats->update([
+                'user_count' => $userCount,
+            ]);
+        }
+
         return response()->json(['success' => true]);
     }
 
@@ -108,9 +146,53 @@ class UserController extends Controller
         $ids = $request->input('ids');
 
         // Validate IDs
-        if (is_array($ids)) {
-            // Perform the deactive operation
-            User::whereIn('id', $ids)->update(['is_active' => 'N']);
+        if (is_array($ids) && !empty($ids)) {
+            // Ensure IDs are numeric
+            $ids = array_filter($ids, 'is_numeric');
+
+            if (empty($ids)) {
+                return response()->json(['success' => false, 'message' => 'No valid numeric IDs provided.']);
+            }
+
+            // Use a transaction to ensure data integrity
+            DB::transaction(function () use ($ids) {
+
+                $userList = User::whereIn('id', $ids)->get();
+                // Update organizations
+                $userUpdated = User::whereIn('id', $ids)->update([
+                    'is_active' => 'N'
+                ]);
+
+                AuditLog::create([
+                    'action' => "Deactivated",
+                    'model' => 'User',
+                    'changes' => json_encode($userList),
+                    'user_guid' => Auth::user()->id,
+                    'ip_address' => request()->ip(),
+                ]);
+
+                // Get current counts
+                $userCount = User::where('is_active', '=', 'Y')->count();
+                // Get today's stat entry (or create a new one if it doesn't exist)
+                $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+                if (!$todayStats) {
+                    // Create a new stat entry for today if it doesn't exist
+                    Stat::create([
+                        'user_count' => $userCount,
+                    ]);
+                } else {
+                    // Update today's counts if the entry already exists
+                    $todayStats->update([
+                        'user_count' => $userCount,
+                    ]);
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'updated_users' => $userUpdated,
+                ]);
+            });
         }
 
         return response()->json(['success' => true]);
@@ -160,7 +242,7 @@ class UserController extends Controller
     public function downloadTemplate()
     {
         // Fetch companies and roles from the database
-        $companies = Organization::pluck('org_name')->toArray(); // Fetch company names
+        $companies = Organization::where('is_operation', '=', 'Y')->pluck('org_name')->toArray(); // Fetch company names
         $roles = Role::pluck('role_name')->toArray();            // Fetch role names
 
         // Create a new Spreadsheet
@@ -248,6 +330,23 @@ class UserController extends Controller
         ]);
 
         Excel::import(new UsersImport, $request->file('file'));
+
+        // Get current counts
+        $userCount = User::where('is_active', '=', 'Y')->count();
+        // Get today's stat entry (or create a new one if it doesn't exist)
+        $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+        if (!$todayStats) {
+            // Create a new stat entry for today if it doesn't exist
+            Stat::create([
+                'user_count' => $userCount,
+            ]);
+        } else {
+            // Update today's counts if the entry already exists
+            $todayStats->update([
+                'user_count' => $userCount,
+            ]);
+        }
 
         session()->flash('success', 'New User Successfully added!');
         return response()->json(['success' => true, 'message' => 'Users imported successfully!']);

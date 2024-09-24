@@ -485,9 +485,7 @@
     // Function to perform OCR on image files
     function startOCR(file, callback) {
         const corePath = window.navigator.userAgent.indexOf("Edge") > -1 ?
-            '{{ asset('
-        assets / js / tesseract - core.asm.js ') }}': '{{ asset('
-        assets / js / tesseract - core.wasm.js ') }}';
+            '{{ asset('assets/js/tesseract-core.asm.js') }}': '{{ asset('assets/js/tesseract-core.wasm.js') }}';
 
         const worker = new Tesseract.TesseractWorker({
             corePath: corePath,

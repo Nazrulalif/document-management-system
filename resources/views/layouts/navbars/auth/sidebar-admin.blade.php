@@ -5,7 +5,7 @@
     <!--begin::Logo-->
     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
         <!--begin::Logo image-->
-        <a href="index.html">
+        <a href="{{ route('dashboard.admin') }}">
             <img alt="Logo" src="{{ asset('assets/media/logos/default.svg') }}"
                 class="h-25px app-sidebar-logo-default theme-light-show" />
             <img alt="Logo" src="{{ asset('assets/media/logos/default-small.svg') }}"

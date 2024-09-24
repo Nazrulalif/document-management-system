@@ -18,13 +18,14 @@ return new class extends Migration
             $table->unsignedBigInteger('doc_guid')->nullable();
             $table->string('version_number')->nullable();
             $table->string('file_path')->nullable();
+            $table->integer('file_size')->nullable();
             $table->string('change_description')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->longText('doc_content')->nullable();
             $table->timestamps();
 
-            $table->foreign('doc_guid')->references('id')->on('documents')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('created_by')->references('id')->on('users')->onUpdate('cascade');
+            $table->foreign('doc_guid')->references('id')->on('documents')->onDelete('cascade');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

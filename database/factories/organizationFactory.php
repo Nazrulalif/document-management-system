@@ -22,6 +22,9 @@ class organizationFactory extends Factory
             'org_place' => $this->faker->streetName,
             'org_number' => $this->faker->companySuffix,
             'nature_of_business' => $this->faker->userName,
+            'reg_date' => $this->faker->date(),
+            'org_address' => $this->faker->streetAddress(),
+            'is_operation' => 'Y',
         ];
     }
 }

@@ -29,7 +29,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
 
-            $table->foreign('role_guid')->references('id')->on('roles')->onUpdate('cascade');
+            $table->foreign('role_guid')->references('id')->on('roles')->onDelete('cascade');
             $table->foreign('org_guid')->references('id')->on('organizations')->onDelete('cascade');
         });
     }

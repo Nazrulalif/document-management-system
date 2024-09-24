@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\Document;
 use App\Models\documentVersion;
 use Gemini\Laravel\Facades\Gemini;
@@ -132,6 +133,14 @@ class FileController extends Controller
         // Find the document by UUID
         $document = Document::where('latest_version_guid', $request->id)->first();
 
+        AuditLog::create([
+            'action' => 'Created',
+            'model' => 'New version',
+            'changes' => json_encode($document),
+            'user_guid' => Auth::user()->id,
+            'ip_address' => request()->ip(),
+        ]);
+
         if (!$document) {
             return redirect()->back()->with('error', 'Document not found.');
         }
@@ -144,6 +153,7 @@ class FileController extends Controller
             $file = $request->file('file');
             $extension = $file->getClientOriginalExtension();
             $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
+            $fileSize = $file->getSize(); // Size in bytes
 
             // Define folder based on file extension
             $folder = $this->getFolderByFileType($extension);
@@ -196,6 +206,7 @@ class FileController extends Controller
                 'change_title' => $request->change_title,
                 'change_description' => $request->change_description,
                 'file_path' => $filePath,
+                'file_size' => $fileSize,
                 'created_by' => Auth::user()->id,
                 'doc_guid' => $document->id,
                 'doc_content' => $docContent, // Store the extracted document content
@@ -333,6 +344,14 @@ class FileController extends Controller
 
         // Find the document by latest version GUID
         $document = Document::where('latest_version_guid', '=', $uuid)->first();
+
+        AuditLog::create([
+            'action' => 'Deleted',
+            'model' => 'File version',
+            'changes' => json_encode($document),
+            'user_guid' => Auth::user()->id,
+            'ip_address' => request()->ip(),
+        ]);
 
         // Check if the document and version exist
         if ($documentVersion && $document) {

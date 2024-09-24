@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\Document;
 use App\Models\documentVersion;
 use App\Models\Folder;
+use App\Models\Stat;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -75,9 +78,6 @@ class FileManagerController extends Controller
         $request->validate([
             'new_folder_name' => 'required',
         ]);
-        // $folder = Folder::create($request->only('name', 'parent_id'));
-
-        // return response()->json($folder, 201);
 
         $folder = new Folder();
         $folder->folder_name = $request->new_folder_name;
@@ -87,9 +87,23 @@ class FileManagerController extends Controller
         $folder->is_meeting = 'N';
         $folder->save();
 
-        // dd($folder);
+        $folderCount = Folder::count();
 
-        // return response()->json(['success' => true, 'message' => 'Folder created successfully!']);
+        // Get today's stat entry (or create a new one if it doesn't exist)
+        $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+        if (!$todayStats) {
+            // Create a new stat entry for today if it doesn't exist
+            Stat::create([
+                'folder_count' => $folderCount,
+            ]);
+        } else {
+            // Update today's counts if the entry already exists
+            $todayStats->update([
+                'folder_count' => $folderCount,
+            ]);
+        }
+
         return redirect()->back();
     }
 
@@ -104,6 +118,23 @@ class FileManagerController extends Controller
 
             // Finally, delete the folder itself
             $folder->delete();
+
+            $folderCount = Folder::count();
+
+            // Get today's stat entry (or create a new one if it doesn't exist)
+            $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+            if (!$todayStats) {
+                // Create a new stat entry for today if it doesn't exist
+                Stat::create([
+                    'folder_count' => $folderCount,
+                ]);
+            } else {
+                // Update today's counts if the entry already exists
+                $todayStats->update([
+                    'folder_count' => $folderCount,
+                ]);
+            }
 
             return response()->json(['success' => true, 'message' => 'Folder and its contents deleted successfully']);
         }
@@ -143,9 +174,6 @@ class FileManagerController extends Controller
         }
     }
 
-
-
-
     public function rename(Request $request, $id)
     {
         $folder = Folder::find($id);
@@ -172,12 +200,37 @@ class FileManagerController extends Controller
         // Find all folders that match the selected IDs
         $folders = Folder::whereIn('id', $ids)->get();
 
+        AuditLog::create([
+            'action' => "Deleted",
+            'model' => 'Folder',
+            'changes' => json_encode($folders),
+            'user_guid' => Auth::user()->id,
+            'ip_address' => request()->ip(),
+        ]);
+
         foreach ($folders as $folder) {
             // Recursively delete folder contents (files, documents, subfolders)
             $this->deleteFolderContents($folder);
 
             // Finally, delete the folder itself
             $folder->delete();
+        }
+
+        $folderCount = Folder::count();
+
+        // Get today's stat entry (or create a new one if it doesn't exist)
+        $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+        if (!$todayStats) {
+            // Create a new stat entry for today if it doesn't exist
+            Stat::create([
+                'folder_count' => $folderCount,
+            ]);
+        } else {
+            // Update today's counts if the entry already exists
+            $todayStats->update([
+                'folder_count' => $folderCount,
+            ]);
         }
 
         return response()->json(['success' => true, 'message' => 'Selected folders and their contents deleted successfully']);
@@ -196,7 +249,13 @@ class FileManagerController extends Controller
         // Iterate over each document
         foreach ($documents as $document) {
             $filePath = $document->file_path;
-
+            AuditLog::create([
+                'action' => "Deleted",
+                'model' => 'File',
+                'changes' => json_encode($document),
+                'user_guid' => Auth::user()->id,
+                'ip_address' => request()->ip(),
+            ]);
             // Assuming $filePath is relative to the 'public' disk (e.g., 'uploads/myfile.pdf')
             if (Storage::disk('public')->exists($filePath)) {
                 Storage::disk('public')->delete($filePath); // Delete the file from 'public' disk
@@ -204,6 +263,24 @@ class FileManagerController extends Controller
 
             // Find the document in the documents table and delete it
             Document::where('id', $document->doc_guid)->delete();
+        }
+
+        // Get current counts
+        $fileCount = Document::count();
+
+        // Get today's stat entry (or create a new one if it doesn't exist)
+        $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+        if (!$todayStats) {
+            // Create a new stat entry for today if it doesn't exist
+            Stat::create([
+                'file_count' => $fileCount,
+            ]);
+        } else {
+            // Update today's counts if the entry already exists
+            $todayStats->update([
+                'file_count' => $fileCount,
+            ]);
         }
 
         return response()->json(['success' => true, 'message' => 'Selected files deleted successfully']);
@@ -240,6 +317,24 @@ class FileManagerController extends Controller
             // Now delete the main document record from the database
             $documentId->delete();
 
+            // Get current counts
+            $fileCount = Document::count();
+
+            // Get today's stat entry (or create a new one if it doesn't exist)
+            $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+            if (!$todayStats) {
+                // Create a new stat entry for today if it doesn't exist
+                Stat::create([
+                    'file_count' => $fileCount,
+                ]);
+            } else {
+                // Update today's counts if the entry already exists
+                $todayStats->update([
+                    'file_count' => $fileCount,
+                ]);
+            }
+
             // Redirect back with a success message
             return response()->json(['success' => true, 'message' => 'File deleted successfully']);
         }
@@ -262,6 +357,7 @@ class FileManagerController extends Controller
             $extension = $file->getClientOriginalExtension();
             $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
             $originalName = $file->getClientOriginalName();
+            $fileSize = $file->getSize(); // Size in bytes
 
 
             // Define folder based on file extension
@@ -301,6 +397,7 @@ class FileManagerController extends Controller
             $documentVersion = documentVersion::create([
                 'doc_guid' => null,
                 'file_path' => $filePath,
+                'file_size' => $fileSize,
                 'doc_content' => $docContent, // Store the extracted document content
                 'created_by' => Auth::user()->id,
                 'version_number' => 'v1.0',
@@ -325,6 +422,25 @@ class FileManagerController extends Controller
 
             $documentVersion->doc_guid = $newFile->id;
             $documentVersion->save();
+
+            // Get current counts
+            $fileCount = Document::count();
+
+            // Get today's stat entry (or create a new one if it doesn't exist)
+            $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+            if (!$todayStats) {
+                // Create a new stat entry for today if it doesn't exist
+                Stat::create([
+                    'file_count' => $fileCount,
+                ]);
+            } else {
+                // Update today's counts if the entry already exists
+                $todayStats->update([
+                    'file_count' => $fileCount,
+                ]);
+            }
+
 
 
             return back()->with('success', 'File uploaded successfully.');

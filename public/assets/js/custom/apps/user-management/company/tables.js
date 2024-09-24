@@ -102,7 +102,7 @@ var KTDatatablesServerSide = function () {
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-3">
                                     <a href="#" class="menu-link px-3" data-kt-docs-table-filter="delete_row" data-id="${data.id}">
-                                        Delete
+                                        Deactive
                                     </a>
                                 </div>
                                 <!--end::Menu item-->
@@ -282,11 +282,11 @@ var KTDatatablesServerSide = function () {
 
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: "Are you sure you want to delete " + companyName + "?",
+                    text: "Are you sure you want to deactivate  " + companyName + "?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
-                    confirmButtonText: "Yes, delete!",
+                    confirmButtonText: "Yes, deactivate!",
                     cancelButtonText: "No, cancel",
                     customClass: {
                         confirmButton: "btn fw-bold btn-danger",
@@ -298,7 +298,7 @@ var KTDatatablesServerSide = function () {
                         // Send the delete request to the server
                         $.ajax({
                             url: `/admin/company-destroy/${rowId}`, // Assuming RESTful API convention
-                            method: 'DELETE',
+                            method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
@@ -322,7 +322,7 @@ var KTDatatablesServerSide = function () {
                             error: function (xhr) {
                                 // Handle the error
                                 Swal.fire({
-                                    text: "There was an error deleting " + companyName + ". Please try again.",
+                                    text: "There was an error deactivate  " + companyName + ". Please try again.",
                                     icon: "error",
                                     buttonsStyling: false,
                                     confirmButtonText: "Ok, got it!",
@@ -334,7 +334,7 @@ var KTDatatablesServerSide = function () {
                         });
                     } else if (result.dismiss === 'cancel') {
                         Swal.fire({
-                            text: companyName + " was not deleted.",
+                            text: companyName + " was not deactivate.",
                             icon: "error",
                             buttonsStyling: false,
                             confirmButtonText: "Ok, got it!",
@@ -388,7 +388,7 @@ var KTDatatablesServerSide = function () {
 
             // SweetAlert2 pop up
             Swal.fire({
-                text: "Are you sure you want to delete selected companies?",
+                text: "Are you sure you want to deactivate selected companies?",
                 icon: "warning",
                 showCancelButton: true,
                 buttonsStyling: false,
@@ -407,14 +407,14 @@ var KTDatatablesServerSide = function () {
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        method: 'delete',
+                        method: 'POST',
                         data: {
                             ids: selectedIds
                         },
                         success: function (response) {
                             // console.log(response);
                             Swal.fire({
-                                text: "You have deleted all selected companies!",
+                                text: "You have deactivate all selected companies!",
                                 icon: "success",
                                 buttonsStyling: false,
                                 confirmButtonText: "Ok, got it!",
@@ -431,7 +431,7 @@ var KTDatatablesServerSide = function () {
                         },
                         error: function () {
                             Swal.fire({
-                                text: "There was an error deleting selected companies. Please try again.",
+                                text: "There was an error deactivate selected companies. Please try again.",
                                 icon: "error",
                                 buttonsStyling: false,
                                 confirmButtonText: "Ok, got it!",
@@ -443,7 +443,7 @@ var KTDatatablesServerSide = function () {
                     });
                 } else if (result.dismiss === 'cancel') {
                     Swal.fire({
-                        text: "Selected companies were not deleted.",
+                        text: "Selected companies were not deactivate.",
                         icon: "error",
                         buttonsStyling: false,
                         confirmButtonText: "Ok, got it!",

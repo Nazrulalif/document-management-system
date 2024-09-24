@@ -40,9 +40,14 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => '$2y$12$jA1DuUJhwzPD4.0wgJHfXOSi0G3bAMjkysIL65pD.Yfi6HaCEm.Ni',
             'remember_token' => Str::random(10),
-            'ic_number' => '12345',
+            'ic_number' => '1234567',
+            'is_active' => 'Y',
+            'nationality' => $this->faker->randomElement(['malaysia']),
+            'gender' => $this->faker->randomElement(['male', 'female']),
+            'race' => $this->faker->word(),
+            'org_guid' => $this->faker->randomElement(['1', '2', '3', '4', '5', '6']),
             'position' => $this->faker->randomLetter(),
-            'role_guid' => '1',
+            'role_guid' => $this->faker->randomElement(['1', '2', '3', '4']),
         ];
     }
 

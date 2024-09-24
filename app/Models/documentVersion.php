@@ -17,6 +17,7 @@ class documentVersion extends Model
         'doc_guid',
         'version_number',
         'file_path',
+        'file_size',
         'change_description',
         'created_by',
         'doc_content',

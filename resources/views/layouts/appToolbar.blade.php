@@ -32,7 +32,7 @@
     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 ">
         <!--begin::Item-->
         <li class="breadcrumb-item text-muted">
-            <a href="/metronic8/demo1/index.html" class="text-muted text-hover-primary">
+            <a href="{{ route('dashboard.admin') }}" class="text-muted text-hover-primary">
                 Home </a>
         </li>
         <!--end::Item-->

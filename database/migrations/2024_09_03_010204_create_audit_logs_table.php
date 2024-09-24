@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_guid');
-            $table->string('action');
-            $table->unsignedBigInteger('doc_guid');
-            $table->dateTime('timestamp');
+            $table->unsignedBigInteger('user_guid')->nullable();
+            $table->string('model')->nullable();
+            $table->string('action')->nullable();
+            $table->text('changes')->nullable();
+            $table->string('ip_address')->nullable(); // IP address of the user
             $table->timestamps();
 
             $table->foreign('user_guid')->references('id')->on('users')->onUpdate('cascade');
-            $table->foreign('doc_guid')->references('id')->on('documents')->onUpdate('cascade');
         });
     }
 

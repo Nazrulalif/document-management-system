@@ -10,10 +10,11 @@ use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\mail\UserRegisteredController;
-use App\Mail\UserRegistered;
+use App\Models\AuditLog;
+// use Gemini\Foundation\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +32,13 @@ Route::get('/', function () {
     return view('session.login');
 })->name('login');
 // Log out
-Route::get('/logout', function () {
+Route::get('/logout', function (Request $request) {
+    AuditLog::create([
+        'action' => 'Logout',
+        'model' => 'User',
+        'user_guid' => Auth::user()->id,
+        'ip_address' => $request->ip(),
+    ]);
     Auth::logout();
     return redirect(route('login'));
 })->name('logout');
@@ -48,9 +55,9 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
     Route::get('/company-list', [CompanyController::class, 'index'])->name('company.index');
     Route::get('/company-detail/{uuid}', [CompanyController::class, 'view'])->name('company.view');
     //destroy company
-    Route::delete('/company-destroy/{id}', [CompanyController::class, 'destroy'])->name('company.destroy');
+    Route::post('/company-destroy/{id}', [CompanyController::class, 'destroy'])->name('company.destroy');
     //bulk destroy company
-    Route::delete('/company-bulk-destroy', [CompanyController::class, 'bulk_destroy'])->name('company.bulk.destroy');
+    Route::post('/company-bulk-destroy', [CompanyController::class, 'bulk_destroy'])->name('company.bulk.destroy');
     // add company
     Route::post('/create-company', [CompanyController::class, 'create'])->name('company.create');
     // Company update

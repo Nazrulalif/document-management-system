@@ -44,7 +44,7 @@
                                 <div class="fw-bold me-5">
                                     <span class="me-2" data-kt-docs-table-select="selected_count"></span>Selected</div>
                                 <button type="button" class="btn btn-danger"
-                                    data-kt-docs-table-select="delete_selected">Delete Selected</button>
+                                    data-kt-docs-table-select="delete_selected">Deactivate Selected</button>
                             </div>
                             <!--end::Group actions-->
                             <!--begin::Modal - Add task-->
@@ -97,7 +97,7 @@
 </div>
 
 <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
-<script src="{{ asset('assets/js/custom/apps/user-management/company/table.js') }}"></script>
+<script src="{{ asset('assets/js/custom/apps/user-management/company/tables.js') }}"></script>
 
 
 @endsection

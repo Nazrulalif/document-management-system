@@ -11,8 +11,16 @@ class AuditLog extends Model
     protected $table = 'audit_logs';
     protected $fillable = [
         'user_guid',
+        'model',
         'action',
+        'changes',
         'document_guid',
+        'ip_address',
         'timestamp',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_guid', 'id');
+    }
 }

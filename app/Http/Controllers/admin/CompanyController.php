@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\Organization;
-use App\Models\Role;
+use App\Models\Stat;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class CompanyController extends Controller
@@ -16,7 +20,9 @@ class CompanyController extends Controller
         // $company = Organization::all(); // Fetch all users from the database
         if ($request->ajax()) {
 
-            $data = Organization::all();
+            $data = Organization::where('is_operation', '=', 'Y')
+                ->orderBy('id', 'DESC')
+                ->get();
 
             // Format the date and time for each record
             $formatted_data = $data->map(function ($item) {
@@ -45,7 +51,7 @@ class CompanyController extends Controller
         }
     }
 
-    public function update($id)
+    public function update(Request $request, $id)
     {
         // Find the company by ID
         $company = Organization::find($id);
@@ -73,11 +79,35 @@ class CompanyController extends Controller
     public function destroy($id)
     {
 
-        // return response()->json(['success' => $id]);
         try {
             // Find the organization by ID and delete it
             $org = Organization::findOrFail($id);
-            $org->delete();
+            $org->is_operation = 'N';
+            $org->save();
+
+            User::where('org_guid', '=', $id)->update([
+                'is_active' => 'N'
+            ]);
+            // Get current counts
+            $userCount = User::where('is_active', '=', 'Y')->count();
+            $orgCount = Organization::where('is_operation', '=', 'Y')->count();
+
+            // Get today's stat entry (or create a new one if it doesn't exist)
+            $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+            if (!$todayStats) {
+                // Create a new stat entry for today if it doesn't exist
+                Stat::create([
+                    'user_count' => $userCount,
+                    'org_count' => $orgCount,
+                ]);
+            } else {
+                // Update today's counts if the entry already exists
+                $todayStats->update([
+                    'user_count' => $userCount,
+                    'org_count' => $orgCount,
+                ]);
+            }
 
             // Return a JSON response indicating success
             return response()->json([
@@ -98,13 +128,70 @@ class CompanyController extends Controller
         $ids = $request->input('ids');
 
         // Validate IDs
-        if (is_array($ids)) {
-            // Perform the delete operation
-            Organization::whereIn('id', $ids)->delete();
+        if (is_array($ids) && !empty($ids)) {
+            // Ensure IDs are numeric
+            $ids = array_filter($ids, 'is_numeric');
+
+            if (empty($ids)) {
+                return response()->json(['success' => false, 'message' => 'No valid numeric IDs provided.']);
+            }
+
+            // Use a transaction to ensure data integrity
+            DB::transaction(function () use ($ids) {
+
+
+                $org = Organization::whereIn('id', $ids)->get();
+                // Update organizations
+                $orgUpdated = Organization::whereIn('id', $ids)->update([
+                    'is_operation' => 'N'
+                ]);
+
+                // Update users
+                $userUpdated = User::whereIn('org_guid', $ids)->update([
+                    'is_active' => 'N'
+                ]);
+
+                AuditLog::create([
+                    'action' => "Deactivated",
+                    'model' => 'Company',
+                    'changes' => json_encode($org),
+                    'user_guid' => Auth::user()->id,
+                    'ip_address' => request()->ip(),
+                ]);
+
+                // Get current counts
+                $userCount = User::where('is_active', '=', 'Y')->count();
+                $orgCount = Organization::where('is_operation', '=', 'Y')->count();
+
+                // Get today's stat entry (or create a new one if it doesn't exist)
+                $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+                if (!$todayStats) {
+                    // Create a new stat entry for today if it doesn't exist
+                    Stat::create([
+                        'user_count' => $userCount,
+                        'org_count' => $orgCount,
+                    ]);
+                } else {
+                    // Update today's counts if the entry already exists
+                    $todayStats->update([
+                        'user_count' => $userCount,
+                        'org_count' => $orgCount,
+                    ]);
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'updated_organizations' => $orgUpdated,
+                    'updated_users' => $userUpdated,
+                ]);
+            });
         }
 
-        return response()->json(['success' => true]);
+        return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
     }
+
+
 
     public function create(Request $request)
     {
@@ -114,10 +201,8 @@ class CompanyController extends Controller
             'org_address' => 'required|string|max:255',
             'org_place' => 'required|string|max:255',
             'nature_of_business' => 'required|string|max:255',
-            'org_number' => 'required|string|max:255|unique:organizations,org_number',
+            'org_number' => 'required|string|max:255',
             'reg_date' => 'required|date',
-        ], [
-            'org_number.unique' => 'The company registration number have taken.',
         ]);
 
         // Attempt to create the organization
@@ -131,6 +216,27 @@ class CompanyController extends Controller
             'is_parent' => 'N',
             'is_operation' => 'Y',
         ]);
+
+        // Get current counts
+        $userCount = User::where('is_active', '=', 'Y')->count();
+        $orgCount = Organization::where('is_operation', '=', 'Y')->count();
+
+        // Get today's stat entry (or create a new one if it doesn't exist)
+        $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+        if (!$todayStats) {
+            // Create a new stat entry for today if it doesn't exist
+            Stat::create([
+                'user_count' => $userCount,
+                'org_count' => $orgCount,
+            ]);
+        } else {
+            // Update today's counts if the entry already exists
+            $todayStats->update([
+                'user_count' => $userCount,
+                'org_count' => $orgCount,
+            ]);
+        }
 
         // Set a success message
         session()->flash('success', 'New Company Successfully added!');
