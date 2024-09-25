@@ -4,6 +4,7 @@ use App\Http\Controllers\admin\CompanyController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\admin\FileController;
 use App\Http\Controllers\admin\FileManagerController;
+use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SearchController;
 use App\Http\Controllers\admin\UserController;
@@ -11,7 +12,6 @@ use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\mail\UserRegisteredController;
 use App\Models\AuditLog;
-// use Gemini\Foundation\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -120,6 +120,11 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
 
     //advance search
     route::get('/advance-search', [SearchController::class, 'index'])->name('search.index');
+
+    //report
+    route::get('/report', [ReportController::class, 'index'])->name('report.index');
+    //gerate report
+    route::post('/generated-report', [ReportController::class, 'post'])->name('report.post');
 });
 
 // User Routes

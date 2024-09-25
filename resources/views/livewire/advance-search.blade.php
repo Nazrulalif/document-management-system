@@ -172,7 +172,7 @@
                 <div class="d-flex flex-column flex-center">
                     <img src="{{ asset('assets/media/illustrations/sketchy-1/5.png') }}" class="mw-300px"
                         alt="No results found illustration">
-                    <div class="fs-1 fw-bolder text-dark">No items found.</div>
+                    <div class="fs-1 fw-bolder">No items found.</div>
                     <div class="fs-6">Please enter the correct keyword!</div>
                 </div>
                 @endforelse

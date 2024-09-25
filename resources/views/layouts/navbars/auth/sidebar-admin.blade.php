@@ -147,9 +147,9 @@
                         <!--end:Menu link-->
                     </div>
 
-                    <div class="menu-item">
+                    <div class="menu-item" >
                         <!--begin:Menu link-->
-                        <a class="menu-link" href="{{ route('dashboard.admin') }}">
+                        <a class="menu-link {{ (Request::is('admin/report', 'admin/generated-report') ? 'active' : '') }}"  href="{{ route('report.index') }}">
                             <span class="menu-icon">
                                 <i class="ki-outline ki-file fs-2">
                                     <span class="path2"></span>

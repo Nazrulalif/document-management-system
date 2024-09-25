@@ -16,7 +16,7 @@ class ModelRole
         AuditLog::create([
             'action' => 'Created',
             'model' => 'Role',
-            'changes' => json_encode($role->getAttributes()),
+            'changes' => $role->role_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -30,7 +30,7 @@ class ModelRole
         AuditLog::create([
             'action' => 'Updated',
             'model' => 'Role',
-            'changes' => json_encode($role->getAttributes()),
+            'changes' => $role->role_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -44,7 +44,7 @@ class ModelRole
         AuditLog::create([
             'action' => 'Deleted',
             'model' => 'Role',
-            'changes' => json_encode($role->getAttributes()),
+            'changes' => $role->role_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -58,7 +58,7 @@ class ModelRole
         AuditLog::create([
             'action' => 'Restored',
             'model' => 'Role',
-            'changes' => json_encode($role->getAttributes()),
+            'changes' => $role->role_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -72,7 +72,7 @@ class ModelRole
         AuditLog::create([
             'action' => 'Restored',
             'model' => 'Role',
-            'changes' => json_encode($role->getAttributes()),
+            'changes' => $role->role_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);

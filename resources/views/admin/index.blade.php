@@ -173,8 +173,8 @@
                                         $progress = min(max($progress, 0), 100); // Ensure progress is between 0 and 100
                                     @endphp
                             
-                                    <div class="h-8px mx-3 w-100 bg-light-success rounded">
-                                        <div class="bg-success rounded h-8px" role="progressbar" style="width: {{ $progress }}%;"
+                                    <div class="h-8px mx-3 w-100 bg-light-primary rounded">
+                                        <div class="bg-primary rounded h-8px" role="progressbar" style="width: {{ $progress }}%;"
                                             aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>

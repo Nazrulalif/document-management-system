@@ -9,14 +9,17 @@ use Illuminate\Support\Facades\Auth;
 class ModelDocument
 {
     /**
-     * Handle the document "created" event.
+     * Handle the Document "created" event.
+     *
+     * @param  \App\Models\Document  $document
+     * @return void
      */
     public function created(document $document): void
     {
         AuditLog::create([
             'action' => 'Created',
             'model' => 'File',
-            'changes' => json_encode($document->getAttributes()),
+            'changes' => $document->doc_title,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -30,7 +33,7 @@ class ModelDocument
         AuditLog::create([
             'action' => 'Updated',
             'model' => 'File',
-            'changes' => json_encode($document->getAttributes()),
+            'changes' => $document->doc_title,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -44,7 +47,7 @@ class ModelDocument
         AuditLog::create([
             'action' => 'Deleted',
             'model' => 'File',
-            'changes' => json_encode($document->getAttributes()),
+            'changes' => $document->doc_title,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -58,7 +61,7 @@ class ModelDocument
         AuditLog::create([
             'action' => 'Restored',
             'model' => 'File',
-            'changes' => json_encode($document->getAttributes()),
+            'changes' => $document->doc_title,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -72,7 +75,7 @@ class ModelDocument
         AuditLog::create([
             'action' => 'Force Deleted',
             'model' => 'File',
-            'changes' => json_encode($document->getAttributes()),
+            'changes' => $document->doc_title,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);

@@ -200,13 +200,13 @@ class FileManagerController extends Controller
         // Find all folders that match the selected IDs
         $folders = Folder::whereIn('id', $ids)->get();
 
-        AuditLog::create([
-            'action' => "Deleted",
-            'model' => 'Folder',
-            'changes' => json_encode($folders),
-            'user_guid' => Auth::user()->id,
-            'ip_address' => request()->ip(),
-        ]);
+        // AuditLog::create([
+        //     'action' => "Deleted",
+        //     'model' => 'Folder',
+        //     'changes' => json_encode($folders),
+        //     'user_guid' => Auth::user()->id,
+        //     'ip_address' => request()->ip(),
+        // ]);
 
         foreach ($folders as $folder) {
             // Recursively delete folder contents (files, documents, subfolders)
@@ -252,7 +252,7 @@ class FileManagerController extends Controller
             AuditLog::create([
                 'action' => "Deleted",
                 'model' => 'File',
-                'changes' => json_encode($document),
+                'changes' => $document->doc_title,
                 'user_guid' => Auth::user()->id,
                 'ip_address' => request()->ip(),
             ]);

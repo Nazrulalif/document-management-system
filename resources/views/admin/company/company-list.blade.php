@@ -97,7 +97,7 @@
 </div>
 
 <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
-<script src="{{ asset('assets/js/custom/apps/user-management/company/tables.js') }}"></script>
+<script src="{{ asset('assets/js/custom/apps/user-management/company/tabless.js') }}"></script>
 
 
 @endsection

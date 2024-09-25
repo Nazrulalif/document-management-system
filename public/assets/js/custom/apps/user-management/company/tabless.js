@@ -305,7 +305,7 @@ var KTDatatablesServerSide = function () {
                             success: function (response) {
                                 // Show success message
                                 Swal.fire({
-                                    text: "You have deleted " + companyName + "!",
+                                    text: "You have deactivated " + companyName + "!",
                                     icon: "success",
                                     buttonsStyling: false,
                                     confirmButtonText: "Ok, got it!",
@@ -393,7 +393,7 @@ var KTDatatablesServerSide = function () {
                 showCancelButton: true,
                 buttonsStyling: false,
                 showLoaderOnConfirm: true,
-                confirmButtonText: "Yes, delete!",
+                confirmButtonText: "Yes, deactivate!",
                 cancelButtonText: "No, cancel",
                 customClass: {
                     confirmButton: "btn fw-bold btn-danger",

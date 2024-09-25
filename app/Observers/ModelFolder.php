@@ -16,7 +16,7 @@ class ModelFolder
         AuditLog::create([
             'action' => 'Created',
             'model' => 'Folder',
-            'changes' => json_encode($folder->getAttributes()),
+            'changes' => $folder->folder_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -30,7 +30,7 @@ class ModelFolder
         AuditLog::create([
             'action' => 'Updated',
             'model' => 'Folder',
-            'changes' => json_encode($folder->getAttributes()),
+            'changes' => $folder->folder_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -44,7 +44,7 @@ class ModelFolder
         AuditLog::create([
             'action' => 'Deleted',
             'model' => 'Folder',
-            'changes' => json_encode($folder->getAttributes()),
+            'changes' => $folder->folder_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -58,7 +58,7 @@ class ModelFolder
         AuditLog::create([
             'action' => 'Restored',
             'model' => 'Folder',
-            'changes' => json_encode($folder->getAttributes()),
+            'changes' => $folder->folder_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -72,7 +72,7 @@ class ModelFolder
         AuditLog::create([
             'action' => 'Force Deleted',
             'model' => 'Folder',
-            'changes' => json_encode($folder->getAttributes()),
+            'changes' => $folder->folder_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);

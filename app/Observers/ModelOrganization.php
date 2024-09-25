@@ -16,7 +16,7 @@ class ModelOrganization
         AuditLog::create([
             'action' => 'Created',
             'model' => 'Company',
-            'changes' => json_encode($organization->getAttributes()),
+            'changes' => $organization->org_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -36,7 +36,7 @@ class ModelOrganization
         AuditLog::create([
             'action' => $action,
             'model' => 'Company',
-            'changes' => json_encode($organization->getAttributes()),
+            'changes' => $organization->org_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -50,7 +50,7 @@ class ModelOrganization
         AuditLog::create([
             'action' => 'Deleted',
             'model' => 'Company',
-            'changes' => json_encode($organization->getAttributes()),
+            'changes' => $organization->org_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -64,7 +64,7 @@ class ModelOrganization
         AuditLog::create([
             'action' => 'Restored',
             'model' => 'Company',
-            'changes' => json_encode($organization->getAttributes()),
+            'changes' => $organization->org_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -78,7 +78,7 @@ class ModelOrganization
         AuditLog::create([
             'action' => 'Force Deleted',
             'model' => 'Company',
-            'changes' => json_encode($organization->getAttributes()),
+            'changes' => $organization->org_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);

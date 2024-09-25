@@ -163,13 +163,16 @@ class UserController extends Controller
                     'is_active' => 'N'
                 ]);
 
-                AuditLog::create([
-                    'action' => "Deactivated",
-                    'model' => 'User',
-                    'changes' => json_encode($userList),
-                    'user_guid' => Auth::user()->id,
-                    'ip_address' => request()->ip(),
-                ]);
+                foreach ($userList as $userList) {
+
+                    AuditLog::create([
+                        'action' => "Deactivated",
+                        'model' => 'User',
+                        'changes' => $userList->full_name,
+                        'user_guid' => Auth::user()->id,
+                        'ip_address' => request()->ip(),
+                    ]);
+                }
 
                 // Get current counts
                 $userCount = User::where('is_active', '=', 'Y')->count();

@@ -16,7 +16,7 @@ class ModelUser
         AuditLog::create([
             'action' => 'Created',
             'model' => 'User',
-            'changes' => json_encode($user->getAttributes()),
+            'changes' => $user->full_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -35,7 +35,7 @@ class ModelUser
         AuditLog::create([
             'action' =>  $action,
             'model' => 'User',
-            'changes' => json_encode($user->getAttributes()),
+            'changes' => $user->full_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -49,7 +49,7 @@ class ModelUser
         AuditLog::create([
             'action' => 'Deleted',
             'model' => 'User',
-            'changes' => json_encode($user->getAttributes()),
+            'changes' => $user->full_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -63,7 +63,7 @@ class ModelUser
         AuditLog::create([
             'action' => 'Restored',
             'model' => 'User',
-            'changes' => json_encode($user->getAttributes()),
+            'changes' => $user->full_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -77,7 +77,7 @@ class ModelUser
         AuditLog::create([
             'action' => 'Force Delete',
             'model' => 'User',
-            'changes' => json_encode($user->getAttributes()),
+            'changes' => $user->full_name,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);

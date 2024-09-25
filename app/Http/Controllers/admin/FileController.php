@@ -136,7 +136,7 @@ class FileController extends Controller
         AuditLog::create([
             'action' => 'Created',
             'model' => 'New version',
-            'changes' => json_encode($document),
+            'changes' => $document->doc_title,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
@@ -348,7 +348,7 @@ class FileController extends Controller
         AuditLog::create([
             'action' => 'Deleted',
             'model' => 'File version',
-            'changes' => json_encode($document),
+            'changes' => $document->doc_title,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);

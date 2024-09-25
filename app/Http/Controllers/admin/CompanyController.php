@@ -139,7 +139,6 @@ class CompanyController extends Controller
             // Use a transaction to ensure data integrity
             DB::transaction(function () use ($ids) {
 
-
                 $org = Organization::whereIn('id', $ids)->get();
                 // Update organizations
                 $orgUpdated = Organization::whereIn('id', $ids)->update([
@@ -151,13 +150,15 @@ class CompanyController extends Controller
                     'is_active' => 'N'
                 ]);
 
-                AuditLog::create([
-                    'action' => "Deactivated",
-                    'model' => 'Company',
-                    'changes' => json_encode($org),
-                    'user_guid' => Auth::user()->id,
-                    'ip_address' => request()->ip(),
-                ]);
+                foreach ($org as $org) {
+                    AuditLog::create([
+                        'action' => "Deactivated",
+                        'model' => 'Company',
+                        'changes' => $org->org_name, // Log the specific organization's name
+                        'user_guid' => Auth::user()->id,
+                        'ip_address' => request()->ip(),
+                    ]);
+                }
 
                 // Get current counts
                 $userCount = User::where('is_active', '=', 'Y')->count();
