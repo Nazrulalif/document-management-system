@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('is_active')->nullable();
             $table->unsignedBigInteger('role_guid')->nullable();
             $table->unsignedBigInteger('org_guid')->nullable();
+            $table->string('profile_picture')->nullable();
             $table->rememberToken();
             $table->timestamps();
 

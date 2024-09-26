@@ -82,7 +82,7 @@
                 <div class="input-group mb-4">
                     <input type="text" wire:model="query" class="form-control form-control-solid"
                         placeholder="Search" />
-                    <button type="submit" class="btn btn-flex btn-light-secondary">
+                    <button type="submit" class="btn btn-flex btn-light-primary">
                         <i class="ki-duotone ki-magnifier fs-1">
                             <span class="path1"></span>
                             <span class="path2"></span>
@@ -154,11 +154,9 @@
 
                                 <div class="fs-7 text-gray-600">
                                     <div class="d-flex align-items-center">
-                                        <div class="symbol symbol-50px me-2">
-                                            <i class="ki-outline ki-profile-circle fs-1">
-                                                <span class="path2"></span>
-                                                <span class="path3"></span>
-                                            </i>
+                                        <div class="symbol symbol-30px symbol-circle me-3">
+                                            <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="user">
+
                                         </div>
                                         {{ $result->full_name }} | {{ $result->org_name }} |
                                         {{ $result->created_at->format('d/m/Y') }}

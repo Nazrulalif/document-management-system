@@ -104,10 +104,7 @@
                     <div class="cursor-pointer symbol symbol-35px"
                         data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
                         data-kt-menu-placement="bottom-end">
-                            <i class="ki-outline ki-profile-circle fs-2hx">
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i>
+                        <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}" class="rounded-3" alt="user">
                     </div>
                     <!--begin::User account menu-->
                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
@@ -117,12 +114,8 @@
                             <div class="menu-content d-flex align-items-center px-3">
                                 <!--begin::Avatar-->
                                 <div class="symbol symbol-50px me-5">
-                                    <i class="ki-outline ki-profile-circle fs-4x">
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                    </i>
+                                    <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}" class="rounded-3" alt="user">
                                 </div>
-                                
                                 <!--end::Avatar-->
                                 <!--begin::Username-->
                                 <div class="d-flex flex-column">
@@ -140,7 +133,7 @@
                         <!--end::Menu separator-->
                         <!--begin::Menu item-->
                         <div class="menu-item px-5">
-                            <a href="account/overview.html" class="menu-link px-5">My Profile</a>
+                            <a href="{{ route('profile.index') }}" class="menu-link px-5">My Profile</a>
                         </div>
                         <!--end::Menu item-->
 

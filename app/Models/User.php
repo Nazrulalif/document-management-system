@@ -33,6 +33,7 @@ class User extends Authenticatable
         'is_active',
         'role_guid',
         'org_guid',
+        'profile_picture',
     ];
 
     public function role()

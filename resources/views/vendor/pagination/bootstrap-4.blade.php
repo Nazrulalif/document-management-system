@@ -5,7 +5,7 @@
             <li class="page-item disabled"><span class="page-link">&lsaquo;</span></li>
         @else
             <li class="page-item">
-                <a class="page-link" href="{{ $paginator->previousPageUrl() }}" rel="prev">&lsaquo;</a>
+                <a class="page-link" href="{{ $paginator->previousPageUrl() }}&query={{ request('query') }}" rel="prev">&lsaquo;</a>
             </li>
         @endif
 
@@ -23,7 +23,7 @@
                         <li class="page-item active"><span class="page-link">{{ $page }}</span></li>
                     @else
                         <li class="page-item">
-                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            <a class="page-link" href="{{ $url }}&query={{ request('query') }}">{{ $page }}</a>
                         </li>
                     @endif
                 @endforeach

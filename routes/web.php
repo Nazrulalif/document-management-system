@@ -4,6 +4,7 @@ use App\Http\Controllers\admin\CompanyController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\admin\FileController;
 use App\Http\Controllers\admin\FileManagerController;
+use App\Http\Controllers\admin\MyProfilController;
 use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SearchController;
@@ -125,6 +126,13 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
     route::get('/report', [ReportController::class, 'index'])->name('report.index');
     //gerate report
     route::post('/generated-report', [ReportController::class, 'post'])->name('report.post');
+
+    //my profile
+    route::get('/my-profile', [MyProfilController::class, 'index'])->name('profile.index');
+    route::get('/my-file', [MyProfilController::class, 'file'])->name('profile.file');
+    route::get('/setting', [MyProfilController::class, 'setting'])->name('profile.setting');
+    route::post('/setting-post', [MyProfilController::class, 'setting_post'])->name('setting.post');
+    route::post('/change-password', [MyProfilController::class, 'change_password'])->name('password.change');
 });
 
 // User Routes

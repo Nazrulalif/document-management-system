@@ -39,7 +39,7 @@
                     data-kt-menu="true" data-kt-menu-expand="false">
                     <div class="menu-item">
                         <!--begin:Menu link-->
-                        <a class="menu-link {{ (Request::is('admin/dashboard') ? 'active' : '') }}"
+                        <a class="menu-link {{ (Request::is('admin/dashboard', 'admin/my-profile', 'admin/my-file', 'admin/setting') ? 'active' : '') }}"
                             href="{{ route('dashboard.admin') }}">
                             <span class="menu-icon">
                                 <i class="ki-outline ki-element-11 fs-2">
