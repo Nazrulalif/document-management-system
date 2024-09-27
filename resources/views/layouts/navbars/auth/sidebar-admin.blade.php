@@ -83,10 +83,14 @@
                     </div>
 
                     <div data-kt-menu-trigger="click"
-                        class="menu-item menu-accordion {{ (Request::is('admin/company-list', 'admin/company-detail/*', 'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*') ? 'hover show' : '') }}">
+                        class="menu-item menu-accordion {{ (Request::is('admin/company-list', 'admin/company-detail/*', 
+                        'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*',
+                        'admin/user-setting/*','admin/user-file/*', 'admin/company-file/*', 'admin/company-setting/*') ? 'hover show' : '') }}">
                         <!--begin:Menu link-->
                         <span
-                            class="menu-link {{ (Request::is('admin/company-list', 'admin/company-detail/*', 'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*') ? 'active' : '') }}">
+                            class="menu-link {{ (Request::is('admin/company-list', 'admin/company-detail/*', 
+                            'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*', 
+                            'admin/company-file/*', 'admin/company-setting/*') ? 'active' : '') }}">
                             <span class="menu-icon">
                                 <i class="ki-outline ki-user fs-2">
                                     <span class="path2"></span>
@@ -102,7 +106,8 @@
                             <!--begin:Menu item-->
                             <div class="menu-item">
                                 <!--begin:Menu link-->
-                                <a class="menu-link {{ (Request::is('admin/company-list', 'admin/company-detail/*') ? 'active' : '') }}"
+                                <a class="menu-link {{ (Request::is('admin/company-list', 'admin/company-detail/*',
+                                'admin/company-file/*', 'admin/company-setting/*') ? 'active' : '') }}"
                                     href="{{ route('company.index') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
@@ -111,7 +116,8 @@
                                 </a>
                                 <!--end:Menu link-->
                                 <!--begin:Menu link-->
-                                <a class="menu-link {{ (Request::is('admin/user-list', 'admin/user-detail/*') ? 'active' : '') }}"
+                                <a class="menu-link {{ (Request::is('admin/user-list', 'admin/user-detail/*',
+                                'admin/user-setting/*','admin/user-file/*') ? 'active' : '') }}"
                                     href="{{ route('user.index') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>

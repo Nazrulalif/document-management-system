@@ -1,13 +1,13 @@
-@extends('admin.my-profile.profile')
+@extends('admin.user.view-user')
 
-@section('profile_content')
+@section('user_content')
 <div class="d-flex flex-wrap flex-stack my-5">
     <!--begin::Heading-->
     <h3 class="fw-bold my-2">Files
         <span class="fs-6 text-gray-500 fw-semibold ms-1">+{{ $fileCount }}</span></h3>
     <!--end::Heading-->
 
-    <form action="{{ route('profile.file') }}" method="GET" class="d-flex" autocomplete="off">
+    <form action="{{ route('user.file', $data->uuid) }}" method="GET" class="d-flex" autocomplete="off">
         <div class="d-flex">
             <div class="input-group mb-4">
                 <input type="text" name="query" value="{{ request('query') }}" class="form-control form-control-solid"
@@ -86,5 +86,4 @@
     </div>
 
 </div>
-
 @endsection

@@ -6,8 +6,8 @@
             <!--begin: Pic-->
             <div class="me-7 mb-4">
                 <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
-                    @if(Auth::user()->profile_picture)
-                    <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="image" />
+                    @if($data->profile_picture)
+                    <img src="{{ asset('storage/' . $data->profile_picture) }}" alt="image" />
 
                     @else
                     <img src="{{ asset('assets/media/svg/avatars/blank.svg') }}" alt="Default Avatar" class="img-thumbnail" width="150">
@@ -104,19 +104,19 @@
         <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
             <!--begin::Nav item-->
             <li class="nav-item mt-2">
-                <a class="nav-link text-active-primary ms-0 me-10 py-5 {{ (Request::is('admin/my-profile') ? 'active' : '') }}"
-                    href="{{ route('profile.index') }}">Overview</a>
+                <a class="nav-link text-active-primary ms-0 me-10 py-5 {{ (Request::is('admin/user-detail/*') ? 'active' : '') }}"
+                    href="{{ route('user.view', $data->uuid) }}">Overview</a>
             </li>
             <!--end::Nav item-->
             <!--begin::Nav item-->
             <li class="nav-item mt-2">
-                <a class="nav-link text-active-primary ms-0 me-10 py-5 {{ (Request::is('admin/my-file') ? 'active' : '') }}"
-                    href="{{ route('profile.file') }}">My Files</a>
+                <a class="nav-link text-active-primary ms-0 me-10 py-5 {{ (Request::is('admin/user-file/*') ? 'active' : '') }}"
+                    href="{{ route('user.file', $data->uuid) }}">Files</a>
             </li>
             <!--end::Nav item-->
             <li class="nav-item mt-2">
-                <a class="nav-link text-active-primary ms-0 me-10 py-5 {{ (Request::is('admin/setting') ? 'active' : '') }}"
-                    href="{{ route('profile.setting') }}">Settings</a>
+                <a class="nav-link text-active-primary ms-0 me-10 py-5 {{ (Request::is('admin/user-setting/*') ? 'active' : '') }}"
+                    href="{{ route('user.setting', $data->uuid) }}">Settings</a>
             </li>
         </ul>
         <!--begin::Navs-->

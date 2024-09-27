@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Imports\UsersImport;
 use App\Mail\UserRegistered;
 use App\Models\AuditLog;
+use App\Models\Document;
+use App\Models\Folder;
 use App\Models\Organization;
 use App\Models\Role;
 use App\Models\Stat;
@@ -353,5 +355,141 @@ class UserController extends Controller
 
         session()->flash('success', 'New User Successfully added!');
         return response()->json(['success' => true, 'message' => 'Users imported successfully!']);
+    }
+
+    public function view($uuid)
+    {
+        // $userId = Auth::user()->id;
+        $data = User::select('*', 'users.uuid as uuid')
+            ->join('organizations', 'organizations.id', '=', 'users.org_guid')
+            ->join('roles', 'roles.id', '=', 'users.role_guid')
+            ->where('users.uuid', '=', $uuid)
+            ->first();
+
+        $fileCount =  Document::join('users', 'users.id', '=', 'documents.upload_by')
+            ->where('users.uuid', $uuid)->count();
+        $folderCount =  Folder::join('users', 'users.id', '=', 'folders.created_by')
+            ->where('users.uuid', $uuid)->count();
+
+        return view('admin.user.detail', compact(
+            'fileCount',
+            'folderCount',
+            'data',
+        ));
+    }
+
+    public function setting($uuid)
+    {
+        // $userId = Auth::user()->id;
+        $data = User::select('*', 'users.uuid as uuid', 'users.id as id')
+            ->join('organizations', 'organizations.id', '=', 'users.org_guid')
+            ->join('roles', 'roles.id', '=', 'users.role_guid')
+            ->where('users.uuid', '=', $uuid)
+            ->first();
+
+        $fileCount =  Document::join('users', 'users.id', '=', 'documents.upload_by')
+            ->where('users.uuid', $uuid)->count();
+        $folderCount =  Folder::join('users', 'users.id', '=', 'folders.created_by')
+            ->where('users.uuid', $uuid)->count();
+
+        $org = Organization::where('is_operation', '=', 'Y')->get();
+
+        return view('admin.user.setting', compact(
+            'fileCount',
+            'folderCount',
+            'data',
+            'org',
+        ));
+    }
+
+    public function user_setting_post(Request $request, $id)
+    {
+        // Validation rules
+        $request->validate([
+            'full_name' => 'required|string|max:255',
+            'ic_number' => 'required|string|max:20',
+            'email' => 'required|email|unique:users,email,' . $id, // Ensures email is unique, except for the current user
+            'race' => 'required|string|max:50',
+            'nationality' => 'required|string|max:50',
+            'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+        ]);
+
+        // Get the user data
+        $user = User::findOrFail($id);
+
+        // Update the user's information
+        $user->update([
+            'full_name' => $request->full_name,
+            'ic_number' => $request->ic_number,
+            'email' => $request->email,
+            'race' => $request->race,
+            'nationality' => $request->nationality,
+            'org_guid' => $request->org_name,
+        ]);
+
+        return redirect()->back()->with(['success' => 'Your profile details updated successfully']);
+    }
+
+    public function file(Request $request, $uuid)
+    {
+        $data = User::select('*', 'users.uuid as uuid', 'users.id as id')
+            ->join('organizations', 'organizations.id', '=', 'users.org_guid')
+            ->join('roles', 'roles.id', '=', 'users.role_guid')
+            ->where('users.uuid', '=', $uuid)
+            ->first();
+
+        $fileCount =  Document::join('users', 'users.id', '=', 'documents.upload_by')
+            ->where('users.uuid', $uuid)->count();
+        $folderCount =  Folder::join('users', 'users.id', '=', 'folders.created_by')
+            ->where('users.uuid', $uuid)->count();
+
+
+        $query = $request->input('query');
+
+        if ($query) {
+            $fileList = Document::join('users', 'users.id', '=', 'documents.upload_by')
+                ->where(function ($q) use ($query) {
+                    $q->where('documents.doc_title', 'LIKE', "%{$query}%")
+                        ->orWhere('documents.doc_type', 'LIKE', "%{$query}%");
+                })
+                ->where('users.uuid', $uuid)
+                ->paginate(12);
+        } else {
+            $fileList = Document::join('users', 'users.id', '=', 'documents.upload_by')
+                ->where('users.uuid', $uuid)->paginate(12);
+        }
+        return view('admin.user.file-list', compact(
+            'fileCount',
+            'folderCount',
+            'data',
+            'fileList',
+        ));
+    }
+
+    public function setting_deactive($uuid)
+    {
+        $user = User::where('uuid', '=', $uuid)->firstOrFail();
+
+        $user->is_active = 'N';
+        $user->save();
+
+        // Get current counts
+        $userCount = User::where('is_active', '=', 'Y')->count();
+        // Get today's stat entry (or create a new one if it doesn't exist)
+        $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+        if (!$todayStats) {
+            // Create a new stat entry for today if it doesn't exist
+            Stat::create([
+                'user_count' => $userCount,
+            ]);
+        } else {
+            // Update today's counts if the entry already exists
+            $todayStats->update([
+                'user_count' => $userCount,
+            ]);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

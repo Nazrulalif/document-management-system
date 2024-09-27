@@ -4,6 +4,8 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
+use App\Models\Document;
+use App\Models\Folder;
 use App\Models\Organization;
 use App\Models\Stat;
 use App\Models\User;
@@ -246,11 +248,195 @@ class CompanyController extends Controller
         return redirect()->back();
     }
 
-    public function view($uuid)
+    public function view(Request $request, $uuid)
     {
-        $data = Organization::where('uuid', $uuid)->firstOrFail();
-        return view('admin.company.view-company', [
-            'data' => $data,
+        if ($request->ajax()) {
+
+            $data = User::select('users.*', 'roles.role_name as role_name', 'organizations.org_name')
+                ->join('roles', 'users.role_guid', '=', 'roles.id')
+                ->leftjoin('organizations', 'organizations.id', '=', 'users.org_guid')
+                ->where('users.id', '!=', Auth::user()->id)
+                ->where('organizations.uuid', '=', $uuid)
+                ->where('users.is_active', '=', 'Y')
+                ->orderBy('users.id', 'DESC')
+                ->get();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }
+
+        $data = Organization::where('uuid', $uuid)->where('is_operation', 'Y')->firstOrFail();
+
+        $fileCount = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
+            ->where('organizations.uuid', $uuid)
+            ->count();
+
+        $folderCount = Folder::join('organizations', 'organizations.id', '=', 'folders.org_guid')
+            ->where('organizations.uuid', $uuid)
+            ->count();
+
+        $userCount = User::join('organizations', 'organizations.id', '=', 'users.org_guid')
+            ->where('users.is_active', 'Y')
+            ->where('organizations.uuid', $uuid)
+            ->count();
+
+
+        return view('admin.company.user-list', compact(
+            'data',
+            'fileCount',
+            'folderCount',
+            'userCount',
+        ));
+    }
+
+    public function file(Request $request, $uuid)
+    {
+        $fileCount = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
+            ->where('organizations.uuid', $uuid)
+            ->count();
+
+        $folderCount = Folder::join('organizations', 'organizations.id', '=', 'folders.org_guid')
+            ->where('organizations.uuid', $uuid)
+            ->count();
+
+        $userCount = User::join('organizations', 'organizations.id', '=', 'users.org_guid')
+            ->where('users.is_active', 'Y')
+            ->where('organizations.uuid', $uuid)
+            ->count();
+
+        $data = Organization::where('uuid', $uuid)->where('is_operation', 'Y')->firstOrFail();
+
+        $query = $request->input('query');
+
+        if ($query) {
+            $fileList = Document::select('*', 'documents.created_at as created_at')
+                ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                ->join('users', 'users.id', '=', 'documents.upload_by')
+                ->where(function ($q) use ($query) {
+                    $q->where('documents.doc_title', 'LIKE', "%{$query}%")
+                        ->orWhere('documents.doc_type', 'LIKE', "%{$query}%")
+                        ->orWhere('users.full_name', 'LIKE', "%{$query}%");
+                })
+                ->where('organizations.uuid', $uuid)
+                ->paginate(8);
+        } else {
+            $fileList = Document::select('*', 'documents.created_at as created_at')
+                ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                ->join('users', 'users.id', '=', 'documents.upload_by')
+                ->where('organizations.uuid', $uuid)
+                ->paginate(8);
+        }
+
+
+        return view('admin.company.file-list', compact(
+            'data',
+            'fileCount',
+            'folderCount',
+            'userCount',
+            'fileList',
+        ));
+    }
+
+    public function setting(Request $request, $uuid)
+    {
+        $fileCount = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
+            ->where('organizations.uuid', $uuid)
+            ->count();
+
+        $folderCount = Folder::join('organizations', 'organizations.id', '=', 'folders.org_guid')
+            ->where('organizations.uuid', $uuid)
+            ->count();
+
+        $userCount = User::join('organizations', 'organizations.id', '=', 'users.org_guid')
+            ->where('users.is_active', 'Y')
+            ->where('organizations.uuid', $uuid)
+            ->count();
+
+        $data = Organization::where('uuid', $uuid)->where('is_operation', 'Y')->firstOrFail();
+
+
+        return view('admin.company.setting', compact(
+            'data',
+            'fileCount',
+            'folderCount',
+            'userCount',
+        ));
+    }
+
+    public function setting_post(Request $request, $uuid)
+    {
+        // Validation rules
+        $request->validate([
+            'org_name' => 'required|string|max:255',
+            'reg_date' => 'required',
+            'org_number' => 'required',
+            'org_address' => 'required',
+            'org_place' => 'required',
+            'nature_of_business' => 'required',
         ]);
+
+        // Get the user data
+        $data = Organization::where('uuid', $uuid)->firstOrFail();
+
+        // Update the user's information
+        $data->update([
+            'org_name' => $request->org_name,
+            'reg_date' => $request->reg_date,
+            'org_number' => $request->org_number,
+            'org_address' => $request->org_address,
+            'org_place' => $request->org_place,
+            'nature_of_business' => $request->nature_of_business,
+        ]);
+
+        return redirect()->back()->with(['success' => 'Your profile details updated successfully']);
+    }
+
+    public function deactivate($uuid)
+    {
+
+        try {
+            // Find the organization by ID and delete it
+            $org = Organization::where('uuid', $uuid)->firstOrFail();
+            $org->is_operation = 'N';
+            $org->save();
+
+            User::join('organizations', 'organizations.id', '=', 'org_guid')
+                ->where('organizations.uuid', '=', $uuid)->update([
+                    'users.is_active' => 'N'
+                ]);
+            // Get current counts
+            $userCount = User::where('is_active', '=', 'Y')->count();
+            $orgCount = Organization::where('is_operation', '=', 'Y')->count();
+
+            // Get today's stat entry (or create a new one if it doesn't exist)
+            $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+            if (!$todayStats) {
+                // Create a new stat entry for today if it doesn't exist
+                Stat::create([
+                    'user_count' => $userCount,
+                    'org_count' => $orgCount,
+                ]);
+            } else {
+                // Update today's counts if the entry already exists
+                $todayStats->update([
+                    'user_count' => $userCount,
+                    'org_count' => $orgCount,
+                ]);
+            }
+
+            // Return a JSON response indicating success
+            return response()->json([
+                'success' => true,
+                'message' => 'Company successfully deleted!'
+            ]);
+        } catch (\Exception $e) {
+            // Return a JSON response indicating an error
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while deleting the company.'
+            ], 500);
+        }
     }
 }

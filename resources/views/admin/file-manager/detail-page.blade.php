@@ -395,7 +395,7 @@
                     // Send the delete request to the server
                     $.ajax({
                         url: `/admin/file-detail-destroy/` + fileUuid, // Assuming RESTful API convention
-                        method: 'GET',
+                        method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },

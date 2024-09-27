@@ -9,19 +9,9 @@
         <div id="kt_app_content" class="app-content flex-column-fluid py-3 py-lg-8">
             <!--begin::Content container-->
             <div id="kt_app_content_container" class="app-container container-fluid">
-                <!--begin::Layout-->
-                <div class="d-flex flex-column flex-xl-row">
-                    <!--begin::Sidebar-->
-                    @include('admin.company.side-card')
-                    <!--end::Sidebar-->
-                    <!--begin::Content-->
-                    <div class="flex-lg-row-fluid ms-lg-15">
-                        @include('admin.company.navbar')
-                        @yield('company_detail')
-                    </div>
-                    <!--end::Content-->
-                </div>
-                <!--end::Layout-->
+                @include("admin.user.navbar")
+
+                @yield('user_content')
             </div>
 
             <!--end::Content container-->

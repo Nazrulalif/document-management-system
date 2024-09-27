@@ -40,7 +40,14 @@ Route::get('/logout', function (Request $request) {
         'user_guid' => Auth::user()->id,
         'ip_address' => $request->ip(),
     ]);
-    Auth::logout();
+
+    // Invalidate the session (destroy all session data)
+    $request->session()->invalidate();
+
+    // Regenerate session token
+    $request->session()->regenerateToken();
+
+    // Redirect to login page
     return redirect(route('login'));
 })->name('logout');
 //Log in
@@ -55,6 +62,10 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
     // Company List
     Route::get('/company-list', [CompanyController::class, 'index'])->name('company.index');
     Route::get('/company-detail/{uuid}', [CompanyController::class, 'view'])->name('company.view');
+    Route::get('/company-file/{uuid}', [CompanyController::class, 'file'])->name('company.file');
+    Route::get('/company-setting/{uuid}', [CompanyController::class, 'setting'])->name('company.setting');
+    Route::post('/company-setting-post/{uuid}', [CompanyController::class, 'setting_post'])->name('company.settingPost');
+    Route::post('/company-deactivate/{uuid}', [CompanyController::class, 'deactivate'])->name('company.deactivate');
     //destroy company
     Route::post('/company-destroy/{id}', [CompanyController::class, 'destroy'])->name('company.destroy');
     //bulk destroy company
@@ -78,6 +89,13 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
     //user update
     Route::get('/user-show/{id}', [UserController::class, 'show'])->name('user.show');
     Route::post('/user-update/{id}', [UserController::class, 'update'])->name('user.update');
+    //view user
+    Route::get('/user-detail/{uuid}', [UserController::class, 'view'])->name('user.view');
+    Route::get('/user-file/{uuid}', [UserController::class, 'file'])->name('user.file');
+    Route::get('/user-setting/{uuid}', [UserController::class, 'setting'])->name('user.setting');
+    route::post('/user-setting-post/{id}', [UserController::class, 'user_setting_post'])->name('userSetting.post');
+    Route::post('/user-setting-deactivate/{uuid}', [UserController::class, 'setting_deactive'])->name('userSetting.deactive');
+
 
     //user account registered email
     Route::get('/user-registered-mail', [UserRegisteredController::class, 'user_registered'])->name('email.registered');
@@ -117,7 +135,7 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
     //Add new version
     Route::post('/add-version', [FileController::class, 'add_version'])->name('file.add.version');
     //destroy file
-    route::get('/file-detail-destroy/{uuid}', [FileController::class, 'destroy_file'])->name('file.detail.destroy');
+    route::post('/file-detail-destroy/{uuid}', [FileController::class, 'destroy_file'])->name('file.detail.destroy');
 
     //advance search
     route::get('/advance-search', [SearchController::class, 'index'])->name('search.index');

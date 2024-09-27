@@ -112,6 +112,7 @@ class AdvanceSearch extends Component
     {
         $documents = Document::select(
             'users.full_name',
+            'users.profile_picture',
             'documents.upload_by',
             'documents.latest_version_guid',
             'documents.doc_type',

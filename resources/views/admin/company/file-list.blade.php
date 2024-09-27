@@ -1,13 +1,13 @@
-@extends('admin.my-profile.profile')
+@extends('admin.company.view-company')
 
-@section('profile_content')
+@section('company_detail')
 <div class="d-flex flex-wrap flex-stack my-5">
     <!--begin::Heading-->
     <h3 class="fw-bold my-2">Files
         <span class="fs-6 text-gray-500 fw-semibold ms-1">+{{ $fileCount }}</span></h3>
     <!--end::Heading-->
 
-    <form action="{{ route('profile.file') }}" method="GET" class="d-flex" autocomplete="off">
+    <form action="{{ route('company.file', $data->uuid) }}" method="GET" class="d-flex" autocomplete="off">
         <div class="d-flex">
             <div class="input-group mb-4">
                 <input type="text" name="query" value="{{ request('query') }}" class="form-control form-control-solid"
@@ -26,7 +26,7 @@
 <div class="row g-6 g-xl-9 mb-6 mb-xl-9">
     <!--begin::Col-->
     @forelse ($fileList as $item)
-    <div class="col-md-6 col-lg-4 col-xl-3">
+    <div class="col-md-6 col-lg-4 col-xl-6">
         <!--begin::Card-->
         <div class="card h-100">
             <!--begin::Card body-->
@@ -66,6 +66,14 @@
                 <!--end::Name-->
                 <!--begin::Description-->
                 <div class="fs-7 fw-semibold text-gray-500">{{ $item->created_at->format('d/m/Y') }}</div>
+                <div class="d-flex align-items-center justify-content-center pt-2">
+                    <div class="symbol symbol-20px symbol-circle me-3">
+                        <img src="{{ $item->profile_picture ? asset('storage/' . $item->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}" alt="user">
+    
+                    </div>
+                    <div class="fs-7 fw-semibold text-gray-500">{{ $item->full_name }}</div>
+                </div>
+               
                 <!--end::Description-->
             </div>
             <!--end::Card body-->
@@ -86,5 +94,4 @@
     </div>
 
 </div>
-
 @endsection

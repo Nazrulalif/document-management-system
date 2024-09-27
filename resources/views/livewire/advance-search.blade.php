@@ -155,7 +155,7 @@
                                 <div class="fs-7 text-gray-600">
                                     <div class="d-flex align-items-center">
                                         <div class="symbol symbol-30px symbol-circle me-3">
-                                            <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="user">
+                                            <img src="{{ $result->profile_picture ? asset('storage/' . $result->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}" alt="user">
 
                                         </div>
                                         {{ $result->full_name }} | {{ $result->org_name }} |

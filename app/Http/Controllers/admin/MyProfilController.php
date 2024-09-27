@@ -42,9 +42,11 @@ class MyProfilController extends Controller
         $query = $request->input('query');
 
         if ($query) {
-            $fileList = Document::where('doc_title', 'LIKE', "%{$query}%")
-                ->where('upload_by', $userId)
-                ->orWhere('doc_type', 'LIKE', "%{$query}%")
+            $fileList = Document::where('upload_by', $userId)
+                ->where(function ($q) use ($query) {
+                    $q->where('doc_title', 'LIKE', "%{$query}%")
+                        ->orWhere('doc_type', 'LIKE', "%{$query}%");
+                })
                 ->paginate(12);
         } else {
             $fileList = Document::where('upload_by', $userId)->paginate(12);
