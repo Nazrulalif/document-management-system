@@ -37,24 +37,16 @@
                     <!--begin::Image-->
                     <div class="symbol symbol-60px mb-5">
                         @if ($item->doc_type == 'pdf')
-                        <img src="{{ asset('assets/media/svg/files/pdf-file.svg') }} " class="theme-light-show"
-                            alt="" />
-                        <img src="{{ asset('assets/media/svg/files/pdf-file.svg') }} " class="theme-dark-show" alt="" />
+                        <img src="{{ asset('assets\media\icons\duotune\files\pdf-file.png') }} " />
+
                         @elseif ($item->doc_type == 'docx' || $item->doc_type == 'doc' )
-                        <img src="{{ asset('assets/media/svg/files/docx-file.svg') }} " class="theme-light-show"
-                            alt="" />
-                        <img src="{{ asset('assets/media/svg/files/docx-file.svg') }} " class="theme-dark-show"
-                            alt="" />
+                        <img src="{{ asset('assets\media\icons\duotune\files\word-file.png') }} " />
                         @elseif ($item->doc_type == 'xlsx' || $item->doc_type == 'csv' )
-                        <img src="{{ asset('assets/media/svg/files/excel-file.svg') }} " class="theme-light-show"
-                            alt="" />
-                        <img src="{{ asset('assets/media/svg/files/excel-file.svg') }} " class="theme-dark-show"
-                            alt="" />
+                        <img src="{{ asset('assets\media\icons\duotune\files\excel-file.png') }} " />
                         @elseif ($item->doc_type == 'images' )
-                        <img src="{{ asset('assets/media/svg/files/image-file.svg') }} " class="theme-light-show"
-                            alt="" />
-                        <img src="{{ asset('assets/media/svg/files/image-file.svg') }} " class="theme-dark-show"
-                            alt="" />
+                        <img src="{{ asset('assets\media\icons\duotune\files\image-file.png') }} " />
+                        @elseif ($item->doc_type == 'pptx' )
+                        <img src="{{ asset('assets\media\icons\duotune\files\pptx-file.png') }} " />
                         @endif
 
                     </div>

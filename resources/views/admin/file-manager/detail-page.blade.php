@@ -153,6 +153,24 @@
                                                 <div class="table-responsive">
                                                     <table class="table">
                                                         <tbody>
+
+                                                            @if ($data->change_title != null && $data->change_description  !='Not Set')
+                                                            <tr>
+                                                                <td class="fw-bold fs-6 text-gray-800">Change Title:&nbsp;
+                                                                </td>
+                                                                <td class="text-gray-600 fw-semibold fs-6">
+                                                                    {{ $data->change_title }}</span></a>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="fw-bold fs-6 text-gray-800">Change Description:&nbsp;
+                                                                </td>
+                                                                <td class="text-gray-600 fw-semibold fs-6">
+                                                                    {{ $data->change_description}}</span></a>
+                                                                </td>
+                                                            </tr>
+                                                            @endif
+                                                            
                                                             <tr>
                                                                 <td class="fw-bold fs-6 text-gray-800">Authors:&nbsp;
                                                                 </td>

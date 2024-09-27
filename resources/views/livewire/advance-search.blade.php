@@ -112,21 +112,24 @@
                                     @if ($selectedType === 'file')
                                     @switch($result->doc_type)
                                     @case('pdf')
-                                    <i class="fa-solid fa-file-pdf fs-2x me-4" style="color:red"></i>
+                                    <img src="{{ asset('assets\media\icons\duotune\files\pdf-file.png') }} " class="mw-30px me-4" alt="" />
                                     @break
                                     @case('docx')
                                     @case('doc')
-                                    <i class="fas fa-file-word text-primary fs-2x me-4"></i>
+                                    <img src="{{ asset('assets\media\icons\duotune\files\word-file.png') }} " class="mw-30px me-4" alt="" />
                                     @break
                                     @case('xlsx')
                                     @case('csv')
-                                    <i class="fas fa-file-excel fs-2x me-4" style="color:green"></i>
+                                    <img src="{{ asset('assets\media\icons\duotune\files\excel-file.png') }} " class="mw-30px me-4" alt="" />
+
                                     @break
                                     @case('pptx')
-                                    <i class="fa-solid fa-file-powerpoint fs-2x me-4" style="color: orange"></i>
+                                    <img src="{{ asset('assets\media\icons\duotune\files\pptx-file.png') }} " class="mw-30px me-4" alt="" />
+
                                     @break
                                     @case('images')
-                                    <i class="fa-solid fa-image text-gray-800 fs-2x me-4"></i>
+                                    <img src="{{ asset('assets\media\icons\duotune\files\image-file.png') }} " class="mw-25px me-4" alt="" />
+
                                     @break
                                     @endswitch
                                     @else

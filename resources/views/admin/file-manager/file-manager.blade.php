@@ -177,17 +177,18 @@
                                         <div class="d-flex align-items-center">
                                             <span class="icon-wrapper">
                                                 @if ( $document->doc_type == 'pdf')
-                                                <i class="fa-solid fa-file-pdf fs-2x me-4" style="color:red"></i>
+                                                <img src="{{ asset('assets\media\icons\duotune\files\pdf-file.png') }} " class="mw-30px me-4" />
                                                 @elseif ($document->doc_type == 'docx' ||$document->doc_type == 'doc' )
-                                                <i class="fas fa-file-word text-primary fs-2x me-4"></i>
-                                                @elseif ( $document->doc_type == 'xlsx' || $document->doc_type == 'csv'
-                                                )
-                                                <i class="fas fa-file-excel fs-2x me-4" style="color:green"></i>
+                                                <img src="{{ asset('assets\media\icons\duotune\files\word-file.png') }} " class="mw-30px me-4" />
+
+                                                @elseif ( $document->doc_type == 'xlsx' || $document->doc_type == 'csv')
+                                                <img src="{{ asset('assets\media\icons\duotune\files\excel-file.png') }} " class="mw-30px me-4" />
+
                                                 @elseif ( $document->doc_type == 'pptx' )
-                                                <i class="fa-solid fa-file-powerpoint fs-2x me-4"
-                                                    style="color: orange"></i>
+                                                <img src="{{ asset('assets\media\icons\duotune\files\pptx-file.png') }} " class="mw-30px me-4" />
+
                                                 @elseif ( $document->doc_type == 'images' )
-                                                <i class="fa-solid fa-image text-gray-800 fs-2x me-4"></i>
+                                                <img src="{{ asset('assets\media\icons\duotune\files\image-file.png') }} " class="mw-30px me-4" />
                                                 @endif
                                             </span>
                                             <a href="{{ route('file.index', $document->latest_version_guid)}}"
