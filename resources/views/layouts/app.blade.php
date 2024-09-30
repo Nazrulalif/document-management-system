@@ -58,12 +58,10 @@
         }
 
     </script>
+    @guest
+    @yield('guest')
+    @endguest
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
-
-        @guest
-        @yield('guest')
-        @endguest
-
         <!--begin::Page-->
         <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
             <!--begin::Wrapper-->

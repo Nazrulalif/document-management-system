@@ -65,13 +65,13 @@ class DashboardController extends Controller
         }
 
         // Get yesterday's stat entry
-        $yesterdayStats = Stat::whereDate('created_at', Carbon::yesterday())->first();
+        $previousStats = Stat::orderBy('created_at', 'desc')->skip(1)->first();
 
         // Default previous counts to 0 if no entry is found for yesterday
-        $previousFileCount = $yesterdayStats ? $yesterdayStats->file_count : 0;
-        $previousFolderCount = $yesterdayStats ? $yesterdayStats->folder_count : 0;
-        $previousUserCount = $yesterdayStats ? $yesterdayStats->user_count : 0;
-        $previousOrgCount = $yesterdayStats ? $yesterdayStats->org_count : 0;
+        $previousFileCount = $previousStats ? $previousStats->file_count : 0;
+        $previousFolderCount = $previousStats ? $previousStats->folder_count : 0;
+        $previousUserCount = $previousStats ? $previousStats->user_count : 0;
+        $previousOrgCount = $previousStats ? $previousStats->org_count : 0;
 
         // Compare today's counts with yesterday's counts
         $fileTrend = $fileCount > $previousFileCount ? 'up' : ($fileCount < $previousFileCount ? 'down' : 'same');

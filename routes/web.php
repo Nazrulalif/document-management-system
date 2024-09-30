@@ -11,6 +11,7 @@ use App\Http\Controllers\admin\SearchController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\mail\UserRegisteredController;
 use App\Models\AuditLog;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +31,7 @@ use Illuminate\Http\Request;
 
 //Landing page
 Route::get('/', function () {
-    return view('session.login');
+    return view('session.login-form');
 })->name('login');
 // Log out
 Route::get('/logout', function (Request $request) {
@@ -53,6 +54,12 @@ Route::get('/logout', function (Request $request) {
 //Log in
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('/login-post', [AuthController::class, 'post'])->name('login.post');;
+// forget password
+Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('password.request');
+Route::post('/email-verify', [ForgotPasswordController::class, 'email_verify'])->name('email.verify');
+Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'reset_password'])->name('reset.password');
+Route::post('/new-password', [ForgotPasswordController::class, 'reset_password_post'])->name('reset.password.post');
+
 // Admin Routes
 route::prefix('admin')->middleware('isadmin')->group(function () {
 
