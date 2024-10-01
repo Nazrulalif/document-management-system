@@ -11,7 +11,15 @@
             <div id="kt_app_content_container" class="app-container container-xxl">
                 <div class="card card-flush">
                     <div class="card-header px-lg-17">
-                        <h3 class="card-title"></h3>
+                        <div class="d-flex align-items-center">
+                            <a href="javascript:void(0);"
+                                class="d-flex align-items-center fw-semibold text-gray-600 text-hover-primary"
+                                onclick="window.history.back();">
+                                <i class="ki-duotone ki-black-left fs-2x">
+                                </i>
+                                Back
+                            </a>
+                        </div>
                         <div class="card-toolbar">
                             <div class="p-1">
                                 <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal"
@@ -20,9 +28,6 @@
                                 </button>
                             </div>
                             <div class="p-1">
-                                {{-- <a type="button" class="btn btn-sm btn-danger" id="delete_button" href="{{ route('file.detail.destroy', $data->uuid) }}">
-                                Delete
-                                </a> --}}
                                 <button type="button" class="btn btn-sm btn-danger" data-kt-filter="delete_file"
                                     data-uuid="{{ $data->uuid }}">
                                     Delete
@@ -154,23 +159,26 @@
                                                     <table class="table">
                                                         <tbody>
 
-                                                            @if ($data->change_title != null && $data->change_description  !='Not Set')
+                                                            @if ($data->change_title != null &&
+                                                            $data->change_description !='Not Set')
                                                             <tr>
-                                                                <td class="fw-bold fs-6 text-gray-800">Change Title:&nbsp;
+                                                                <td class="fw-bold fs-6 text-gray-800">Change
+                                                                    Title:&nbsp;
                                                                 </td>
                                                                 <td class="text-gray-600 fw-semibold fs-6">
                                                                     {{ $data->change_title }}</span></a>
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td class="fw-bold fs-6 text-gray-800">Change Description:&nbsp;
+                                                                <td class="fw-bold fs-6 text-gray-800">Change
+                                                                    Description:&nbsp;
                                                                 </td>
                                                                 <td class="text-gray-600 fw-semibold fs-6">
                                                                     {{ $data->change_description}}</span></a>
                                                                 </td>
                                                             </tr>
                                                             @endif
-                                                            
+
                                                             <tr>
                                                                 <td class="fw-bold fs-6 text-gray-800">Authors:&nbsp;
                                                                 </td>
@@ -412,7 +420,8 @@
 
                     // Send the delete request to the server
                     $.ajax({
-                        url: `/admin/file-detail-destroy/` + fileUuid, // Assuming RESTful API convention
+                        url: `/admin/file-detail-destroy/` +
+                            fileUuid, // Assuming RESTful API convention
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -430,9 +439,12 @@
                                 }
                             }).then(function () {
                                 if (response.success && response.uuid) {
-                                    window.location.href = "/admin/file-details/" + response.uuid;
+                                    window.location.href =
+                                        "/admin/file-details/" + response
+                                        .uuid;
                                 } else {
-                                    window.location.href = "/admin/file-manager";
+                                    window.location.href =
+                                        "/admin/file-manager";
                                 }
 
                             });

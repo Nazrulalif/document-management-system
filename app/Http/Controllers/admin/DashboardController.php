@@ -12,6 +12,7 @@ use App\Models\Stat;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class DashboardController extends Controller
@@ -21,10 +22,20 @@ class DashboardController extends Controller
         // $company = Organization::all(); // Fetch all users from the database
         if ($request->ajax()) {
 
-            $data = AuditLog::select('*', 'audit_logs.created_at as created_at')
-                ->join('users', 'users.id', '=', 'audit_logs.user_guid')
-                ->orderBy('audit_logs.id', 'desc')
-                ->get();
+            if (Auth::user()->role_guid == 1) {
+                $data = AuditLog::select('*', 'audit_logs.created_at as created_at')
+                    ->join('users', 'users.id', '=', 'audit_logs.user_guid')
+                    ->orderBy('audit_logs.id', 'desc')
+                    ->get();
+            } else {
+                $data = AuditLog::select('*', 'audit_logs.created_at as created_at')
+                    ->join('users', 'users.id', '=', 'audit_logs.user_guid')
+                    ->where('users.org_guid', Auth::user()->org_guid)
+                    ->orderBy('audit_logs.id', 'desc')
+                    ->get();
+            }
+
+
 
             // Format the date and time for each record
             $formatted_data = $data->map(function ($item) {
@@ -37,35 +48,82 @@ class DashboardController extends Controller
         }
 
 
-        // Get current counts
-        $fileCount = Document::count();
-        $folderCount = Folder::count();
-        $userCount = User::where('is_active', '=', 'Y')->count();
-        $orgCount = Organization::where('is_operation', '=', 'Y')->count();
+        if (Auth::user()->role_guid == 1) {
+            $fileCount = Document::count();
+            $folderCount = Folder::count();
+            $userCount = User::where('is_active', '=', 'Y')->count();
+            $orgCount = Organization::where('is_operation', '=', 'Y')->count();
 
-        // Get today's stat entry (or create a new one if it doesn't exist)
-        $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+            // Get today's stat entry (or create a new one if it doesn't exist)
+            $todayStats = Stat::where('org_guid', '0')->whereDate('created_at', Carbon::today())->first();
 
-        if (!$todayStats) {
-            // Create a new stat entry for today if it doesn't exist
-            Stat::create([
-                'file_count' => $fileCount,
-                'folder_count' => $folderCount,
-                'user_count' => $userCount,
-                'org_count' => $orgCount,
-            ]);
+            if (!$todayStats) {
+                // Create a new stat entry for today if it doesn't exist
+                Stat::create([
+                    'org_guid' =>  '0',
+                    'file_count' => $fileCount,
+                    'folder_count' => $folderCount,
+                    'user_count' => $userCount,
+                    'org_count' => $orgCount,
+                ]);
+            } else {
+                // Update today's counts if the entry already exists
+                $todayStats->update([
+                    'file_count' => $fileCount,
+                    'folder_count' => $folderCount,
+                    'user_count' => $userCount,
+                    'org_count' => $orgCount,
+                ]);
+            }
+
+            // Get yesterday's stat entry
+            $previousStats = Stat::where('org_guid', '0')->orderBy('created_at', 'desc')->skip(1)->first();
+            $todayLogin = AuditLog::where('action', '=', 'login')->whereDate('created_at', Carbon::today())->count();
         } else {
-            // Update today's counts if the entry already exists
-            $todayStats->update([
-                'file_count' => $fileCount,
-                'folder_count' => $folderCount,
-                'user_count' => $userCount,
-                'org_count' => $orgCount,
-            ]);
-        }
+            $fileCount = Document::join('users', 'users.id', '=', 'documents.upload_by')
+                ->where('documents.org_guid', Auth::user()->org_guid)
+                ->orwhere('users.role_guid', '1')
+                ->count();
 
-        // Get yesterday's stat entry
-        $previousStats = Stat::orderBy('created_at', 'desc')->skip(1)->first();
+            $folderCount = Folder::join('users', 'users.id', '=', 'folders.created_by')
+                ->where('folders.org_guid', Auth::user()->org_guid)
+                ->orwhere('users.role_guid', '1')
+                ->count();
+
+            $userCount = User::where('is_active', '=', 'Y')->where('org_guid', Auth::user()->org_guid)->count();
+            $orgCount = Organization::where('is_operation', '=', 'Y')->count();
+
+            // Get today's stat entry (or create a new one if it doesn't exist)
+            $todayStats = Stat::where('org_guid', Auth::user()->org_guid)->whereDate('created_at', Carbon::today())->first();
+
+            if (!$todayStats) {
+                // Create a new stat entry for today if it doesn't exist
+                Stat::create([
+                    'org_guid' =>  Auth::user()->org_guid,
+                    'file_count' => $fileCount,
+                    'folder_count' => $folderCount,
+                    'user_count' => $userCount,
+                    'org_count' => $orgCount,
+                ]);
+            } else {
+                // Update today's counts if the entry already exists
+                $todayStats->update([
+                    'file_count' => $fileCount,
+                    'folder_count' => $folderCount,
+                    'user_count' => $userCount,
+                    'org_count' => $orgCount,
+                ]);
+            }
+
+            // Get yesterday's stat entry
+            $previousStats = Stat::where('org_guid', Auth::user()->org_guid)
+                ->orderBy('created_at', 'desc')->skip(1)->first();
+
+            $todayLogin = AuditLog::join('users', 'users.id', '=', 'audit_logs.user_guid')
+                ->where('audit_logs.action', '=', 'login')
+                ->where('users.org_guid', Auth::user()->org_guid)
+                ->whereDate('audit_logs.created_at', Carbon::today())->count();
+        }
 
         // Default previous counts to 0 if no entry is found for yesterday
         $previousFileCount = $previousStats ? $previousStats->file_count : 0;
@@ -80,7 +138,6 @@ class DashboardController extends Controller
         $orgTrend = $orgCount > $previousOrgCount ? 'up' : ($orgCount < $previousOrgCount ? 'down' : 'same');
 
         //count today login
-        $todayLogin = AuditLog::where('action', '=', 'login')->whereDate('created_at', Carbon::today())->count();
         $totalCurrentStorage = $this->calculateTotalStorage();
         $totalSpace = $this->getAvailableStorage();
         return view('admin.index', compact(

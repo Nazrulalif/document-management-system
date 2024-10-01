@@ -10,7 +10,8 @@
                 class="h-25px app-sidebar-logo-default theme-light-show" />
             <img alt="Logo" src="{{ asset('assets/media/logos/default-small.svg') }}"
                 class="h-20px app-sidebar-logo-minimize" />
-                <img alt="Logo" src="{{ asset('assets/media/logos/default-dark.svg') }}" class="h-25px app-sidebar-logo-default theme-dark-show">
+            <img alt="Logo" src="{{ asset('assets/media/logos/default-dark.svg') }}"
+                class="h-25px app-sidebar-logo-default theme-dark-show">
         </a>
         <div id="kt_app_sidebar_toggle"
             class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-30px w-30px position-absolute top-50 start-100 translate-middle rotate"
@@ -61,7 +62,8 @@
                     </div>
                     <div class="menu-item ">
                         <!--begin:Menu link-->
-                        <a class="menu-link {{ (Request::is('admin/advance-search') ? 'active' : '') }}" href="{{ route('search.index') }}">
+                        <a class="menu-link {{ (Request::is('admin/advance-search') ? 'active' : '') }}"
+                            href="{{ route('search.index') }}">
                             <span class="menu-icon">
                                 <i class="ki-outline ki-magnifier fs-2">
                                     <span class="path2"></span>
@@ -82,15 +84,15 @@
                         <!--end:Menu content-->
                     </div>
 
+                    @if(Auth::user()->role_guid != 3)
                     <div data-kt-menu-trigger="click"
                         class="menu-item menu-accordion {{ (Request::is('admin/company-list', 'admin/company-detail/*', 
-                        'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*',
-                        'admin/user-setting/*','admin/user-file/*', 'admin/company-file/*', 'admin/company-setting/*') ? 'hover show' : '') }}">
+                    'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*',
+                    'admin/user-setting/*','admin/user-file/*', 'admin/company-file/*', 'admin/company-setting/*') ? 'hover show' : '') }}">
                         <!--begin:Menu link-->
-                        <span
-                            class="menu-link {{ (Request::is('admin/company-list', 'admin/company-detail/*', 
-                            'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*', 
-                            'admin/company-file/*', 'admin/company-setting/*') ? 'active' : '') }}">
+                        <span class="menu-link {{ (Request::is('admin/company-list', 'admin/company-detail/*', 
+                        'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*', 
+                        'admin/company-file/*', 'admin/company-setting/*') ? 'active' : '') }}">
                             <span class="menu-icon">
                                 <i class="ki-outline ki-user fs-2">
                                     <span class="path2"></span>
@@ -105,9 +107,11 @@
                         <div class="menu-sub menu-sub-accordion">
                             <!--begin:Menu item-->
                             <div class="menu-item">
+
+                                @if (Auth::user()->role_guid == 1)
                                 <!--begin:Menu link-->
                                 <a class="menu-link {{ (Request::is('admin/company-list', 'admin/company-detail/*',
-                                'admin/company-file/*', 'admin/company-setting/*') ? 'active' : '') }}"
+                            'admin/company-file/*', 'admin/company-setting/*') ? 'active' : '') }}"
                                     href="{{ route('company.index') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
@@ -115,9 +119,11 @@
                                     <span class="menu-title">Company List</span>
                                 </a>
                                 <!--end:Menu link-->
+                                @endif
+
                                 <!--begin:Menu link-->
                                 <a class="menu-link {{ (Request::is('admin/user-list', 'admin/user-detail/*',
-                                'admin/user-setting/*','admin/user-file/*') ? 'active' : '') }}"
+                            'admin/user-setting/*','admin/user-file/*') ? 'active' : '') }}"
                                     href="{{ route('user.index') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
@@ -126,23 +132,28 @@
                                 </a>
                                 <!--end:Menu link-->
 
+                                @if (Auth::user()->role_guid == 1)
                                 <!--begin:Menu link-->
-                                <a class="menu-link {{ (Request::is('admin/role-list', 'admin/view-role/*') ? 'active' : '') }}" href="{{ route('role.index') }}">
+                                <a class="menu-link {{ (Request::is('admin/role-list', 'admin/view-role/*') ? 'active' : '') }}"
+                                    href="{{ route('role.index') }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">Role List</span>
                                 </a>
                                 <!--end:Menu link-->
+                                @endif
                             </div>
 
                         </div>
                         <!--end:Menu sub-->
                     </div>
+                    @endif
 
                     <div class="menu-item">
                         <!--begin:Menu link-->
-                        <a class="menu-link {{ (Request::is('admin/file-manager','admin/file-manager/*', 'admin/folder/*', 'admin/file-details/*') ? 'active' : '') }}" href="{{ route('fileManager.index') }}">
+                        <a class="menu-link {{ (Request::is('admin/file-manager','admin/file-manager/*', 'admin/folder/*', 'admin/file-details/*') ? 'active' : '') }}"
+                            href="{{ route('fileManager.index') }}">
                             <span class="menu-icon">
                                 <i class="ki-outline ki-switch fs-2">
                                     <span class="path2"></span>
@@ -153,9 +164,10 @@
                         <!--end:Menu link-->
                     </div>
 
-                    <div class="menu-item" >
+                    <div class="menu-item">
                         <!--begin:Menu link-->
-                        <a class="menu-link {{ (Request::is('admin/report', 'admin/generated-report') ? 'active' : '') }}"  href="{{ route('report.index') }}">
+                        <a class="menu-link {{ (Request::is('admin/report', 'admin/generated-report') ? 'active' : '') }}"
+                            href="{{ route('report.index') }}">
                             <span class="menu-icon">
                                 <i class="ki-outline ki-file fs-2">
                                     <span class="path2"></span>

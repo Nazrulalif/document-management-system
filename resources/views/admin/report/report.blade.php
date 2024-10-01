@@ -50,6 +50,7 @@
                             </div>
                             <!--end::Input group-->
                             <!--begin::Input group-->
+                            @if (Auth::user()->role_guid == 1)
                             <div class="fv-row row mb-15">
                                 <!--begin::Col-->
                                 <div class="col-md-3 d-flex align-items-center">
@@ -60,6 +61,7 @@
                                 <!--end::Col-->
                                 <!--begin::Col-->
                                 <div class="col-md-9">
+                                   
                                     <div class="form-check form-switch form-check-custom form-check-solid me-10 mb-5">
                                         <input class="form-check-input h-30px w-50px" name="all_company" type="checkbox" value="1" id="all_company" checked />
                                         <label class="form-check-label fw-semibold text-muted" for="all_company">All Companies</label>
@@ -79,6 +81,10 @@
                                 </div>
                                 <!--end::Col-->
                             </div>
+                            @else
+                            <input type="hidden" value="{{ Auth::user()->org_guid }}" name="org_name[]" readonly>
+                            @endif
+                            
                             <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="fv-row row mb-15">

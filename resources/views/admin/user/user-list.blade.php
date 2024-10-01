@@ -78,7 +78,9 @@
                                     <th class="min-w-125px">Full Name</th>
                                     <th class="min-w-125px">Email</th>
                                     <th class="min-w-125px">Role</th>
-                                    <th class="min-w-125px">Company</th>
+                                    @if(Auth::user()->role_guid == 1)
+                                        <th class="min-w-125px">Company</th>
+                                    @endif
                                     <th class="min-w-125px">Created at</th>
                                     <th class="text-end min-w-100px">Actions</th>
                                 </tr>
@@ -103,9 +105,10 @@
 </div>
 
 <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
+@if(Auth::user()->role_guid == 1)
 <script src="{{ asset('assets/js/custom/apps/user-management/users/table-users.js') }}"></script>
-
-
-
+@else
+<script src="{{ asset('assets/js/custom/apps/user-management/users/table-users-diff-role.js') }}"></script>
+@endif
 
 @endsection

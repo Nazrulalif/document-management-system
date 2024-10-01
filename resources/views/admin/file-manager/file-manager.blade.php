@@ -101,6 +101,7 @@
                                         </div>
                                     </th>
                                     <th class="min-w-250px">Name</th>
+                                    <th class="min-w-10px">Company</th>
                                     <th class="min-w-10px">Upload by</th>
                                     <th class="min-w-125px">Type</th>
                                     <th class="w-125px"></th>
@@ -128,6 +129,7 @@
                                                 class="text-gray-800 text-hover-primary">{{ $folder->folder_name }}</a>
                                         </div>
                                     </td>
+                                    <td>{{ $folder->org_name }}</td>
                                     <td>{{ $folder->full_name }}</td>
                                     <td>File Folder</td>
                                     <td class="text-end">
@@ -195,6 +197,7 @@
                                                 class="text-gray-800 text-hover-primary">{{ $document->doc_title }}</a>
                                         </div>
                                     </td>
+                                    <td>{{$document->org_name}}</td>
                                     <td>{{$document->full_name}}</td>
                                     <td>{{$document->doc_type}}</td>
                                     <td>
@@ -446,7 +449,7 @@
 
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js')}}"></script>
 <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
-<script src="{{ asset('assets/js/custom/apps/file-manager/listss.js')}}"></script>
+<script src="{{ asset('assets/js/custom/apps/file-manager/listsss.js')}}"></script>
 <script src="{{ asset('assets/js/custom/apps/file-manager/lists-2.js')}}"></script>
 
 

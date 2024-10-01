@@ -6,6 +6,7 @@ use App\Mail\UserRegistered;
 use App\Models\Organization;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -59,16 +60,31 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation
         $generatedPassword = Str::random(10);
         $uuid = (string) Str::uuid();
 
-        // Lookup the company by name (org_guid)
-        $organization = Organization::where('org_name', $row['org_guid'])->first();
+        if (Auth::user()->role_guid == 1) {
+            // Lookup the company by name (org_guid)
+            $organization = Organization::where('org_name', $row['org_guid'])->first();
 
-        // Lookup the role by name (role_guid)
-        $role = Role::where('role_name', $row['role_guid'])->first();
+            // Lookup the role by name (role_guid)
+            $role = Role::where('role_name', $row['role_guid'])->first();
+        } else {
+            // Lookup the company by name (org_guid)
+            $organization = Organization::where('id', Auth::user()->org_guid)->where('org_name', $row['org_guid'])->first();
+
+            // Lookup the role by name (role_guid)
+            $role = Role::where('id', '!=', '1')->where('role_name', $row['role_guid'])->first();
+        }
+
 
         // Handle missing organization or role
-        if (!$organization || !$role) {
-            return null;
+        if (!$organization) {
+            throw new \Exception("Organization not found for: " . $row['org_guid']); // Throw an exception if organization is missing
         }
+
+        if (!$role) {
+            throw new \Exception("Role not found for: " . $row['role_guid']); // Throw an exception if role is missing
+        }
+
+
 
         // Return a new User instance
         $user = User::create([

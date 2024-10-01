@@ -66,53 +66,57 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
     // Dasboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard.admin');
 
-    // Company List
-    Route::get('/company-list', [CompanyController::class, 'index'])->name('company.index');
-    Route::get('/company-detail/{uuid}', [CompanyController::class, 'view'])->name('company.view');
-    Route::get('/company-file/{uuid}', [CompanyController::class, 'file'])->name('company.file');
-    Route::get('/company-setting/{uuid}', [CompanyController::class, 'setting'])->name('company.setting');
-    Route::post('/company-setting-post/{uuid}', [CompanyController::class, 'setting_post'])->name('company.settingPost');
-    Route::post('/company-deactivate/{uuid}', [CompanyController::class, 'deactivate'])->name('company.deactivate');
-    //destroy company
-    Route::post('/company-destroy/{id}', [CompanyController::class, 'destroy'])->name('company.destroy');
-    //bulk destroy company
-    Route::post('/company-bulk-destroy', [CompanyController::class, 'bulk_destroy'])->name('company.bulk.destroy');
-    // add company
-    Route::post('/create-company', [CompanyController::class, 'create'])->name('company.create');
-    // Company update
-    Route::post('/company-update/{id}', [CompanyController::class, 'update'])->name('company.update');
-    Route::get('/company-show/{id}', [CompanyController::class, 'show'])->name('company.show');
+    // Apply role middleware to restrict access based on role_guid = 1
+    Route::middleware('role:1')->group(function () {
+        // Company List
+        Route::get('/company-list', [CompanyController::class, 'index'])->name('company.index');
+        Route::get('/company-detail/{uuid}', [CompanyController::class, 'view'])->name('company.view');
+        Route::get('/company-file/{uuid}', [CompanyController::class, 'file'])->name('company.file');
+        Route::get('/company-setting/{uuid}', [CompanyController::class, 'setting'])->name('company.setting');
+        Route::post('/company-setting-post/{uuid}', [CompanyController::class, 'setting_post'])->name('company.settingPost');
+        Route::post('/company-deactivate/{uuid}', [CompanyController::class, 'deactivate'])->name('company.deactivate');
+        Route::post('/company-destroy/{id}', [CompanyController::class, 'destroy'])->name('company.destroy');
+        Route::post('/company-bulk-destroy', [CompanyController::class, 'bulk_destroy'])->name('company.bulk.destroy');
+        Route::post('/create-company', [CompanyController::class, 'create'])->name('company.create');
+        Route::post('/company-update/{id}', [CompanyController::class, 'update'])->name('company.update');
+        Route::get('/company-show/{id}', [CompanyController::class, 'show'])->name('company.show');
 
-    //User list
-    Route::get('/user-list', [UserController::class, 'index'])->name('user.index');
-    //add User
-    Route::post('/create-user', [UserController::class, 'create'])->name('user.create');
-    Route::post('/import-user', [UserController::class, 'import'])->name('user.import');
-    //Deactive User
-    Route::post('/user-deactive/{id}', [UserController::class, 'deactive'])->name('user.deactive');
-    //bulk deactive user
-    route::get('/download-template', [UserController::class, 'downloadTemplate'])->name('download.template');
-    Route::post('/user-bulk-deactive', [UserController::class, 'bulk_deactive'])->name('user.bulk.deactive');
-    //user update
-    Route::get('/user-show/{id}', [UserController::class, 'show'])->name('user.show');
-    Route::post('/user-update/{id}', [UserController::class, 'update'])->name('user.update');
-    //view user
-    Route::get('/user-detail/{uuid}', [UserController::class, 'view'])->name('user.view');
-    Route::get('/user-file/{uuid}', [UserController::class, 'file'])->name('user.file');
-    Route::get('/user-setting/{uuid}', [UserController::class, 'setting'])->name('user.setting');
-    route::post('/user-setting-post/{id}', [UserController::class, 'user_setting_post'])->name('userSetting.post');
-    Route::post('/user-setting-deactivate/{uuid}', [UserController::class, 'setting_deactive'])->name('userSetting.deactive');
+        //role list
+        Route::get('/role-list', [RoleController::class, 'index'])->name('role.index');
+        Route::get('/role-show/{id}', [RoleController::class, 'show'])->name('company.show');
+        Route::post('/role-update/{id}', [RoleController::class, 'update'])->name('role.update');
+        //view role
+        Route::get('/view-role/{uuid}', [RoleController::class, 'view'])->name('role.view');
+    });
+
+    Route::middleware('role:1,2')->group(function () {
+        //User list
+        Route::get('/user-list', [UserController::class, 'index'])->name('user.index');
+        //add User
+        Route::post('/create-user', [UserController::class, 'create'])->name('user.create');
+        Route::post('/import-user', [UserController::class, 'import'])->name('user.import');
+        //Deactive User
+        Route::post('/user-deactive/{id}', [UserController::class, 'deactive'])->name('user.deactive');
+        //bulk deactive user
+        route::get('/download-template', [UserController::class, 'downloadTemplate'])->name('download.template');
+        Route::post('/user-bulk-deactive', [UserController::class, 'bulk_deactive'])->name('user.bulk.deactive');
+        //user update
+        Route::get('/user-show/{id}', [UserController::class, 'show'])->name('user.show');
+        Route::post('/user-update/{id}', [UserController::class, 'update'])->name('user.update');
+        //view user
+        Route::get('/user-detail/{uuid}', [UserController::class, 'view'])->name('user.view');
+        Route::get('/user-file/{uuid}', [UserController::class, 'file'])->name('user.file');
+        Route::get('/user-setting/{uuid}', [UserController::class, 'setting'])->name('user.setting');
+        route::post('/user-setting-post/{id}', [UserController::class, 'user_setting_post'])->name('userSetting.post');
+        Route::post('/user-setting-deactivate/{uuid}', [UserController::class, 'setting_deactive'])->name('userSetting.deactive');
+    });
+
+
 
 
     //user account registered email
     Route::get('/user-registered-mail', [UserRegisteredController::class, 'user_registered'])->name('email.registered');
 
-    //role list
-    Route::get('/role-list', [RoleController::class, 'index'])->name('role.index');
-    Route::get('/role-show/{id}', [RoleController::class, 'show'])->name('company.show');
-    Route::post('/role-update/{id}', [RoleController::class, 'update'])->name('role.update');
-    //view role
-    Route::get('/view-role/{uuid}', [RoleController::class, 'view'])->name('role.view');
 
     //file manager
     Route::get('/file-manager', [FileManagerController::class, 'index'])->name('fileManager.index');

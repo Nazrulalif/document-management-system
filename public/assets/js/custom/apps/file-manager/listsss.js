@@ -244,10 +244,13 @@ var KTFileManagerList = function () {
                             }, {
                                 data: "name"
                             }, {
-                                data: "size"
+                                data: "company"
                             }, {
-                                data: "date"
-                            }, {
+                                data: "full_name"
+                            }, 
+                            {
+                                data: "type"
+                            },{
                                 data: "action"
                             }],
                             language: {
@@ -265,10 +268,13 @@ var KTFileManagerList = function () {
                             }, {
                                 data: "name"
                             }, {
-                                data: "size"
+                                data: "company"
                             }, {
-                                data: "date"
-                            }, {
+                                data: "full_name"
+                            }, 
+                            {
+                                data: "type"
+                            },{
                                 data: "action"
                             }],
                             language: {

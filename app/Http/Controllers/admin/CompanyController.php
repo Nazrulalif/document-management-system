@@ -19,6 +19,12 @@ class CompanyController extends Controller
 {
     public function index(Request $request)
     {
+
+
+        // if (Auth::user()->role_guid != 1) {
+        //     return redirect(route('dashboard.admin'));
+        // }
+
         // $company = Organization::all(); // Fetch all users from the database
         if ($request->ajax()) {
 

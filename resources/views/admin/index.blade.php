@@ -80,6 +80,7 @@
                                     <!--end::Statistics-->
                                 </div>
                                 <!--end::Item-->
+                                @if(Auth::user()->role_guid == 1)
                                 <div class="separator separator-dashed my-3"></div>
                                 <div class="d-flex flex-stack">
                                     <!--begin::Section-->
@@ -105,6 +106,7 @@
                                     </div>
                                     <!--end::Statistics-->
                                 </div>
+                                @endif
                                 <div class="separator separator-dashed my-3"></div>
                                 <div class="d-flex flex-stack">
                                     <!--begin::Section-->

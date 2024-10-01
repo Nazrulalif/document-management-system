@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('stats', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('org_guid')->default('0')->nullable();
             $table->integer('file_count')->nullable();
             $table->integer('folder_count')->nullable();
             $table->integer('user_count')->nullable();

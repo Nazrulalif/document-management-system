@@ -29,13 +29,26 @@ class UserController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = User::select('users.*', 'roles.role_name as role_name', 'organizations.org_name')
-                ->join('roles', 'users.role_guid', '=', 'roles.id')
-                ->leftjoin('organizations', 'organizations.id', '=', 'users.org_guid')
-                ->where('users.id', '!=', Auth::user()->id)
-                ->where('users.is_active', '=', 'Y')
-                ->orderBy('users.id', 'DESC')
-                ->get();
+            if (Auth::user()->role_guid == 1) {
+                $data = User::select('users.*', 'roles.role_name as role_name', 'organizations.org_name')
+                    ->join('roles', 'users.role_guid', '=', 'roles.id')
+                    ->leftjoin('organizations', 'organizations.id', '=', 'users.org_guid')
+                    ->where('users.id', '!=', Auth::user()->id)
+                    ->where('users.is_active', '=', 'Y')
+                    ->orderBy('users.id', 'DESC')
+                    ->get();
+            } else {
+                $data = User::select('users.*', 'roles.role_name as role_name', 'organizations.org_name')
+                    ->join('roles', 'users.role_guid', '=', 'roles.id')
+                    ->leftjoin('organizations', 'organizations.id', '=', 'users.org_guid')
+                    ->where('users.id', '!=', Auth::user()->id)
+                    ->where('organizations.id', '=', Auth::user()->org_guid)
+                    ->where('users.is_active', '=', 'Y')
+                    ->orderBy('users.id', 'DESC')
+                    ->get();
+            }
+
+
 
             // Format the date and time for each record
             $formatted_data = $data->map(function ($item) {
@@ -47,7 +60,13 @@ class UserController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        $role = Role::all();
+
+        if (Auth::user()->role_guid == 1) {
+            $role = Role::all();
+        } else {
+            $role = Role::where('id', '!=', '1')->get();
+        }
+
         $company = Organization::where('is_operation', '=', 'Y')->get();
 
         return view('admin.user.user-list', [
@@ -233,7 +252,7 @@ class UserController extends Controller
             'nationality' => request('nationality'),
             'gender' => request('gender'),
             'position' => request('position'),
-            'role_guid' => request('role_name'),
+            'role_guid' => request('role_guid'),
             'org_guid' => request('org_name'),
             'race' => request('race'),
         ]);
@@ -246,9 +265,17 @@ class UserController extends Controller
 
     public function downloadTemplate()
     {
-        // Fetch companies and roles from the database
-        $companies = Organization::where('is_operation', '=', 'Y')->pluck('org_name')->toArray(); // Fetch company names
-        $roles = Role::pluck('role_name')->toArray();            // Fetch role names
+
+        if (Auth::user()->role_guid == 1) {
+            // Fetch companies and roles from the database
+            $companies = Organization::where('is_operation', '=', 'Y')->pluck('org_name')->toArray(); // Fetch company names
+            $roles = Role::pluck('role_name')->toArray();            // Fetch role names
+        } else {
+            // Fetch companies and roles from the database
+            $companies = Organization::where('is_operation', '=', 'Y')->where('id', Auth::user()->org_guid)->pluck('org_name')->toArray(); // Fetch company names
+            $roles = Role::where('id', '!=', '1')->pluck('role_name')->toArray();            // Fetch role names
+        }
+
 
         // Create a new Spreadsheet
         $spreadsheet = new Spreadsheet();

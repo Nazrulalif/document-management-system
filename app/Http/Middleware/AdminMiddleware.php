@@ -17,7 +17,7 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
-            if (Auth::user()->role_guid == 1) {
+            if (Auth::user()->role_guid == 1 || Auth::user()->role_guid == 2 || Auth::user()->role_guid == 3) {
                 return $next($request);
             } else {
                 return redirect('/dashboard')->with('message', 'error');

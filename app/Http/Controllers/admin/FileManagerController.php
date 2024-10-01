@@ -23,16 +23,42 @@ class FileManagerController extends Controller
 {
     public function index()
     {
-        $folders = Folder::with(['children', 'documents'])
-            ->select('*', 'folders.uuid as uuid', 'folders.id as id')
-            ->whereNull('parent_folder_guid')
-            ->join('users', 'users.id', '=', 'folders.created_by')
-            ->get();
 
-        // Fetch root-level documents where folder_guid is null
-        $rootDocuments = Document::select('*', 'documents.uuid as uuid', 'documents.id as id')
-            ->join('users', 'users.id', '=', 'documents.upload_by')
-            ->get();
+        if (Auth::user()->role_guid == 1) {
+            $folders = Folder::with(['children', 'documents'])
+                ->select('*', 'folders.uuid as uuid', 'folders.id as id')
+                ->join('users', 'users.id', '=', 'folders.created_by')
+                ->join('organizations', 'organizations.id', '=', 'folders.org_guid')
+                ->whereNull('folders.parent_folder_guid')
+                ->get();
+
+            // Fetch root-level documents where folder_guid is null
+            $rootDocuments = Document::select('*', 'documents.uuid as uuid', 'documents.id as id')
+                ->join('users', 'users.id', '=', 'documents.upload_by')
+                ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                ->whereNull('documents.folder_guid') // Documents not in any folder
+                ->get();
+        } else {
+            $folders = Folder::with(['children', 'documents'])
+                ->select('*', 'folders.uuid as uuid', 'folders.id as id')
+                ->join('users', 'users.id', '=', 'folders.created_by')
+                ->join('organizations', 'organizations.id', '=', 'folders.org_guid')
+                ->where(function ($query) {
+                    $query->where('folders.org_guid', Auth::user()->org_guid)
+                        ->orWhere('users.role_guid', '1');
+                })
+                ->whereNull('folders.parent_folder_guid')
+                ->get();
+
+            // Fetch root-level documents where folder_guid is null
+            $rootDocuments = Document::select('*', 'documents.uuid as uuid', 'documents.id as id')
+                ->join('users', 'users.id', '=', 'documents.upload_by')
+                ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                ->where('users.org_guid', Auth::user()->org_guid)
+                ->orWhere('users.role_guid', '1')
+                ->get();
+        }
+
 
         return view('admin.file-manager.file-manager', [
             'folders' => $folders,
@@ -44,15 +70,38 @@ class FileManagerController extends Controller
     public function show_folder($uuid)
     {
 
-        // Fetch folder with its children and documents
-        $folder = Folder::with(['children', 'documents'])->where('uuid', '=', $uuid)->first();
+
+        // Fetch folder with its children, documents, and the creator's user information
+        $folder = Folder::with(['children', 'documents', 'creator']) // Eager load creator relationship
+            ->where('folders.uuid', '=', $uuid)
+            ->first();
+
         $path = $this->getFolderPath($folder);
 
-        // $document = Document::where('folder_guid', '=', $uuid)->get();
-        $document = Document::select('*', 'documents.id as id')
-            ->join('folders', 'folders.id', '=', 'documents.folder_guid')
-            ->where('folders.uuid', '=', $uuid)
-            ->get();
+        if (Auth::user()->role_guid == 1) {
+
+            // $document = Document::where('folder_guid', '=', $uuid)->get();
+            $document = Document::select('*', 'documents.id as id')
+                ->join('folders', 'folders.id', '=', 'documents.folder_guid')
+                ->join('users', 'users.id', '=', 'documents.upload_by')
+                ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                ->where('folders.uuid', '=', $uuid)
+                ->get();
+        } else {
+
+            $document = Document::select('*', 'documents.id as id')
+                ->join('folders', 'folders.id', '=', 'documents.folder_guid')
+                ->join('users', 'users.id', '=', 'documents.upload_by')
+                ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                ->where('folders.uuid', '=', $uuid)
+                ->where(function ($query) {
+                    // Ensure either the document's organization GUID matches or the user is an admin
+                    $query->where('documents.org_guid', Auth::user()->org_guid)
+                        ->orWhere('users.role_guid', '1');
+                })
+                ->get();
+        }
+
 
         return view('admin.file-manager.file-manager-item', [
             'folder' => $folder,
@@ -60,6 +109,7 @@ class FileManagerController extends Controller
             'documents' => $document,
         ]);
     }
+
     public function getFolderPath(Folder $folder)
     {
         $path = [];

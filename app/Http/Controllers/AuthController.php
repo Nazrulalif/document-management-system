@@ -31,7 +31,7 @@ class AuthController extends Controller
 
             if ($user->is_active == "Y") {
                 // dd($user->role_guid);
-                if ($user->role_guid == 1) {
+                if ($user->role_guid == 1 || $user->role_guid == 2 || $user->role_guid == 3) {
                     AuditLog::create([
                         'action' => 'Login',
                         'model' => 'User',

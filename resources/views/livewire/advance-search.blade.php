@@ -49,6 +49,7 @@
                         </div>
                         @endif
 
+                        @if(Auth::user()->role_guid == 1)
                         <div class="mb-10">
                             <label class="fs-6 form-label fw-bold text-gray-900 mb-5">Company</label>
 
@@ -64,6 +65,7 @@
                             @endforeach
 
                         </div>
+                        @endif
 
                     </div>
 

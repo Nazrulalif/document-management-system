@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Stat extends Model
 {
     use HasFactory;
-    protected $fillable = ['file_count', 'folder_count', 'user_count', 'org_count'];
+    protected $fillable = ['org_guid', 'file_count', 'folder_count', 'user_count', 'org_count'];
 }

@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Document;
 use App\Models\Folder;
 use App\Models\Organization;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
 
@@ -81,7 +82,8 @@ class AdvanceSearch extends Component
 
     private function searchFolders()
     {
-        $folders = Folder::select(
+        // Start the query on the Folder model
+        $query = Folder::select(
             'users.full_name',
             'folders.uuid',
             'folders.created_at',
@@ -95,12 +97,26 @@ class AdvanceSearch extends Component
             })
             ->when($this->companies, function ($query) {
                 $query->whereIn('folders.org_guid', $this->companies);
+            });
+
+        // Check user role and apply additional conditions
+        if (Auth::user()->role_guid == 1) {
+            // Admin user can see all folders
+            $folders = $query->paginate(5)->withQueryString();
+        } else {
+            // Non-admin user sees only their organization's folders
+            $folders = $query->where(function ($query) {
+                $query->where('folders.org_guid', Auth::user()->org_guid)
+                    ->orWhere('users.role_guid', '1'); // Include folders created by admins
             })
-            ->paginate(5)
-            ->withQueryString(); // Maintain pagination state
+                ->paginate(5)
+                ->withQueryString();
+        }
 
-        $this->folderCount = $folders->total(); // Update folder count
+        // Update folder count
+        $this->folderCount = $folders->total();
 
+        // Highlight the search term in folder names
         foreach ($folders as $folder) {
             $folder->highlighted_title = str_ireplace($this->query, '<strong>' . $this->query . '</strong>', $folder->folder_name);
         }
@@ -108,9 +124,10 @@ class AdvanceSearch extends Component
         return $folders; // Return the paginated folders
     }
 
+
     private function searchFiles()
     {
-        $documents = Document::select(
+        $query = Document::select(
             'users.full_name',
             'users.profile_picture',
             'documents.upload_by',
@@ -137,9 +154,19 @@ class AdvanceSearch extends Component
             })
             ->when($this->companies, function ($query) {
                 return $query->whereIn('documents.org_guid', $this->companies);
+            });
+
+        if (Auth::user()->role_guid == 1) {
+            $documents = $query->paginate(5)->withQueryString();
+        } else {
+            // Non-admin user sees only their organization's folders
+            $documents = $query->where(function ($query) {
+                $query->where('documents.org_guid', Auth::user()->org_guid)
+                    ->orWhere('users.role_guid', '1'); // Include folders created by admins
             })
-            ->paginate(5)
-            ->withQueryString(); // Maintain pagination state
+                ->paginate(5)
+                ->withQueryString();
+        }
 
         $this->fileCount = $documents->total(); // Update file count
 

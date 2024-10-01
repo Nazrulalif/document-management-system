@@ -65,7 +65,7 @@
         <!--begin::Page-->
         <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
             <!--begin::Wrapper-->
-            <div class="{{ (Request::is('admin/report/print') ? '' : 'app-wrapper') }}  flex-column flex-row-fluid" id="kt_app_wrapper">
+            <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
 
                 @auth
                 @yield('auth')

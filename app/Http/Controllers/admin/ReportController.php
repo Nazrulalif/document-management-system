@@ -43,50 +43,75 @@ class ReportController extends Controller
         if ($allCompanies == false) {
             // Filter for specific organizations selected
             if (!empty($orgNames)) {
-                // Example logic for selected companies
+                // Count PDF documents
                 $docStat_pdf = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                    ->join('users', 'users.id', '=', 'documents.upload_by')
                     ->where('organizations.is_operation', '=', 'Y')
-                    ->whereIn('documents.org_guid', $orgNames)
-                    ->where('documents.doc_type', '=', 'pdf')
-                    ->whereBetween('documents.created_at', [$startDate, $endDate])
+                    ->where(function ($query) use ($orgNames, $startDate, $endDate) {
+                        $query->whereIn('documents.org_guid', $orgNames)
+                            ->where('documents.doc_type', '=', 'pdf')
+                            ->whereBetween('documents.created_at', [$startDate, $endDate]);
+                    })
+                    ->orWhere('users.role_guid', '1') // Include admin documents
                     ->count();
 
+                // Count DOCX documents
                 $docStat_docx = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                    ->join('users', 'users.id', '=', 'documents.upload_by')
                     ->where('organizations.is_operation', '=', 'Y')
-                    ->whereIn('documents.org_guid', $orgNames)
-                    ->whereIn('documents.doc_type', ['docx', 'doc']) // Handle docx and doc
-                    ->whereBetween('documents.created_at', [$startDate, $endDate])
+                    ->where(function ($query) use ($orgNames, $startDate, $endDate) {
+                        $query->whereIn('documents.org_guid', $orgNames)
+                            ->whereIn('documents.doc_type', ['docx', 'doc'])
+                            ->whereBetween('documents.created_at', [$startDate, $endDate]);
+                    })
+                    ->orWhere('users.role_guid', '1') // Include admin documents
                     ->count();
 
+                // Count PPTX documents
                 $docStat_pptx = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                    ->join('users', 'users.id', '=', 'documents.upload_by')
                     ->where('organizations.is_operation', '=', 'Y')
-                    ->whereIn('documents.org_guid', $orgNames)
-                    ->where('documents.doc_type', '=', 'pptx')
-                    ->whereBetween('documents.created_at', [$startDate, $endDate])
+                    ->where(function ($query) use ($orgNames, $startDate, $endDate) {
+                        $query->whereIn('documents.org_guid', $orgNames)
+                            ->where('documents.doc_type', '=', 'pptx')
+                            ->whereBetween('documents.created_at', [$startDate, $endDate]);
+                    })
+                    ->orWhere('users.role_guid', '1') // Include admin documents
                     ->count();
 
+                // Count Image documents
                 $docStat_images = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                    ->join('users', 'users.id', '=', 'documents.upload_by')
                     ->where('organizations.is_operation', '=', 'Y')
-                    ->whereIn('documents.org_guid', $orgNames)
-                    ->where('documents.doc_type', '=', 'images') // List image types
-                    ->whereBetween('documents.created_at', [$startDate, $endDate])
-                    ->count();
-                $docStat_excel = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
-                    ->where('organizations.is_operation', '=', 'Y')
-                    ->whereIn('documents.org_guid', $orgNames)
-                    ->whereIn('documents.doc_type', ['xlsx', 'csv',])
-                    ->whereBetween('documents.created_at', [$startDate, $endDate])
+                    ->where(function ($query) use ($orgNames, $startDate, $endDate) {
+                        $query->whereIn('documents.org_guid', $orgNames)
+                            ->whereIn('documents.doc_type', ['jpeg', 'jpg', 'png', 'gif', 'bmp']) // Adjust for image types
+                            ->whereBetween('documents.created_at', [$startDate, $endDate]);
+                    })
+                    ->orWhere('users.role_guid', '1') // Include admin documents
                     ->count();
 
-                $docStat_total = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                // Count Excel documents
+                $docStat_excel = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                    ->join('users', 'users.id', '=', 'documents.upload_by')
                     ->where('organizations.is_operation', '=', 'Y')
-                    ->whereIn('documents.org_guid', $orgNames)
-                    ->whereBetween('documents.created_at', [$startDate, $endDate])
+                    ->where(function ($query) use ($orgNames, $startDate, $endDate) {
+                        $query->whereIn('documents.org_guid', $orgNames)
+                            ->whereIn('documents.doc_type', ['xlsx', 'csv'])
+                            ->whereBetween('documents.created_at', [$startDate, $endDate]);
+                    })
+                    ->orWhere('users.role_guid', '1') // Include admin documents
                     ->count();
+
+                // Count Total documents
                 $docStat_total = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
-                    ->whereIn('documents.org_guid', $orgNames)
+                    ->join('users', 'users.id', '=', 'documents.upload_by')
                     ->where('organizations.is_operation', '=', 'Y')
-                    ->whereBetween('documents.created_at', [$startDate, $endDate])
+                    ->where(function ($query) use ($orgNames, $startDate, $endDate) {
+                        $query->whereIn('documents.org_guid', $orgNames)
+                            ->whereBetween('documents.created_at', [$startDate, $endDate]);
+                    })
+                    ->orWhere('users.role_guid', '1') // Include admin documents
                     ->count();
 
                 // Query to get the activity log for login and logout actions
