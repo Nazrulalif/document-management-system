@@ -40,7 +40,13 @@ class AuthController extends Controller
                     ]);
                     return redirect()->intended(route('dashboard.admin'))->with("success", "Log in Successfully");
                 } else {
-                    return redirect()->intended(route('dashboard.user'))->with("success", "Log in Successfully");
+                    AuditLog::create([
+                        'action' => 'Login',
+                        'model' => 'User',
+                        'user_guid' => $user->id,
+                        'ip_address' => $request->ip(),
+                    ]);
+                    return redirect()->intended(route('home.user'))->with("success", "Log in Successfully");
                 }
             } else {
                 Auth::logout();

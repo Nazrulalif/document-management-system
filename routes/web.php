@@ -13,6 +13,12 @@ use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\mail\UserRegisteredController;
+use App\Http\Controllers\user\FileController as UserFileController;
+use App\Http\Controllers\user\FileManagerController as UserFileManagerController;
+use App\Http\Controllers\user\HomeController;
+use App\Http\Controllers\user\MyProfilController as UserMyProfilController;
+use App\Http\Controllers\user\SearchController as UserSearchController;
+use App\Http\Controllers\user\StarredController;
 use App\Models\AuditLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -166,5 +172,26 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
 
 // User Routes
 Route::middleware(['auth', 'web', 'isuser'])->group(function () {
-    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard.user');
+    Route::get('/home', [HomeController::class, 'index'])->name('home.user');
+
+    //file manager
+    Route::get('/file-manager', [UserFileManagerController::class, 'index'])->name('file-manager.user');
+    route::get('/file-manager/{uuid}', [UserFileManagerController::class, 'show_folder'])->name('folder.show.user');
+    Route::post('/star', [UserFileManagerController::class, 'star'])->name('star.user');
+
+    // file detail
+    route::get('/file-details/{uuid}', [UserFileController::class, 'index'])->name('file.user');
+
+
+    //starred
+    Route::get('/starred', [StarredController::class, 'index'])->name('starred.user');
+
+    //advance Search
+    Route::get('/advance-search', [UserSearchController::class, 'index'])->name('advance-search.user');
+
+    //my profile
+    Route::get('/my-profile', [UserMyProfilController::class, 'index'])->name('profile.user');
+    Route::get('/setting', [UserMyProfilController::class, 'setting'])->name('profile.setting.user');
+    Route::post('/setting-post', [UserMyProfilController::class, 'setting_post'])->name('setting.user.post');
+    Route::post('/password-change', [UserMyProfilController::class, 'change_password'])->name('password.change.user');
 });

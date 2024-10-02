@@ -25,7 +25,7 @@
         <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1" id="kt_app_header_wrapper">
             <!--begin::Menu wrapper-->
 
-            @include('layouts.appToolbar')
+            @include('layouts.appToolbar-admin')
 
             <!--end::Menu wrapper-->
             <!--begin::Navbar-->

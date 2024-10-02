@@ -32,7 +32,7 @@ class Folder extends Model
         if (Auth::user()->role_guid == 1) {
             // If the user is an admin, return all child folders
             return $this->hasMany(Folder::class, 'parent_folder_guid', 'id')
-                ->with('organization'); // Eager load organization
+                ->with('organization');
         } else {
             // For non-admin users, fetch child folders based on org_guid or admin status
             return $this->hasMany(Folder::class, 'parent_folder_guid', 'id')
@@ -58,6 +58,7 @@ class Folder extends Model
     {
         return $this->belongsTo(Organization::class, 'org_guid');
     }
+
 
     protected static function boot()
     {
