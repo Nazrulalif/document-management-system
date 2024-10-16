@@ -26,9 +26,9 @@ class documentFactory extends Factory
             'doc_description' => $this->faker->paragraph(), // Generate a paragraph for description
             'doc_type' => $this->faker->randomElement(['pdf', 'xlsx', 'docx', 'doc', 'csv', 'images']),
             'doc_author' => $this->faker->name(),
-            'doc_keyword' => implode(', ', $this->faker->words(3)), // Generate 3 random words, joined by commas
-            'upload_by' => $this->faker->randomElement(['1', '44', '60']),
-            'org_guid' => $this->faker->randomElement(['8', '18', '11']),
+            'doc_keyword' => implode(', ', $this->faker->words(3)),
+            'upload_by' => $this->faker->randomElement(['1', '2', '3']),
+            'org_guid' => $this->faker->randomElement(['1', '3', '5']),
         ];
     }
 }

@@ -263,7 +263,7 @@
                 <table class="d-none">
                     <tr id="kt_file_manager_new_folder_row" data-kt-filemanager-template="upload">
                         <td></td>
-                        <td id="kt_file_manager_add_folder_form" class="fv-row">
+                        <td colspan="2" id="kt_file_manager_add_folder_form" class="fv-row">
                             <form action="{{ route('folder.create') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="d-flex align-items-center">
@@ -438,7 +438,7 @@
                                         </div>
                                         <!--end::Dropzone-->
                                         <!--begin::Hint-->
-                                        <span class="form-text fs-6 text-muted">Max file size is 1MB per
+                                        <span class="form-text fs-6 text-muted">Max file size is 100MB per
                                             file.</span>
                                         <!--end::Hint-->
                                     </div>
@@ -526,7 +526,7 @@
         url: "{{ route('file.upload') }}",
         parallelUploads: 20,
         previewTemplate: previewTemplate,
-        maxFilesize: 1, // Limit to 1MB
+        maxFilesize: 100, // Limit to 100MB
         autoQueue: false, // Prevent auto-upload
         previewsContainer: id + " .dropzone-items",
         clickable: id + " .dropzone-select"

@@ -127,7 +127,7 @@
                             <!--end::Label-->
                             <!--begin::Input-->
                             <textarea class="form-control form-control form-control-solid" data-kt-autosize="true"
-                                name="doc_summary" id="doc_summary" required>{{ $data->doc_summary }}
+                                name="doc_summary" id="doc_summary" rows="20" required>{{ $data->doc_summary }}
                             </textarea>
                             <!--end::Input-->
                             @error('doc_summary')

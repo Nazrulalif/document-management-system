@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\role>
@@ -16,8 +17,12 @@ class roleFactory extends Factory
      */
     public function definition(): array
     {
+
         return [
-            'role_name' => 'Super Admin',
+            'id'        => '',  // Will be filled in seeder
+            'role_name'        => '',  // Will be filled in seeder
+            'uuid'             => Str::uuid(),  // Generate unique UUID
+            'role_description' => $this->faker->sentence(),  // Random sentence for description
         ];
     }
 }

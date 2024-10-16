@@ -17,7 +17,7 @@ class ModelUser
             'action' => 'Created',
             'model' => 'User',
             'changes' => $user->full_name,
-            'user_guid' => Auth::user()->id,
+            'user_guid'  => Auth::check() ? Auth::user()->id : null,
             'ip_address' => request()->ip(),
         ]);
     }

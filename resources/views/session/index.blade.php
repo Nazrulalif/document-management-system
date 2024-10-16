@@ -7,13 +7,12 @@
     <!--begin::Page bg image-->
     <style>
         body {
-            background-image: url( {{ asset('assets/media/auth/bg3.jpg') }});
+            background-image: url({{ asset('assets/media/auth/bg3.jpg')}});
         }
 
         [data-bs-theme="dark"] body {
-            background-image: url({{ asset('assets/media/auth/bg3-dark.jpg') }});
+            background-image: url({{ asset('assets/media/auth/bg3-dark.jpg')}});
         }
-
     </style>
     <!--end::Page bg image-->
     <!--begin::Authentication - Sign-in -->
@@ -24,7 +23,7 @@
             <div class="d-flex flex-center flex-lg-start flex-column">
                 <!--begin::Logo-->
                 <a href="/" class="mb-7">
-                    <img alt="Logo" width="230"  src="{{ asset('assets/media/logos/docms.svg') }}" />
+                    <img alt="Logo" width="230" src="{{ asset('assets/media/logos/docms.svg') }}" />
                 </a>
                 <!--end::Logo-->
                 <!--begin::Title-->
@@ -44,7 +43,7 @@
                     <!--begin::Form-->
 
                     @yield('login')
-                   
+
                     <!--end::Form-->
                 </div>
                 <!--end::Wrapper-->
@@ -57,19 +56,27 @@
 </div>
 <!--end::Authentication - Sign-in-->
 
+<!--end::Stepper-->
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+<!--begin::Global Javascript Bundle(mandatory for all pages)-->
+<script src="{{ asset('assets/plugins/global/plugins.bundle.js')}}"></script>
+<script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
+
 <script>
     // Element to indecate
-var button = document.querySelector("#kt_sign_in_submit");
+    var button = document.querySelector("#kt_sign_in_submit");
 
-// Handle button click event
-button.addEventListener("click", function() {
-    // Activate indicator
-    button.setAttribute("data-kt-indicator", "on");
+    // Handle button click event
+    button.addEventListener("click", function () {
+        // Activate indicator
+        button.setAttribute("data-kt-indicator", "on");
 
-    // Disable indicator after 3 seconds
-    setTimeout(function() {
-        button.removeAttribute("data-kt-indicator");
-    }, 3000);
-});
+        // Disable indicator after 3 seconds
+        setTimeout(function () {
+            button.removeAttribute("data-kt-indicator");
+        }, 3000);
+    });
+
 </script>
 @endsection

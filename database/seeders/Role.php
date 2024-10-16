@@ -13,6 +13,21 @@ class Role extends Seeder
      */
     public function run(): void
     {
-        ModelsRole::factory()->count(1)->create();
+        $roles = [
+            'Super Admin' => 'The Super Admin has full access to all system features, including user management, settings configuration, and reports.',
+            'Company Admin' => 'The Company Admin manages company-specific settings, oversees user roles, and ensures that operational workflows run smoothly.',
+            'Company Contributor' => 'The Company Contributor can create and manage content.',
+            'Viewer' => 'The Viewer has read-only access to files and documents, allowing them to stay informed without making changes to the system.',
+        ];
+
+        $ids = [1, 2, 3, 4];
+
+        foreach ($roles as $roleName => $roleDescription) {
+            ModelsRole::factory()->create([
+                'id' => array_shift($ids),
+                'role_name' => $roleName,
+                'role_description' => $roleDescription,
+            ]);
+        }
     }
 }

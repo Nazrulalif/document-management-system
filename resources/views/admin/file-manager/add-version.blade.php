@@ -140,7 +140,7 @@
         autoProcessQueue: false, // Prevent automatic file upload
         url: "/admin/add-version", // Laravel route for handling file upload
         paramName: "file", // The name that will be used to transfer the file
-        maxFiles: 1, // Allow only one file
+        maxFiles: 100, // Allow only one file
         maxFilesize: 10, // Maximum file size in MB
         addRemoveLinks: true, // Show remove link
         headers: {

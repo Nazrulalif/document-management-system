@@ -15,6 +15,7 @@
         <!--end::Subtitle=-->
     </div>
     <!--begin::Heading-->
+    @if ($isParentExist)
     <!--begin::Input group=-->
     <div class="fv-row mb-8">
         <!--begin::Email-->
@@ -51,5 +52,24 @@
         </button>
     </div>
     <!--end::Submit button-->
+    @else
+    <div class="row g-3 mb-9">
+        <!--begin::Col-->
+        <div class="col-md-12">
+            <!--begin::Google link=-->
+            <a href="{{ route('register.parent') }}"
+                class="btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100">
+                <img alt="Logo" src="assets/media/svg/brand-logos/man_enter.svg" class="h-25px me-3">Sign Up Parent
+                Company</a>
+            <!--end::Google link=-->
+        </div>
+        <!--end::Col-->
+    </div>
+    <div class="separator separator-content my-14">
+        <span class="w-300px text-gray-500 fw-semibold fs-7">Sign Up parent company to continue sign in</span>
+    </div>
+    @endif
+
+
 </form>
 @endsection

@@ -20,7 +20,7 @@ class ModelDocument
             'action' => 'Created',
             'model' => 'File',
             'changes' => $document->doc_title,
-            'user_guid' => Auth::user()->id,
+            'user_guid'  => Auth::check() ? Auth::user()->id : null,
             'ip_address' => request()->ip(),
         ]);
     }

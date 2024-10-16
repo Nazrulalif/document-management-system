@@ -66,6 +66,11 @@ Route::post('/email-verify', [ForgotPasswordController::class, 'email_verify'])-
 Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'reset_password'])->name('reset.password');
 Route::post('/new-password', [ForgotPasswordController::class, 'reset_password_post'])->name('reset.password.post');
 
+//register parent company
+Route::get('/register-main', [AuthController::class, 'register_parent'])->name('register.parent');
+Route::post('/register-main-post', [AuthController::class, 'register_parent_post'])->name('register.parent.post');
+Route::get('/register-success', [AuthController::class, 'register_success'])->name('register.parent.success');
+
 // Admin Routes
 route::prefix('admin')->middleware('isadmin')->group(function () {
 

@@ -17,7 +17,7 @@ class ModelFolder
             'action' => 'Created',
             'model' => 'Folder',
             'changes' => $folder->folder_name,
-            'user_guid' => Auth::user()->id,
+            'user_guid'  => Auth::check() ? Auth::user()->id : null,
             'ip_address' => request()->ip(),
         ]);
     }

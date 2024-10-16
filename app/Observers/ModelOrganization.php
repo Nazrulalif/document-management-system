@@ -17,7 +17,7 @@ class ModelOrganization
             'action' => 'Created',
             'model' => 'Company',
             'changes' => $organization->org_name,
-            'user_guid' => Auth::user()->id,
+            'user_guid'  => Auth::check() ? Auth::user()->id : null,
             'ip_address' => request()->ip(),
         ]);
     }

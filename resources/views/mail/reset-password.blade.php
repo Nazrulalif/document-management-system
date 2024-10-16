@@ -5,14 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Reset Password</title>
-    <link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
     <!--begin::Fonts(mandatory for all pages)-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
     <!--end::Fonts-->
     <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
-    <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
 </head>
 
 <body id="kt_body" class="app-blank">
@@ -52,15 +50,15 @@
                                         <div style="text-align:center; margin:0 60px 34px 60px">
                                             <!--begin:Logo-->
                                             <div style="margin-bottom: 10px">
-                                                <a href="https://keenthemes.com" rel="noopener" target="_blank">
-                                                    <img alt="Logo" src="assets/media/email/logo-1.svg"
-                                                        style="height: 35px" />
-                                                </a>
+                                                <img alt="Logo"
+                                                    src="{{ $message->embed(asset('assets/media/logos/docms-light.svg')) }}"
+                                                    style="height: 35px" />
                                             </div>
                                             <!--end:Logo-->
                                             <!--begin:Media-->
                                             <div style="margin-bottom: 15px">
-                                                <img alt="Logo" src="assets/media/email/icon-positive-vote-2.svg" />
+                                                <img alt="Logo"
+                                                    src="{{ $message->embed(asset('assets/media/email/icon-positive-vote-1.svg')) }}" />
                                             </div>
                                             <!--end:Media-->
                                             <!--begin:Text-->
@@ -108,18 +106,6 @@
                                 </tr>
                                 <tr>
                                     <td align="center" valign="center"
-                                        style="font-size: 13px; text-align:center; padding: 0 10px 10px 10px; font-weight: 500; color: #A1A5B7; font-family:Arial,Helvetica,sans-serif">
-                                        <p style="color:#181C32; font-size: 16px; font-weight: 600; margin-bottom:9px">
-                                            It’s all about Users!</p>
-                                        <p style="margin-bottom:2px">Call us: +31 6 3344 55 56</p>
-                                        <p style="margin-bottom:4px">You may reach us at
-                                            <a href="https://devs.keenthemes.com" rel="noopener" target="_blank"
-                                                style="font-weight: 600">devs.dms.com</a>.</p>
-                                        <p>We serve Mon-Fri, 9AM-18AM</p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="center" valign="center"
                                         style="font-size: 13px; padding:0 15px; text-align:center; font-weight: 500; color: #A1A5B7;font-family:Arial,Helvetica,sans-serif">
                                         <p>&copy; Copyright DMS.
                                     </td>
@@ -141,13 +127,10 @@
 
     </script>
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->
-    <script src="assets/plugins/global/plugins.bundle.js"></script>
-    <script src="assets/js/scripts.bundle.js"></script>
+    <script src="{{ asset("assets/plugins/global/plugins.bundle.js") }}"></script>
+    <script src="{{ asset("assets/js/scripts.bundle.js") }}"></script>
     <!--end::Global Javascript Bundle-->
     <!--end::Javascript-->
 </body>
-
-</html>
-
 
 </html>

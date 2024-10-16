@@ -24,29 +24,19 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            // 'uuid' =>  $this->faker->uuid(),
-            // 'full_name' => 'Super',
-            // 'email' => 'Supers@gmail.com',
-            // 'email_verified_at' => now(),
-            // 'password' => '$2y$12$jA1DuUJhwzPD4.0wgJHfXOSi0G3bAMjkysIL65pD.Yfi6HaCEm.Ni',
-            // 'remember_token' => Str::random(10),
-            // 'ic_number' => '1011920394',
-            // 'position' => 'Director',
-            // 'role_guid' => '1',
-
-            'uuid' =>  $this->faker->uuid(),
-            'full_name' => $this->faker->userName(),
-            'email' => $this->faker->email(),
+            'uuid' => $this->faker->uuid(),
+            'full_name' => $this->faker->name(),  // Generate a random full name
+            'email' => $this->faker->unique()->safeEmail(),  // Ensure unique email
             'email_verified_at' => now(),
-            'password' => '$2y$12$jA1DuUJhwzPD4.0wgJHfXOSi0G3bAMjkysIL65pD.Yfi6HaCEm.Ni',
+            'password' => bcrypt('123'),  // Encrypt the password '123'
             'remember_token' => Str::random(10),
-            'ic_number' => '1234567',
+            'ic_number' => $this->faker->unique()->numerify('######'),  // Generate a fake IC number
             'is_active' => 'Y',
-            'nationality' => $this->faker->randomElement(['malaysia']),
+            'nationality' => $this->faker->randomElement(['Malaysia', 'Singapore', 'Indonesia', 'Brunei']),  // Include other nationalities for variety
             'gender' => $this->faker->randomElement(['male', 'female']),
-            'race' => $this->faker->word(),
-            'org_guid' => $this->faker->randomElement(['1', '2', '3', '4', '5', '6']),
-            'position' => $this->faker->randomLetter(),
+            'race' => $this->faker->randomElement(['Malay', 'Chinese', 'Indian', 'Others']),  // Use specific races
+            'org_guid' => $this->faker->randomElement(['45', '42', '43', '44', '47', '46']),  // Retrieve from the organization IDs (ensure these exist)
+            'position' => $this->faker->randomElement(['Manager', 'Developer', 'Designer', 'Tester']),  // Use common job positions
             'role_guid' => $this->faker->randomElement(['1', '2', '3', '4']),
         ];
     }
