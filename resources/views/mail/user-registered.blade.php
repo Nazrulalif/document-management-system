@@ -4,32 +4,16 @@
 <!--begin::Head-->
 
 <head>
-    <base href="../../" />
-    <title>Metronic - The World's #1 Selling Bootstrap Admin Template by KeenThemes</title>
-    <meta charset="utf-8" />
-    <meta name="description"
-        content="The most advanced Bootstrap 5 Admin Theme with 40 unique prebuilt layouts on Themeforest trusted by 100,000 beginners and professionals. Multi-demo, Dark Mode, RTL support and complete React, Angular, Vue, Asp.Net Core, Rails, Spring, Blazor, Django, Express.js, Node.js, Flask, Symfony & Laravel versions. Grab your copy now and get life-time updates for free." />
-    <meta name="keywords"
-        content="metronic, bootstrap, bootstrap 5, angular, VueJs, React, Asp.Net Core, Rails, Spring, Blazor, Django, Express.js, Node.js, Flask, Symfony & Laravel starter kits, admin themes, web design, figma, web development, free templates, free admin themes, bootstrap theme, bootstrap template, bootstrap dashboard, bootstrap dak mode, bootstrap button, bootstrap datepicker, bootstrap timepicker, fullcalendar, datatables, flaticon" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content="Metronic - The World's #1 Selling Bootstrap Admin Template by KeenThemes" />
-    <meta property="og:url" content="https://keenthemes.com/metronic" />
-    <meta property="og:site_name" content="Metronic by Keenthemes" />
-    <link rel="canonical" href="http://preview.keenthemes.comauthentication/email/welcome-message.html" />
-    <link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!--begin::Fonts(mandatory for all pages)-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
     <!--end::Fonts-->
     <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
-    <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
     <!--end::Global Stylesheets Bundle-->
-    <script>
-        // Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }
-
-    </script>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -71,21 +55,21 @@
                                         <div style="text-align:center; margin:0 15px 34px 15px">
                                             <!--begin:Logo-->
                                             <div style="margin-bottom: 10px">
-                                                <a href="https://keenthemes.com" rel="noopener" target="_blank">
-                                                    <img alt="Logo" src="assets/media/email/logo-1.svg"
-                                                        style="height: 35px" />
-                                                </a>
+                                                <img alt="Logo"
+                                                    src="{{ $message->embed(asset('assets/media/logos/docms-light.svg')) }}"
+                                                    style="height: 35px" />
                                             </div>
                                             <!--end:Logo-->
                                             <!--begin:Media-->
                                             <div style="margin-bottom: 15px">
-                                                <img alt="Logo" src="assets/media/email/icon-positive-vote-1.svg" />
+                                                <img alt="Logo"
+                                                    src="{{ $message->embed(asset('assets/media/email/icon-positive-vote-1.svg')) }}" />
                                             </div>
                                             <!--end:Media-->
                                             <!--begin:Text-->
                                             <div
                                                 style="font-size: 14px; font-weight: 500; margin-bottom: 27px; font-family:Arial,Helvetica,sans-serif;">
-                                                    <p
+                                                <p
                                                     style="margin-bottom:9px; color:#181C32; font-size: 22px; font-weight:700">
                                                     {{ $user->full_name }},</p>
                                                 <p
@@ -93,10 +77,10 @@
                                                     Your account has been successfully registered!</p>
                                                 <p style="margin-bottom:7px; color:#7E8299">You can now log in using the
                                                     following credentials:</p>
-                                                    <p style="margin-bottom:2px; color:#232429 "> <strong> Email:</strong>
-                                                        {{ $user->email }} </p>
-                                                    <p style="margin-bottom:7px; color:#232429"><strong> Password:</strong>
-                                                        {{ $generatedPassword }}</p>
+                                                <p style="margin-bottom:2px; color:#232429 "> <strong> Email:</strong>
+                                                    {{ $user->email }} </p>
+                                                <p style="margin-bottom:7px; color:#232429"><strong> Password:</strong>
+                                                    {{ $generatedPassword }}</p>
                                                 <p style="margin-bottom:2px; color:#7E8299">To access your account,
                                                     click the button below:</p>
 
@@ -109,18 +93,6 @@
                                             <!--begin:Action-->
                                         </div>
                                         <!--end:Email content-->
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="center" valign="center"
-                                        style="font-size: 13px; text-align:center; padding: 0 10px 10px 10px; font-weight: 500; color: #A1A5B7; font-family:Arial,Helvetica,sans-serif">
-                                        <p style="color:#181C32; font-size: 16px; font-weight: 600; margin-bottom:9px">
-                                            It’s all about Users!</p>
-                                        <p style="margin-bottom:2px">Call us: +31 6 3344 55 56</p>
-                                        <p style="margin-bottom:4px">You may reach us at
-                                            <a href="https://devs.keenthemes.com" rel="noopener" target="_blank"
-                                                style="font-weight: 600">devs.dms.com</a>.</p>
-                                        <p>We serve Mon-Fri, 9AM-18AM</p>
                                     </td>
                                 </tr>
                                 <tr>

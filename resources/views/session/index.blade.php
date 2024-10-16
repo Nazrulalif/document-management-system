@@ -23,12 +23,12 @@
             <!--begin::Aside-->
             <div class="d-flex flex-center flex-lg-start flex-column">
                 <!--begin::Logo-->
-                <a href="index.html" class="mb-7">
-                    <img alt="Logo" src="{{ asset('assets/media/logos/custom-3.svg') }}" />
+                <a href="/" class="mb-7">
+                    <img alt="Logo" width="230"  src="{{ asset('assets/media/logos/docms.svg') }}" />
                 </a>
                 <!--end::Logo-->
                 <!--begin::Title-->
-                <h2 class="text-white fw-normal m-0">Branding tools designed for your business</h2>
+                <h2 class="text-white fw-normal m-0">Simplifying Document Workflows</h2>
                 <!--end::Title-->
             </div>
             <!--begin::Aside-->

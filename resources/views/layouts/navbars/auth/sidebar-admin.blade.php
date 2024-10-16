@@ -6,11 +6,11 @@
     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
         <!--begin::Logo image-->
         <a href="{{ route('dashboard.admin') }}">
-            <img alt="Logo" src="{{ asset('assets/media/logos/default.svg') }}"
+            <img alt="Logo" src="{{ asset('assets/media/logos/docms-light.svg') }}"
                 class="h-25px app-sidebar-logo-default theme-light-show" />
-            <img alt="Logo" src="{{ asset('assets/media/logos/default-small.svg') }}"
+            <img alt="Logo" src="{{ asset('assets/media/logos/docms-light.svg') }}"
                 class="h-20px app-sidebar-logo-minimize" />
-            <img alt="Logo" src="{{ asset('assets/media/logos/default-dark.svg') }}"
+            <img alt="Logo" src="{{ asset('assets/media/logos/docms-dark.svg') }}"
                 class="h-25px app-sidebar-logo-default theme-dark-show">
         </a>
         <div id="kt_app_sidebar_toggle"

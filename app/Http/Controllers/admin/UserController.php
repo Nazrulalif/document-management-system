@@ -126,7 +126,7 @@ class UserController extends Controller
         }
 
         Mail::to($user->email)
-            ->later(30, new UserRegistered($user, $generatedPassword));
+            ->later(10, new UserRegistered($user, $generatedPassword));
 
         // Set a success message
         session()->flash('success', 'New User Successfully added!');

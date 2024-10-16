@@ -9,7 +9,6 @@ use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SearchController;
 use App\Http\Controllers\admin\UserController;
-use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\mail\UserRegisteredController;
@@ -117,12 +116,8 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
         Route::post('/user-setting-deactivate/{uuid}', [UserController::class, 'setting_deactive'])->name('userSetting.deactive');
     });
 
-
-
-
     //user account registered email
     Route::get('/user-registered-mail', [UserRegisteredController::class, 'user_registered'])->name('email.registered');
-
 
     //file manager
     Route::get('/file-manager', [FileManagerController::class, 'index'])->name('fileManager.index');

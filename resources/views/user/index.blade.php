@@ -46,7 +46,7 @@
 
                     <div class="col-md-6 col-lg-4 col-xl-3">
                         <!--begin::Card-->
-                        <div class="card p-0">
+                        <div class="card h-100 p-0">
                             <!--begin::Card body-->
                             <div class="card-body p-0">
                                 <a href="{{ route('file.user', $item->latest_version_guid) }}"

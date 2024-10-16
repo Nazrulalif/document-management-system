@@ -18,7 +18,7 @@
         <!--begin::Mobile logo-->
         <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
             <a href="{{ route('dashboard.admin') }}" class="d-lg-none">
-                <img alt="Logo" src="{{ asset('assets/media/logos/default-small.svg') }}" class="h-30px" />
+                <img alt="Logo" src="{{ asset('assets/media/logos/docms-favicon.svg') }}" class="h-30px" />
             </a>
         </div>
         <!--begin::Header wrapper-->
