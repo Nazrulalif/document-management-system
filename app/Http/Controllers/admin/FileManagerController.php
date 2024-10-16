@@ -7,6 +7,8 @@ use App\Models\AuditLog;
 use App\Models\Document;
 use App\Models\documentVersion;
 use App\Models\Folder;
+use App\Models\Starred_document;
+use App\Models\Starred_folder;
 use App\Models\Stat;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -59,13 +61,65 @@ class FileManagerController extends Controller
                 ->get();
         }
 
+        $starredFolders = Starred_folder::where('user_guid', Auth::user()->id)->pluck('folder_guid')->toArray();
+        $starredDoc = Starred_document::where('user_guid', Auth::user()->id)->pluck('doc_guid')->toArray();
+
 
         return view('admin.file-manager.file-manager', [
             'folders' => $folders,
-            'documents' => $rootDocuments
+            'documents' => $rootDocuments,
+            'starredFolders' => $starredFolders,
+            'starredDoc' => $starredDoc,
         ]);
     }
 
+    public function star(Request $request)
+    {
+        $type = $request->input('type');
+        $starred = false; // Initialize starred to false
+
+        if ($type == 'folder') {
+            // Check if the folder is already starred
+            $isStarred = Starred_folder::where('user_guid', Auth::user()->id)
+                ->where('folder_guid', $request->id)
+                ->exists();
+
+            if ($isStarred) {
+                // Unstar the folder
+                Starred_folder::where('user_guid', Auth::user()->id)
+                    ->where('folder_guid', $request->id)
+                    ->delete();
+            } else {
+                // Star the folder
+                Starred_folder::create([
+                    'user_guid' => Auth::user()->id,
+                    'folder_guid' => $request->id,
+                ]);
+                $starred = true; // Set starred to true
+            }
+        } elseif ($type == 'document') {
+            // Check if the folder is already starred
+            $isStarred = Starred_document::where('user_guid', Auth::user()->id)
+                ->where('doc_guid', $request->id)
+                ->exists();
+
+            if ($isStarred) {
+                // Unstar the folder
+                Starred_document::where('user_guid', Auth::user()->id)
+                    ->where('doc_guid', $request->id)
+                    ->delete();
+            } else {
+                // Star the folder
+                Starred_document::create([
+                    'user_guid' => Auth::user()->id,
+                    'doc_guid' => $request->id,
+                ]);
+                $starred = true; // Set starred to true
+            }
+        }
+
+        return response()->json(['success' => true, 'starred' => $starred]);
+    }
 
     public function show_folder($uuid)
     {
@@ -102,11 +156,15 @@ class FileManagerController extends Controller
                 ->get();
         }
 
+        $starredFolders = Starred_folder::where('user_guid', Auth::user()->id)->pluck('folder_guid')->toArray();
+        $starredDoc = Starred_document::where('user_guid', Auth::user()->id)->pluck('doc_guid')->toArray();
 
         return view('admin.file-manager.file-manager-item', [
             'folder' => $folder,
             'path' => $path,
             'documents' => $document,
+            'starredFolders' => $starredFolders,
+            'starredDoc' => $starredDoc,
         ]);
     }
 

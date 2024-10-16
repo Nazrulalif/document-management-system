@@ -8,6 +8,7 @@ use App\Http\Controllers\admin\MyProfilController;
 use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SearchController;
+use App\Http\Controllers\admin\StarredController as AdminStarredController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
@@ -115,6 +116,12 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
         route::post('/user-setting-post/{id}', [UserController::class, 'user_setting_post'])->name('userSetting.post');
         Route::post('/user-setting-deactivate/{uuid}', [UserController::class, 'setting_deactive'])->name('userSetting.deactive');
     });
+
+    //Starred post
+    Route::post('/star', [FileManagerController::class, 'star'])->name('star.user');
+
+    //Starred
+    Route::get('/starred', [AdminStarredController::class, 'index'])->name('starred.index');
 
     //user account registered email
     Route::get('/user-registered-mail', [UserRegisteredController::class, 'user_registered'])->name('email.registered');

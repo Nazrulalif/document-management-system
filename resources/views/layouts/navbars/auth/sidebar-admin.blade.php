@@ -166,6 +166,19 @@
 
                     <div class="menu-item">
                         <!--begin:Menu link-->
+                        <a class="menu-link {{ (Request::is('admin/starred') ? 'active' : '') }}"
+                            href="{{ route('starred.index') }}">
+                            <span class="menu-icon">
+                                <i class="ki-outline ki-star fs-2">
+                                </i>
+                            </span>
+                            <span class="menu-title">Starred</span>
+                        </a>
+                        <!--end:Menu link-->
+                    </div>
+
+                    <div class="menu-item">
+                        <!--begin:Menu link-->
                         <a class="menu-link {{ (Request::is('admin/report', 'admin/generated-report') ? 'active' : '') }}"
                             href="{{ route('report.index') }}">
                             <span class="menu-icon">

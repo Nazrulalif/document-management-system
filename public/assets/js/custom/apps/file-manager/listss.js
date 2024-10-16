@@ -250,6 +250,9 @@ var KTFileManagerList = function () {
                             }, 
                             {
                                 data: "type"
+                            },
+                            {
+                                data: "star"
                             },{
                                 data: "action"
                             }],
@@ -274,7 +277,11 @@ var KTFileManagerList = function () {
                             }, 
                             {
                                 data: "type"
+                            },
+                            {
+                                data: "star"
                             },{
+                                
                                 data: "action"
                             }],
                             language: {
