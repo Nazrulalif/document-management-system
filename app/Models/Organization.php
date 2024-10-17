@@ -20,6 +20,7 @@ class Organization extends Model
         'nature_of_business',
         'is_operation',
         'is_parent',
+        'org_logo',
     ];
 
     protected static function boot()

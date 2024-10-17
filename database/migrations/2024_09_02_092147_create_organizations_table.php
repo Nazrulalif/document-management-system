@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('nature_of_business')->nullable();
             $table->string('is_operation')->nullable();
             $table->string('is_parent')->nullable();
+            $table->string('org_logo')->nullable();
             $table->timestamps();
         });
     }

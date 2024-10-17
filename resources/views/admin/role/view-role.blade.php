@@ -119,8 +119,8 @@
                                                 </div>
                                             </th>
                                             <th class="min-w-150px">User</th>
+                                            <th class="min-w-150px">Email</th>
                                             <th class="min-w-125px">Joined Date</th>
-                                            <th class="text-end min-w-100px">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="fw-semibold text-gray-600">
@@ -147,7 +147,7 @@
 </div>
 <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
 <script src="{{ asset('assets\js\custom\apps\user-management\roles\list.js') }}"></script>
-<script src="{{ asset('assets/js/custom/apps/user-management/roles/view.js') }}"></script>
+<script src="{{ asset('assets/js/custom/apps/user-management/roles/views.js') }}"></script>
 
 
 @endsection

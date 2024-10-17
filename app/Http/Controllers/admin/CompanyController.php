@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 class CompanyController extends Controller
@@ -380,10 +381,35 @@ class CompanyController extends Controller
             'org_address' => 'required',
             'org_place' => 'required',
             'nature_of_business' => 'required',
+            'org_logo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
         // Get the user data
         $data = Organization::where('uuid', $uuid)->firstOrFail();
+
+        // Handle profile picture removal
+        if ($request->input('remove_avatar') == 1) {
+            // Delete the old picture if it exists
+            if ($data->profile_picture) {
+                Storage::delete('public/' . $data->org_logo);
+            }
+
+            // Set profile picture to null in the database
+            $data->org_logo = null;
+        } elseif ($request->hasFile('org_logo')) {
+            // Handle profile picture upload
+            if ($data->org_logo) {
+                Storage::delete('public/' . $data->org_logo);
+            }
+
+            $file = $request->file('org_logo');
+            $extension = $file->getClientOriginalExtension();
+            $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
+
+            // Store the new picture
+            $filePath = $file->storeAs('uploads/company-logo', $uniqueFileName, 'public');
+            $data->org_logo = $filePath;
+        }
 
         // Update the user's information
         $data->update([
@@ -394,6 +420,11 @@ class CompanyController extends Controller
             'org_place' => $request->org_place,
             'nature_of_business' => $request->nature_of_business,
         ]);
+
+        if (isset($filePath)) {
+            $data->org_logo = $filePath;
+            $data->save();
+        }
 
         return redirect()->back()->with(['success' => 'Your profile details updated successfully']);
     }

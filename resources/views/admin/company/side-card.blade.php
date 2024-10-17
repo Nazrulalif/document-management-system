@@ -6,10 +6,15 @@
             <!--begin::Summary-->
             <div class="d-flex flex-center flex-column mb-5">
                 <!--begin::Avatar-->
-                <div class="symbol symbol-100px symbol-circle mb-7">
-                    <i class="fa-solid fa-building fs-5x" ></i>
+                <div class="symbol symbol-100px symbol-lg-160px">
+                    @if($data->org_logo)
+                    <img class="mb-7" src="{{ asset('storage/' . $data->org_logo) }}" alt="image" />
+                    @else
+                    <div class="mb-7">
+                        <i class="fa-solid fa-building fs-5x" ></i>
+                    </div>
+                    @endif
                 </div>
-                <!--end::Avatar-->
                 <!--begin::Name-->
                 <a href="#"
                     class="fs-3 text-gray-800 text-hover-primary fw-bold mb-1">{{$data->org_name}}</a>

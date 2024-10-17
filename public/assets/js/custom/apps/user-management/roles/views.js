@@ -6,11 +6,12 @@ var KTDatatablesServerSide = function () {
     var table;
     var dt;
     var filterPayment;
-    var uuid = $('#uuid').val();
+    const roleDataElement = document.getElementById('role-data');
+    const uuid = roleDataElement.getAttribute('data-uuid');
 
     // Private functions
     var initDatatable = function () {
-        dt = $("#kt_datatable_example_2").DataTable({
+        dt = $("#kt_roles_view_table").DataTable({
             searchDelay: 500,
             // processing: true,
             serverSide: true,
@@ -24,7 +25,7 @@ var KTDatatablesServerSide = function () {
                 className: 'row-selected'
             },
             ajax: {
-                url: "/admin/company-detail/" + uuid,
+                url: `/admin/view-role/${uuid}`,
             },
             columns: [{
                     data: null,
@@ -37,18 +38,18 @@ var KTDatatablesServerSide = function () {
                 {
                     data: 'full_name',
                     render: function (data, type, row) {
-                        return '<a class="text-gray-800 text-hover-primary" href="/admin/user-detail/' + row.uuid + '">' + data + '</a>';
+                        return '<a class="text-gray-800 text-hover-primary" href="/admin/user-detail/' + row.userUUID + '">' + data + '</a>';
                     },
                 },
                 {
                     data: 'email'
                 },
                 {
-                    data: 'role_name'
+                    data: 'formatted_date'
                 },
             ],
             columnDefs: [{
-                data: 'org_name',
+                data: 'full_name',
                 targets: 1,
                 className: 'text-gray-800',
 

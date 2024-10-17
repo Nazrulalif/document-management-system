@@ -78,7 +78,7 @@ class RoleController extends Controller
 
         if ($request->ajax()) {
 
-            $data = User::select('*', 'users.id as id')
+            $data = User::select('*', 'users.id as id', 'users.uuid as userUUID')
                 ->join('roles', 'roles.id', '=', 'users.role_guid')
                 ->where('roles.uuid', '=', $uuid)
                 ->where('users.is_active', '=', 'Y')
