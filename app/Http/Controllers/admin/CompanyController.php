@@ -97,6 +97,15 @@ class CompanyController extends Controller
             User::where('org_guid', '=', $id)->update([
                 'is_active' => 'N'
             ]);
+
+            AuditLog::create([
+                'action' => 'Deactivated',
+                'model' => 'Company',
+                'changes' =>  $org->org_name,
+                'user_guid' => Auth::check() ? Auth::user()->id : null,
+                'ip_address' => request()->ip(),
+            ]);
+
             // Get current counts
             $userCount = User::where('is_active', '=', 'Y')->count();
             $orgCount = Organization::where('is_operation', '=', 'Y')->count();
@@ -442,6 +451,15 @@ class CompanyController extends Controller
                 ->where('organizations.uuid', '=', $uuid)->update([
                     'users.is_active' => 'N'
                 ]);
+
+            AuditLog::create([
+                'action' => 'Deactivated',
+                'model' => 'Company',
+                'changes' =>  $org->org_name,
+                'user_guid' => Auth::check() ? Auth::user()->id : null,
+                'ip_address' => request()->ip(),
+            ]);
+
             // Get current counts
             $userCount = User::where('is_active', '=', 'Y')->count();
             $orgCount = Organization::where('is_operation', '=', 'Y')->count();

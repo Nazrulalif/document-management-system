@@ -25,22 +25,51 @@ class ModelOrganization
     /**
      * Handle the organization "updated" event.
      */
-    public function updated(organization $organization): void
+    public function updated(Organization $organization): void
     {
-        $action = 'Updated';
+        $changes = $organization->getDirty();  // Get changed fields
+        $original = $organization->getOriginal();  // Get original values
 
-        if ($organization->is_operation == 'N') { // Assuming you have a method to check if deactivated
-            $action = 'Deactivated';
+        // Define friendly names for specific fields
+        $fieldNames = [
+            'org_name' => 'Company name',
+            'org_number' => 'Company number',
+            'reg_date' => 'Register date',
+            'org_address' => 'Address',
+            'org_place' => 'State',
+            'nature_of_business' => 'Nature of business',
+            'org_logo' => 'Logo',
+        ];
+
+        foreach ($changes as $key => $newValue) {
+            // Skip timestamps and other fields to ignore
+            if (in_array($key, ['created_at', 'updated_at', 'is_operation'])) {
+                continue;
+            }
+
+            // Use friendly name if available, otherwise capitalize the key
+            $fieldName = $fieldNames[$key] ?? ucfirst($key);
+
+            // Handle special case for logo changes
+            if ($key === 'org_logo') {
+                $changeMessage = $organization->org_name . " : Logo Changed";
+            } else {
+                $oldValue = $original[$key];
+                $changeMessage = $organization->org_name .
+                    " : {$fieldName} changed from '{$oldValue}' to '{$newValue}'";
+            }
+
+            // Create individual log entry for each change
+            AuditLog::create([
+                'action' => 'Updated',
+                'model' => 'Company',
+                'changes' => $changeMessage,
+                'user_guid' => Auth::check() ? Auth::user()->id : null,
+                'ip_address' => request()->ip(),
+            ]);
         }
-
-        AuditLog::create([
-            'action' => $action,
-            'model' => 'Company',
-            'changes' => $organization->org_name,
-            'user_guid' => Auth::user()->id,
-            'ip_address' => request()->ip(),
-        ]);
     }
+
 
     /**
      * Handle the organization "deleted" event.
