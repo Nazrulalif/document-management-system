@@ -19,6 +19,7 @@ class ModelDocument
         AuditLog::create([
             'action' => 'Created',
             'model' => 'File',
+            'doc_guid' => $document->id,
             'changes' => $document->doc_title,
             'user_guid' => Auth::check() ? Auth::user()->id : null,
             'ip_address' => request()->ip(),
@@ -65,6 +66,7 @@ class ModelDocument
             AuditLog::create([
                 'action' => 'Updated',
                 'model' => 'File',
+                'doc_guid' => $document->id,
                 'changes' => $changeMessage,
                 'user_guid' => Auth::check() ? Auth::user()->id : null,
                 'ip_address' => request()->ip(),
@@ -81,6 +83,7 @@ class ModelDocument
         AuditLog::create([
             'action' => 'Deleted',
             'model' => 'File',
+            'doc_guid' => $document->id,
             'changes' => $document->doc_title,
             'user_guid' => Auth::check() ? Auth::user()->id : null,
             'ip_address' => request()->ip(),
@@ -95,6 +98,7 @@ class ModelDocument
         AuditLog::create([
             'action' => 'Restored',
             'model' => 'File',
+            'doc_guid' => $document->id,
             'changes' => $document->doc_title,
             'user_guid' => Auth::check() ? Auth::user()->id : null,
             'ip_address' => request()->ip(),
@@ -109,6 +113,7 @@ class ModelDocument
         AuditLog::create([
             'action' => 'Force Deleted',
             'model' => 'File',
+            'doc_guid' => $document->id,
             'changes' => $document->doc_title,
             'user_guid' => Auth::check() ? Auth::user()->id : null,
             'ip_address' => request()->ip(),

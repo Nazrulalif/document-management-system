@@ -217,11 +217,76 @@
                                         <div class="separator separator-dashed"></div>
                                         <!--end::Separator-->
                                     </div>
-                                    <!--end::Section-->
+                                    
+                                    <div class="m-0">
+                                        <!--begin::Heading-->
+                                        <div class="d-flex align-items-center collapsible py-3 toggle mb-0"
+                                            data-bs-toggle="collapse" data-bs-target="#kt_job_1_2">
+                                            <!--begin::Icon-->
+                                            <div class="btn btn-sm btn-icon mw-20px btn-active-color-primary me-5">
+                                                <i class="ki-duotone ki-minus-square toggle-on text-primary fs-1">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                                <i class="ki-duotone ki-plus-square toggle-off fs-1">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                </i>
+                                            </div>
+                                            <!--end::Icon-->
+                                            <!--begin::Title-->
+                                            <h4 class="text-gray-700 fw-bold cursor-pointer mb-0">
+                                                Audit Logs</h4>
+                                            <!--end::Title-->
+                                        </div>
+                                        <!--end::Heading-->
+                                        <!--begin::Body-->
+                                        <div id="kt_job_1_2" class="collapse show fs-6 ms-1">
+                                            <!--begin::Item-->
+                                            <div class="mb-4">
+                                                <!--begin::Item-->
+                                                <!--begin::Label-->
+                                                <div class="text-gray-600 fw-semibold fs-6">
+                                                    <div class="table-responsive">
+                                                        <table id="kt_datatable_zero_configuration" class="table table-rounded table-striped border gy-7 gs-7">
+                                                            <thead>
+                                                                <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
+                                                                    <th>User</th>
+                                                                    <th>Timestamp</th>
+                                                                    <th>Actions</th>
+                                                                    <th>Changes</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                               @foreach ($audit_logs as $item)
+                                                                   <tr>
+                                                                    <td>{{ $item->full_name }}</td>
+                                                                    <td>{{ $item->created_at }}</td>
+                                                                    <td>{{ $item->action }}</td>
+                                                                    @if($item->model === 'New version')
+                                                                    <td>{{ $item->model }} added</td>
+                                                                    @else
+                                                                    <td>{{ $item->changes }}</td>
+                                                                    @endif
+                                                                   </tr>
+                                                               @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <!--end::Label-->
+                                                <!--end::Item-->
+                                            </div>
+                                            <!--end::Item-->
 
-                                    <!--end::Accordion-->
-                                    <!--begin::Apply-->
-                                    <!--end::Apply-->
+                                        </div>
+                                        <!--end::Content-->
+                                        <!--begin::Separator-->
+                                        <div class="separator separator-dashed"></div>
+                                        <!--end::Separator-->
+                                    </div>
+
                                 </div>
                                 <!--end::Job-->
 
@@ -344,6 +409,12 @@
 
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js')}}"></script>
 <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
+<script>
+    $(document).ready(function () {
+        $("#kt_datatable_zero_configuration").DataTable();
+
+    })
+</script>
 <script>
     $(document).ready(function () {
         $('#kt_modal_view_version').on('show.bs.modal', function (event) {

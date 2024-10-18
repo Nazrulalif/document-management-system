@@ -13,6 +13,6 @@ class folder extends Seeder
      */
     public function run(): void
     {
-        modelFolder::factory()->count(200)->create();
+        modelFolder::factory()->count(1000)->create();
     }
 }

@@ -7,6 +7,7 @@ use App\Models\AuditLog;
 use App\Models\Document;
 use App\Models\documentVersion;
 use App\Models\Folder;
+use App\Models\Organization;
 use App\Models\Starred_document;
 use App\Models\Starred_folder;
 use App\Models\Stat;
@@ -20,11 +21,35 @@ use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\Element\Text;
 use PhpOffice\PhpSpreadsheet\IOFactory as SpreadsheetIOFactory;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class FileManagerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // if ($request->ajax()) {
+
+        //     $folders = Folder::with(['children', 'documents'])
+        //         ->select('*', 'folders.uuid as uuid', 'folders.id as id', 'folders.folder_name as item_name',  DB::raw('NULL as doc_type'))
+        //         ->join('users', 'users.id', '=', 'folders.created_by')
+        //         ->join('organizations', 'organizations.id', '=', 'folders.org_guid')
+        //         ->whereNull('folders.parent_folder_guid')
+        //         ->get();
+
+        //     // Fetch root-level documents where folder_guid is null
+        //     $rootDocuments = Document::select('*', 'documents.uuid as uuid', 'documents.id as id', 'documents.doc_name as item_name', 'documents.doc_type as doc_type')
+        //         ->join('users', 'users.id', '=', 'documents.upload_by')
+        //         ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
+        //         ->whereNull('documents.folder_guid') // Documents not in any folder
+        //         ->get();
+
+        //     // Merge both collections into one
+        //     $data = $folders->concat($rootDocuments);
+
+        //     return DataTables::of($data)
+        //         ->addIndexColumn()
+        //         ->make(true);
+        // }
 
         if (Auth::user()->role_guid == 1) {
             $folders = Folder::with(['children', 'documents'])

@@ -12,9 +12,7 @@
                     @else
                     <img src="{{ asset('assets/media/svg/avatars/blank.svg') }}" alt="Default Avatar" class="img-thumbnail" width="150">
                     @endif
-                    <div
-                        class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px">
-                    </div>
+                   
                 </div>
             </div>
             <!--end::Pic-->

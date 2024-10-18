@@ -43,18 +43,22 @@ class FileController extends Controller
             return abort(404, 'Document not found'); // Or you could redirect to another page with an error message
         }
 
+        $audit_logs = AuditLog::select('*', 'audit_logs.created_at as created_at')
+            ->join('documents', 'documents.id', '=', 'audit_logs.doc_guid')
+            ->join('users', 'users.id', '=', 'documents.upload_by')
+            ->where('documents.latest_version_guid', $uuid)
+            ->orderBy('audit_logs.created_at', 'desc')
+            ->get();
+
+
         // Split the doc_summary into lines (if applicable)
         $doc_summary = explode("\n", $file->doc_summary);
         return view('admin.file-manager.detail-page', [
             'data' => $file,
             'doc_summary' => $doc_summary,
             'version' => $version,
+            'audit_logs' => $audit_logs,
         ]);
-
-        // $file = documentVersion::where('uuid', '=', $uuid)->first();
-
-
-        // return response()->json(['message' => $file]);
     }
 
     public function update(Request $request, $uuid)
@@ -136,6 +140,7 @@ class FileController extends Controller
         AuditLog::create([
             'action' => 'Created',
             'model' => 'New version',
+            'doc_guid' => $document->id,
             'changes' => $document->doc_title,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
@@ -348,6 +353,7 @@ class FileController extends Controller
         AuditLog::create([
             'action' => 'Deleted',
             'model' => 'File version',
+            'doc_guid' => $document->id,
             'changes' => $document->doc_title,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),

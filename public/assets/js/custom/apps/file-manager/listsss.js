@@ -1,6 +1,7 @@
 "use strict";
 var KTFileManagerList = function () {
     var e, t, o, n, r, a;
+
     const l = () => {
             t.querySelectorAll('[data-kt-filemanager-table-filter="delete_row"]').forEach((t => {
                 t.addEventListener("click", (function (t) {
@@ -239,23 +240,28 @@ var KTFileManagerList = function () {
                             scrollCollapse: !0,
                             paging: !1,
                             ordering: !1,
+                            pageLength: 10, // Number of rows per page
+                            lengthMenu: [5, 10, 25, 50], // Options for rows per page
+                            paging: true, // Enable pagination
+                            info: true, // Show table information
                             columns: [{
-                                data: "checkbox"
-                            }, {
-                                data: "name"
-                            }, {
-                                data: "company"
-                            }, {
-                                data: "full_name"
-                            }, 
-                            {
-                                data: "type"
-                            },
-                            {
-                                data: "star"
-                            },{
-                                data: "action"
-                            }],
+                                    data: "checkbox"
+                                }, {
+                                    data: "name"
+                                }, {
+                                    data: "company"
+                                }, {
+                                    data: "full_name"
+                                },
+                                {
+                                    data: "type"
+                                },
+                                {
+                                    data: "star"
+                                }, {
+                                    data: "action"
+                                }
+                            ],
                             language: {
                                 emptyTable: `<div class="d-flex flex-column flex-center">\n                    <img src="${hostUrl}media/illustrations/sketchy-1/5.png" class="mw-400px" />\n                    <div class="fs-1 fw-bolder text-dark">No items found.</div>\n                    <div class="fs-6">Start creating new folders or uploading a new file!</div>\n                </div>`
                             }
@@ -266,24 +272,29 @@ var KTFileManagerList = function () {
                             pageLength: 10,
                             lengthChange: !1,
                             ordering: !1,
+                            pageLength: 10, // Number of rows per page
+                            lengthMenu: [5, 10, 25, 50], // Options for rows per page
+                            paging: true, // Enable pagination
+                            info: true, // Show table information
                             columns: [{
-                                data: "checkbox"
-                            }, {
-                                data: "name"
-                            }, {
-                                data: "company"
-                            }, {
-                                data: "full_name"
-                            }, 
-                            {
-                                data: "type"
-                            },
-                            {
-                                data: "star"
-                            },{
-                                
-                                data: "action"
-                            }],
+                                    data: "checkbox"
+                                }, {
+                                    data: "name"
+                                }, {
+                                    data: "company"
+                                }, {
+                                    data: "full_name"
+                                },
+                                {
+                                    data: "type"
+                                },
+                                {
+                                    data: "star"
+                                }, {
+
+                                    data: "action"
+                                }
+                            ],
                             language: {
                                 emptyTable: `<div class="d-flex flex-column flex-center">\n                    <img src="${hostUrl}media/illustrations/sketchy-1/5.png" class="mw-400px" />\n                    <div class="fs-1 fw-bolder text-dark mb-4">No items found.</div>\n                    <div class="fs-6">Start creating new folders or uploading a new file!</div>\n                </div>`
                             },

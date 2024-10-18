@@ -46,7 +46,7 @@
                         <!--end::Table header-->
                         <!--begin::Table-->
                         <div class="table-responsive">
-                            <table class="table align-middle table-row-dashed fs-6 gy-5">
+                            <table class="table align-middle table-row-dashed fs-6" id="kt_datatable_zero_configuration">
                                 <thead>
                                     <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
 
@@ -215,6 +215,23 @@
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js')}}"></script>
 <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
 
+<script>
+$(document).ready(function () {
+    $("#kt_datatable_zero_configuration").DataTable({
+        language: {
+            emptyTable: "No files or documents found.",
+            zeroRecords: "No matching records found.",
+            infoEmpty: "Showing 0 to 0 of 0 entries",
+        },
+        columnDefs: [
+            { targets: "_all", defaultContent: "" } // Ensure no missing content errors
+        ],
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50]
+    });
+});
+
+</script>
 <script>
     $(document).on('click', '.star-icon', function () {
         const element = $(this);

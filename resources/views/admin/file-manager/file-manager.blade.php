@@ -92,7 +92,7 @@
                         <!--end::Table header-->
                         <!--begin::Table-->
                         <table id="kt_file_manager_list" data-kt-filemanager-table="folders"
-                            class="table align-middle table-row-dashed fs-6 gy-5">
+                            class="table align-middle table-row-dashed fs-6">
                             <thead>
                                 <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                     <th class="w-10px pe-2">
@@ -472,8 +472,9 @@
 
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js')}}"></script>
 <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
-<script src="{{ asset('assets/js/custom/apps/file-manager/listss.js')}}"></script>
+<script src="{{ asset('assets/js/custom/apps/file-manager/listsss.js')}}"></script>
 <script src="{{ asset('assets/js/custom/apps/file-manager/lists-2.js')}}"></script>
+
 
 <script>
     $(document).on('click', '.star-icon', function () {
