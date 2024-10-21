@@ -131,7 +131,7 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
     //user account registered email
     Route::get('/user-registered-mail', [UserRegisteredController::class, 'user_registered'])->name('email.registered');
 
-    //file manager
+    //File Manager
     Route::get('/file-manager', [FileManagerController::class, 'index'])->name('fileManager.index');
     route::get('/file-manager/fetch-data', [FileManagerController::class, 'fetchData'])->name('fileManager.fetchData');
     route::get('/file-manager/{uuid}', [FileManagerController::class, 'show_folder'])->name('folder.show');

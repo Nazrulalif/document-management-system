@@ -33,7 +33,7 @@ var KTDatatablesServerSide = function () {
                         return meta.row + meta.settings._iDisplayStart +
                             1; // Column for displaying row number
                     },
-                    orderable: true,
+                    orderable: false,
                 },
                 {
                     data: 'full_name',
@@ -53,7 +53,13 @@ var KTDatatablesServerSide = function () {
                 targets: 1,
                 className: 'text-gray-800',
 
-            }, ],
+            }, {
+                targets: 0,
+                width: '10px',
+                orderable: false,
+
+            }, 
+        ],
             // Add data-filter attribute
             createdRow: function (row, data, dataIndex) {
                 $(row).find('td:eq(4)').attr('data-filter', data.CreditCardType);

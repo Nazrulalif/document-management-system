@@ -9,40 +9,69 @@ use App\Models\Starred_document;
 use App\Models\Starred_folder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class FileManagerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->ajax()) {
+            // Fetch starred folders and documents for the authenticated user
+            $starredFolders = Starred_folder::where('user_guid', Auth::user()->id)->pluck('folder_guid')->toArray();
+            $starredDocs = Starred_document::where('user_guid', Auth::user()->id)->pluck('doc_guid')->toArray();
 
-        $folders = Folder::with(['children', 'documents'])
-            ->select('*', 'folders.uuid as uuid', 'folders.id as id')
-            ->join('users', 'users.id', '=', 'folders.created_by')
-            ->join('organizations', 'organizations.id', '=', 'folders.org_guid')
-            ->where(function ($query) {
-                $query->where('folders.org_guid', Auth::user()->org_guid)
-                    ->orWhere('users.role_guid', '1');
-            })
-            ->whereNull('folders.parent_folder_guid')
-            ->get();
+            $folders = Folder::with(['children', 'documents'])
+                ->select(
+                    '*',
+                    'folders.uuid as uuid',
+                    'folders.id as id',
+                    'folders.folder_name as item_name',
+                    DB::raw('NULL as doc_type')
+                )
+                ->join('users', 'users.id', '=', 'folders.created_by')
+                ->join('organizations', 'organizations.id', '=', 'folders.org_guid')
+                ->where(function ($query) {
+                    $query->where('folders.org_guid', Auth::user()->org_guid)
+                        ->orWhere('users.role_guid', '1');
+                })
+                ->whereNull('folders.parent_folder_guid')
+                ->get()
+                ->map(function ($folder) use ($starredFolders) {
+                    $folder->is_starred = in_array($folder->id, $starredFolders);
+                    return $folder;
+                });
 
-        // Fetch root-level documents where folder_guid is null
-        $rootDocuments = Document::select('*', 'documents.uuid as uuid', 'documents.id as id')
-            ->join('users', 'users.id', '=', 'documents.upload_by')
-            ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
-            ->where('users.org_guid', Auth::user()->org_guid)
-            ->orWhere('users.role_guid', '1')
-            ->get();
+            // Fetch documents and add `is_starred` field
+            $rootDocuments = Document::select(
+                '*',
+                'documents.uuid as uuid',
+                'documents.id as id',
+                'documents.doc_title as item_name',
+                'documents.doc_type as doc_type'
+            )
+                ->join('users', 'users.id', '=', 'documents.upload_by')
+                ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                ->where('users.org_guid', Auth::user()->org_guid)
+                ->orWhere('users.role_guid', '1')
+                ->whereNull('documents.folder_guid')
+                ->get()
+                ->map(function ($document) use ($starredDocs) {
+                    $document->is_starred = in_array($document->id, $starredDocs);
+                    return $document;
+                });
 
-        $starredFolders = Starred_folder::where('user_guid', Auth::user()->id)->pluck('folder_guid')->toArray();
-        $starredDoc = Starred_document::where('user_guid', Auth::user()->id)->pluck('doc_guid')->toArray();
 
-        return view('user.file-manager.file-manager', [
-            'folders' => $folders,
-            'documents' => $rootDocuments,
-            'starredFolders' => $starredFolders,
-            'starredDoc' => $starredDoc,
-        ]);
+            // Merge folders and documents
+            $data = $folders->concat($rootDocuments);
+
+            // Return data via DataTables
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }
+
+        return view('user.file-manager.file-manager');
     }
 
     public function star(Request $request)
@@ -93,40 +122,99 @@ class FileManagerController extends Controller
         return response()->json(['success' => true, 'starred' => $starred]);
     }
 
-    public function show_folder($uuid)
+    public function show_folder(Request $request, $uuid)
     {
+        $folder_id = Folder::where('uuid', $uuid)->first();
+
+        if ($request->ajax()) {
+            // Fetch starred folders and documents for the authenticated user
+            $starredFolders = Starred_folder::where('user_guid', Auth::user()->id)->pluck('folder_guid')->toArray();
+            $starredDocs = Starred_document::where('user_guid', Auth::user()->id)->pluck('doc_guid')->toArray();
 
 
-        // Fetch folder with its children, documents, and the creator's user information
-        $folder = Folder::with(['children', 'documents', 'creator']) // Eager load creator relationship
-            ->where('folders.uuid', '=', $uuid)
+            // Fetch the main folder with its children and documents
+            $folder = Folder::with(['children', 'documents', 'creator'])
+                ->select(
+                    '*',
+                    'folders.uuid as uuid',
+                    'folders.id as id',
+                    'folders.folder_name as item_name',
+                    DB::raw('NULL as doc_type')
+                )
+                ->where('uuid', $uuid)
+                ->first();
+
+
+
+            if (!$folder) {
+                return response()->json(['error' => 'Folder not found'], 404);
+            }
+
+            // Map the main folder to include the starred status
+            $folder->is_starred = in_array($folder->id, $starredFolders);
+
+            // Prepare the children folders
+            $subfolders = $folder->children->map(function ($childFolder) use ($starredFolders) {
+                return [
+                    'id' => $childFolder->id,
+                    'uuid' => $childFolder->uuid,
+                    'item_name' => $childFolder->folder_name,
+                    'org_name' => $childFolder->organization->org_name, // Ensure the relation exists
+                    'full_name' => $childFolder->creator->full_name,
+                    'doc_type' => null,
+                    'is_starred' => in_array($childFolder->id, $starredFolders),
+                ];
+            });
+
+
+            // Fetch documents related to the folder
+            $documents = Document::select(
+                '*',
+                'documents.uuid as uuid',
+                'documents.id as id',
+                'documents.doc_title as item_name',
+                'documents.doc_type as doc_type'
+            )
+                ->join('folders', 'folders.id', '=', 'documents.folder_guid')
+                ->join('users', 'users.id', '=', 'documents.upload_by')
+                ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                ->where('folders.uuid', '=', $uuid)
+                ->where(function ($query) {
+                    // Ensure either the document's organization GUID matches or the user is an admin
+                    $query->where('documents.org_guid', Auth::user()->org_guid)
+                        ->orWhere('users.role_guid', '1');
+                })
+                ->get()
+                ->map(function ($document) use ($starredDocs) {
+                    $document->is_starred = in_array($document->id, $starredDocs);
+                    return $document;
+                });
+
+
+
+            // Merge subfolders and documents
+            $data = $subfolders->concat($documents);
+
+            // Return data via DataTables
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->make(true);
+        }
+        $folder = Folder::with(['children', 'documents', 'creator'])
+            ->select(
+                '*',
+                'folders.uuid as uuid',
+                'folders.id as id',
+                'folders.folder_name as item_name',
+                DB::raw('NULL as doc_type')
+            )
+            ->where('uuid', $uuid)
             ->first();
-
 
         $path = $this->getFolderPath($folder);
 
-
-        $document = Document::select('*', 'documents.id as id')
-            ->join('folders', 'folders.id', '=', 'documents.folder_guid')
-            ->join('users', 'users.id', '=', 'documents.upload_by')
-            ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
-            ->where('folders.uuid', '=', $uuid)
-            ->where(function ($query) {
-                // Ensure either the document's organization GUID matches or the user is an admin
-                $query->where('documents.org_guid', Auth::user()->org_guid)
-                    ->orWhere('users.role_guid', '1');
-            })
-            ->get();
-        $starredFolders = Starred_folder::where('user_guid', Auth::user()->id)->pluck('folder_guid')->toArray();
-        $starredDoc = Starred_document::where('user_guid', Auth::user()->id)->pluck('doc_guid')->toArray();
-
-        return view('user.file-manager.file-manager-item', [
-            'folder' => $folder,
-            'path' => $path,
-            'documents' => $document,
-            'starredFolders' => $starredFolders,
-            'starredDoc' => $starredDoc,
-        ]);
+        // Passing the folder to the view
+        return view('user.file-manager.file-manager-item', compact('uuid', 'folder_id', 'path'));
     }
 
 

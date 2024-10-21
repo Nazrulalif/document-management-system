@@ -6,6 +6,7 @@
         .page-break {
             page-break-before: always; /* Start a new page before this element */
         }
+       
     }
 </style>
 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
@@ -468,8 +469,15 @@
         var pageBreakStyle = `
             <style>
                 @media print {
+                 body {
+                    background-color: white;
+                    color: #333; 
+                    margin: 0; 
+                    padding: 10px; 
+                }
                     .page-break {
                         page-break-before: always; /* Start a new page before this element */
+                        
                     }
                 }
             </style>
