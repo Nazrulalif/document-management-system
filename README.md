@@ -1,66 +1,87 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Document Management System (DMS)
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <a href="https://laravel.com" target="_blank">
+    <img src="assets/media/logos/docms.svg" width="400" alt="Laravel Logo">
+  </a>
 </p>
 
-## About Laravel
+## About DMS
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The Document Management System (DMS) is a comprehensive solution designed for corporate entities to efficiently manage and control their documents and records across various companies under their umbrella. This system integrates seamlessly with the existing Corporate Information System (CIS), enhancing its capabilities by adding robust document version control, secure file storage, and user access management.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The DMS allows for the streamlined upload, organization, and retrieval of documents, ensuring that every version of a document is tracked and accessible, thereby facilitating better compliance and audit trails. By centralizing document management, the DMS helps companies maintain accurate records, manage sensitive information securely, and provide controlled access to essential corporate documents. This ensures that all critical documentation is easily accessible and properly managed, supporting the efficient operation and oversight of multiple business entities.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Prerequisites
 
-## Learning Laravel
+Before you begin, ensure you have met the following requirements:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-   PHP >= 8.1
+-   Laravel 10
+-   Laragon/XAMPP
+-   Gemini
+-   Mailtrap (If to use email delivery platform to test, send and control email infrastructure in one place)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Clone repository into your local file:**
 
-## Laravel Sponsors
+```bash
+git clone {{ Clone with HTTPS }}
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Follow these steps to install and set up the DMS:
 
-### Premium Partners
+1. **Run the Composer update command from the Terminal in your IDE:**
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+composer update
+```
 
-## Contributing
+2. **Migrate database:**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan migrate
+```
 
-## Code of Conduct
+3. **Seed the factory for system roles:**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan db:seed role
+```
 
-## Security Vulnerabilities
+4. **Paste the Gemini API key in the .env file.**
+   _(Refer to the section "Get Gemini API" below)_
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. **Paste the Mailtrap username and password in the .env file.**
+   _(Refer to the section "Get Mailtrap API" below)_
 
-## License
+6. **Run the Laravel development server:**
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan serve
+```
+
+7. **Run the mail queue:**
+
+```bash
+php artisan queue:work
+```
+
+## Get Gemini API
+
+To obtain your Gemini API key, follow these instructions:
+
+1. Sign up or log in to your Gemini account. (https://aistudio.google.com/app/apikey)
+2. Navigate to the API section in your account settings.
+3. Create a new API key and copy it.
+4. Paste the key into your `.env` file under the GEMINI_API_KEY.
+
+## Get Mailtrap API
+
+To get your Mailtrap API credentials:
+
+1. Log in to your Mailtrap account. (https://mailtrap.io/)
+2. Go to the API settings in your account.
+3. Copy the host, username, password and port (2525) provided for SMTP.
+4. Paste them into your `.env` file under the appropriate variables.
