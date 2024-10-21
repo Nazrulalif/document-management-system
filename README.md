@@ -85,5 +85,5 @@ To get your Mailtrap API credentials:
 
 1. Log in to your Mailtrap account. (https://mailtrap.io/)
 2. Go to the email testing > inboxes > my inbox > integration > SMTP.
-3. Copy the host, username, password and port (2525) provided for SMTP.
+3. Copy the host, username, password, port (2525 or 587) and encryption (tls) provided for SMTP.
 4. Paste them into your `.env` file under the appropriate variables.

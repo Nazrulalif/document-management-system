@@ -70,7 +70,17 @@ class AuthController extends Controller
 
     public function register_parent()
     {
-        return view('session.register-parent-company');
+        if (Auth::check()) {
+            return redirect(route('dashboard.admin'));
+        }
+
+        $isParentExist = Organization::where('is_parent', 'Y')->first();
+
+        if ($isParentExist) {
+            return redirect(route('login'));
+        } else {
+            return view('session.register-parent-company');
+        }
     }
 
     public function register_parent_post(Request $request)
