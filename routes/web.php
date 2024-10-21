@@ -20,6 +20,7 @@ use App\Http\Controllers\user\MyProfilController as UserMyProfilController;
 use App\Http\Controllers\user\SearchController as UserSearchController;
 use App\Http\Controllers\user\StarredController;
 use App\Models\AuditLog;
+use App\Models\Organization;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -39,7 +40,12 @@ use Illuminate\Http\Request;
 
 //Landing page
 Route::get('/', function () {
-    return view('session.login-form');
+    if (Auth::check()) {
+        return redirect(route('dashboard.admin'));
+    }
+    $isParentExist = Organization::where('is_parent', 'Y')->first();
+
+    return view('session.login-form', compact('isParentExist'));
 })->name('login');
 // Log out
 Route::get('/logout', function (Request $request) {

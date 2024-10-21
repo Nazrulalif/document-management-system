@@ -43,8 +43,8 @@ class ForgotPasswordController extends Controller
             'token' => $token,
         ]);
 
-        // Send email with a delay of 10 seconds
-        Mail::to($request->email)->later(now()->addSeconds(10), new ResetPassword($token));
+        // Send email with a delay of 3 seconds
+        Mail::to($request->email)->later(now()->addSeconds(3), new ResetPassword($token));
 
         return redirect()->back()->with('success', 'Reset password email sent successfully.');
     }

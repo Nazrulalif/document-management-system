@@ -32,37 +32,39 @@ git clone {{ Clone with HTTPS }}
 
 Follow these steps to install and set up the DMS:
 
-1. **Run the Composer update command from the Terminal in your IDE:**
+1. **Rename `.env.example` to `.env`**
+
+2. **Run the Composer update command from the Terminal in your IDE:**
 
 ```bash
 composer update
 ```
 
-2. **Migrate database:**
+3. **Migrate database:**
 
 ```bash
 php artisan migrate
 ```
 
-3. **Seed the factory for system roles:**
+4. **Seed the factory for system roles:**
 
 ```bash
 php artisan db:seed role
 ```
 
-4. **Paste the Gemini API key in the .env file.**
+5. **Paste the Gemini API key in the .env file.**
    _(Refer to the section "Get Gemini API" below)_
 
-5. **Paste the Mailtrap username and password in the .env file.**
+6. **Paste the Mailtrap username and password in the .env file.**
    _(Refer to the section "Get Mailtrap API" below)_
 
-6. **Run the Laravel development server:**
+7. **Run the Laravel development server:**
 
 ```bash
 php artisan serve
 ```
 
-7. **Run the mail queue:**
+8. **Run the mail queue:**
 
 ```bash
 php artisan queue:work
@@ -82,6 +84,6 @@ To obtain your Gemini API key, follow these instructions:
 To get your Mailtrap API credentials:
 
 1. Log in to your Mailtrap account. (https://mailtrap.io/)
-2. Go to the API settings in your account.
+2. Go to the email testing > inboxes > my inbox > integration > SMTP.
 3. Copy the host, username, password and port (2525) provided for SMTP.
 4. Paste them into your `.env` file under the appropriate variables.
