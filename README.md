@@ -24,7 +24,9 @@ Before you begin, ensure you have met the following requirements:
 
 ## Installation
 
-**Clone repository into your local file:**
+**OPTION 1: Download zip file**
+
+**OPTION 2: Clone repository into your local file:**
 
 ```bash
 git clone {{ Clone with HTTPS }}
@@ -34,37 +36,58 @@ Follow these steps to install and set up the DMS:
 
 1. **Rename `.env.example` to `.env`**
 
-2. **Run the Composer update command from the Terminal in your IDE:**
+2. **Run the Composer install**
+   _(download composer `exe` if you don't have it installed yet.https://getcomposer.org/download/)_
+
+```bash
+composer install
+```
+
+3. **Run the Composer update:**
 
 ```bash
 composer update
 ```
 
-3. **Migrate database:**
+4. **Migrate database:**
 
 ```bash
 php artisan migrate
 ```
 
-4. **Seed the factory for system roles:**
+5. **Seed the factory for system roles:**
 
 ```bash
 php artisan db:seed role
 ```
 
-5. **Paste the Gemini API key in the .env file.**
+6. **Paste the Gemini API key in the .env file.**
    _(Refer to the section "Get Gemini API" below)_
 
-6. **Paste the Mailtrap username and password in the .env file.**
+7. **Paste the Mailtrap username and password in the .env file.**
    _(Refer to the section "Get Mailtrap API" below)_
 
-7. **Run the Laravel development server:**
+8. **Generate app key:**
+
+```bash
+php artisan key:generate
+```
+
+9. **Clear configuration:**
+
+```bash
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+```
+
+10. **Run the Laravel development server:**
 
 ```bash
 php artisan serve
 ```
 
-8. **Run the mail queue:**
+11. **Run the mail queue:**
 
 ```bash
 php artisan queue:work
