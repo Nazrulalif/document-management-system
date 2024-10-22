@@ -18,7 +18,7 @@ Before you begin, ensure you have met the following requirements:
 
 -   PHP >= 8.1
 -   Laravel 10
--   Laragon/XAMPP
+-   Laragon(prefered)/XAMPP
 -   Gemini
 -   Mailtrap (If to use email delivery platform to test, send and control email infrastructure in one place)
 
@@ -61,19 +61,25 @@ php artisan migrate
 php artisan db:seed role
 ```
 
-6. **Paste the Gemini API key in the .env file.**
-   _(Refer to the section "Get Gemini API" below)_
-
-7. **Paste the Mailtrap username and password in the .env file.**
-   _(Refer to the section "Get Mailtrap API" below)_
-
-8. **Generate app key:**
+6. **Generate app key:**
 
 ```bash
 php artisan key:generate
 ```
 
-9. **Clear configuration:**
+7. **Create uploads folders:**
+
+```bash
+php artisan storage:link
+```
+
+8. **Paste the Gemini API key in the .env file.**
+   _(Refer to the section "Get Gemini API" below)_
+
+9. **Paste the Mailtrap username and password in the .env file.**
+   _(Refer to the section "Get Mailtrap API" below)_
+
+10. **Clear configuration:**
 
 ```bash
 php artisan config:clear
@@ -81,13 +87,13 @@ php artisan cache:clear
 php artisan route:clear
 ```
 
-10. **Run the Laravel development server:**
+11. **Run the Laravel development server:**
 
 ```bash
 php artisan serve
 ```
 
-11. **Run the mail queue:**
+12. **Run the mail queue:**
 
 ```bash
 php artisan queue:work
@@ -110,3 +116,9 @@ To get your Mailtrap API credentials:
 2. Go to the email testing > inboxes > my inbox > integration > SMTP.
 3. Copy the host, username, password, port (2525 or 587) and encryption (tls) provided for SMTP.
 4. Paste them into your `.env` file under the appropriate variables.
+
+_p/s: run this command to check connection port with mailtrap:_
+
+```bash
+telnet sandbox.smtp.mailtrap.io 587
+```

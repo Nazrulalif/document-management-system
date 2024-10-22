@@ -48,19 +48,6 @@
                                     <td align="center" valign="center" style="text-align:center; padding-bottom: 10px">
                                         <!--begin:Email content-->
                                         <div style="text-align:center; margin:0 60px 34px 60px">
-                                            <!--begin:Logo-->
-                                            <div style="margin-bottom: 10px">
-                                                <img alt="Logo"
-                                                    src="{{ $message->embed(asset('assets/media/logos/docms-light.svg')) }}"
-                                                    style="height: 35px" />
-                                            </div>
-                                            <!--end:Logo-->
-                                            <!--begin:Media-->
-                                            <div style="margin-bottom: 15px">
-                                                <img alt="Logo"
-                                                    src="{{ $message->embed(asset('assets/media/email/icon-positive-vote-1.svg')) }}" />
-                                            </div>
-                                            <!--end:Media-->
                                             <!--begin:Text-->
                                             <div
                                                 style="font-size: 14px; font-weight: 500; margin-bottom: 27px; font-family:Arial,Helvetica,sans-serif;">
