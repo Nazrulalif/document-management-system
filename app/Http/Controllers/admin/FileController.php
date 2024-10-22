@@ -129,7 +129,7 @@ class FileController extends Controller
     {
         // Validate incoming request
         $request->validate([
-            'file' => 'required|file|mimes:pdf,docx,doc,jpg,png', // Adjust MIME types as needed
+            'file' => 'required|mimes:jpg,jpeg,png,pdf,doc,docx,pptx,xlsx,csv|max:102400', // Adjust MIME types as needed
             'change_title' => 'required|string',
             'change_description' => 'required|string',
         ]);

@@ -87,7 +87,7 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="row mb-7">
+                        <div class="fv-row mb-7">
 
                             <!--begin::Label-->
                             <label class="required fw-semibold fs-6 mb-2">Author</label>
@@ -107,7 +107,7 @@
                             <div class="d-flex flex-stack">
                                 <label class="required fw-semibold fs-6 mb-2">Summary</label>
 
-                                @if ( $data->doc_type != 'images')
+                                @if ( $data->doc_type != 'images' && $data->doc_type != 'pptx')
 
                                 <a type="button"
                                     class="btn btn-sm mw-120px btn-active-color-info me-5 text-info hover-scale pulse"

@@ -581,7 +581,7 @@ class FileManagerController extends Controller
     {
         // Validate the file input
         $request->validate([
-            'file' => 'required|mimes:jpg,jpeg,png,pdf,doc,docx,pptx,xlsx,csv|max:1024', // 1MB Max
+            'file' => 'required|mimes:jpg,jpeg,png,pdf,doc,docx,pptx,xlsx,csv|max:102400', // 100MB Max
         ]);
 
         // Handle the uploaded file

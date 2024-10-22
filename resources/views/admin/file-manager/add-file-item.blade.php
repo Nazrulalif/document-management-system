@@ -126,7 +126,7 @@
         url: "{{ route('file.upload') }}",
         parallelUploads: 20,
         previewTemplate: previewTemplate,
-        maxFilesize: 100, // Limit to 100MB
+        maxFilesize: 102400, // Limit to 100MB
         autoQueue: false, // Prevent auto-upload
         previewsContainer: id + " .dropzone-items",
         clickable: id + " .dropzone-select"
