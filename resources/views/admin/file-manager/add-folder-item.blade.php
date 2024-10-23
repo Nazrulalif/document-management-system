@@ -60,7 +60,6 @@
     <!--end::Modal dialog-->
 </div>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="{{ asset('assets/plugins/global/plugins.bundle.js')}}"></script>
 
 <script>
     // Element to indecate

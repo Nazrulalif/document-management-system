@@ -18,7 +18,7 @@ Before you begin, ensure you have met the following requirements:
 
 -   PHP >= 8.1
 -   Laravel 10
--   Laragon(prefered)/XAMPP
+-   Laragon(preferred)/XAMPP
 -   Gemini
 -   Mailtrap (If to use email delivery platform to test, send and control email infrastructure in one place)
 

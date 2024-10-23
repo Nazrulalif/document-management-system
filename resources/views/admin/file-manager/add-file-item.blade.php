@@ -107,6 +107,7 @@
         </div>
     </div>
 </div>
+<script src="{{ asset('assets/plugins/global/plugins.bundle.js')}}"></script>
 
 <script>
     const id = "#kt_modal_upload_dropzone";

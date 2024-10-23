@@ -149,7 +149,11 @@ var KTDatatablesServerSide = function () {
                             :
                             `/admin/file-details/${row.latest_version_guid}`; // Document link
 
-                        // Return the rendered HTML
+                            let renameMenuItem = row.doc_type === null
+                            ? `<div class="menu-item px-3">
+                                  <a class="menu-link px-3" data-kt-docs-table-filter="edit_row" data-id="${data.id}">Rename</a>
+                                </div>`
+                            : '';
 
                         return `
                             <td class="text-end">
@@ -170,9 +174,7 @@ var KTDatatablesServerSide = function () {
                                                     <a href="${linkUrl}"
                                                         class="menu-link px-3">View</a>
                                                 </div>
-                                                <div class="menu-item px-3">
-                                                    <a class="menu-link px-3" data-kt-docs-table-filter="edit_row" data-id="${data.id}">Rename</a>
-                                                </div>
+                                                 ${renameMenuItem}
                                                 <div class="menu-item px-3">
                                                     <a href="#" class="menu-link text-danger px-3" data-kt-docs-table-filter="delete_row" data-id="${data.id}"
                                                     data-type="${row.doc_type === null ? 'folder' : 'document'}">Delete</a>
@@ -433,9 +435,9 @@ var KTDatatablesServerSide = function () {
                 text: "Are you sure you want to delete the selected items?",
                 icon: "warning",
                 showCancelButton: true,
-                showLoaderOnConfirm: true,
-                confirmButtonText: "Yes, Delete!",
-                cancelButtonText: "No, Cancel",
+                buttonsStyling: false,
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "No, cancel",
                 customClass: {
                     confirmButton: "btn fw-bold btn-danger",
                     cancelButton: "btn fw-bold btn-active-light-primary"

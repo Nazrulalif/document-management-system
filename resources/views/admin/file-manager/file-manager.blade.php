@@ -123,7 +123,6 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
-<script src="{{ asset('assets/plugins/global/plugins.bundle.js')}}"></script>
 <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
-<script src="{{ asset('assets/js/custom/apps/file-manager/table-file.js') }}"></script>
+<script src="{{ asset('assets/js/custom/apps/file-manager/table-files.js') }}"></script>
 @endsection
