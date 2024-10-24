@@ -4,13 +4,23 @@
     data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
     <!--begin::Logo-->
     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
+        @php
+        // Retrieve the logos from the database directly in the view
+        $lightLogo = \App\Models\SystemSetting::where('name', 'nav_light_logo')->first();
+        $darkLogo = \App\Models\SystemSetting::where('name', 'nav_dark_logo')->first();
+        @endphp
         <!--begin::Logo image-->
         <a href="{{ route('home.user') }}">
-            <img alt="Logo" src="{{ asset('assets/media/logos/docms-light.svg') }}"
-            class="h-25px app-sidebar-logo-default theme-light-show" />
-            <img alt="Logo" src="{{ asset('assets/media/logos/docms-light.svg') }}"
+            <img alt="Logo"
+                src="{{ $lightLogo && $lightLogo->attribute ? asset('storage/' . $lightLogo->attribute) : asset('assets/media/logos/docms-light.svg') }}"
+                class="h-25px app-sidebar-logo-default theme-light-show" />
+
+            <img alt="Logo"
+                src="{{ $lightLogo && $lightLogo->attribute ? asset('storage/' . $lightLogo->attribute) : asset('assets/media/logos/docms-light.svg') }}"
                 class="h-20px app-sidebar-logo-minimize" />
-            <img alt="Logo" src="{{ asset('assets/media/logos/docms-dark.svg') }}"
+
+            <img alt="Logo"
+                src="{{ $darkLogo && $darkLogo->attribute ? asset('storage/' . $darkLogo->attribute) : asset('assets/media/logos/docms-dark.svg') }}"
                 class="h-25px app-sidebar-logo-default theme-dark-show">
         </a>
         <div id="kt_app_sidebar_toggle"

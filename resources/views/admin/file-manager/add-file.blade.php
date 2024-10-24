@@ -38,9 +38,8 @@
                             <!--end::Controls-->
                             <!-- Progress bar -->
                             <div class="progress mt-3" style="display: none">
-                                <div id="progress-bar" class="progress-bar" role="progressbar"
-                                    style="width: 0%" aria-valuenow="0" aria-valuemin="0"
-                                    aria-valuemax="100">0%</div>
+                                <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%"
+                                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                             </div>
                             <!-- Status text -->
                             <div id="status-text" class="mt-2"></div>
@@ -49,8 +48,7 @@
                                 <div class="dropzone-item p-5" style="display:none">
                                     <!--begin::File-->
                                     <div class="dropzone-file">
-                                        <div class="dropzone-filename text-gray-900"
-                                            title="some_image_file_name.jpg">
+                                        <div class="dropzone-filename text-gray-900" title="some_image_file_name.jpg">
                                             <span data-dz-name="">some_image_file_name.jpg</span>
                                             <strong>(
                                                 <span data-dz-size="">340kb</span>)</strong>
@@ -61,9 +59,8 @@
                                     <!--begin::Progress-->
                                     <div class="dropzone-progress">
                                         <div class="progress bg-gray-300">
-                                            <div class="progress-bar bg-primary" role="progressbar"
-                                                aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-                                                data-dz-uploadprogress=""></div>
+                                            <div class="progress-bar bg-primary" role="progressbar" aria-valuemin="0"
+                                                aria-valuemax="100" aria-valuenow="0" data-dz-uploadprogress=""></div>
                                         </div>
                                     </div>
                                     <!--end::Progress-->
@@ -72,8 +69,7 @@
                                         <span class="dropzone-start">
                                             <i class="ki-duotone ki-to-right fs-1"></i>
                                         </span>
-                                        <span class="dropzone-cancel" data-dz-remove=""
-                                            style="display: none;">
+                                        <span class="dropzone-cancel" data-dz-remove="" style="display: none;">
                                             <i class="ki-duotone ki-cross fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -189,7 +185,7 @@
                     filesProcessed++;
                     if (filesProcessed === remainingFiles) {
                         myDropzone
-                    .processQueue(); // Start uploading when all files are processed
+                            .processQueue(); // Start uploading when all files are processed
                     }
                 });
             } else {
@@ -229,6 +225,29 @@
         }
     });
 
+    let hasError = false; // Flag to track if any errors occur
+
+    // Handle errors
+    myDropzone.on("error", function (file, errorMessage) {
+        hasError = true; // Set flag to true if an error occurs
+
+        Swal.fire({
+        text: `Upload failed for ${file.name}`,
+        icon: "error",
+        buttonsStyling: false,
+        confirmButtonText: "Ok, got it!",
+        allowOutsideClick: false, // Prevent closing by clicking outside
+        allowEscapeKey: false,    // Prevent closing with the Escape key
+        customClass: {
+            confirmButton: "btn btn-primary"
+        }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.reload(); // Reload after clicking "Ok"
+            }
+        });
+    });
+
     // Hide the total progress bar when nothing's uploading anymore
     myDropzone.on("queuecomplete", function () {
         const progressBars = dropzone.querySelectorAll('.dz-complete');
@@ -239,7 +258,9 @@
                 progressBar.querySelector('.progress').style.opacity = "0";
             });
             // Reload the page after all files are processed
-            window.location.reload();
+            if (!hasError) {
+                window.location.reload();
+            }
         }, 500);
     });
 

@@ -20,7 +20,7 @@ class AdminMiddleware
             if (Auth::user()->role_guid == 1 || Auth::user()->role_guid == 2 || Auth::user()->role_guid == 3) {
                 return $next($request);
             } else {
-                return redirect('/dashboard')->with('message', 'error');
+                return redirect('/home')->with('message', 'error');
             }
         } else {
             return redirect('/login')->with('message', 'error');

@@ -29,6 +29,7 @@ Before you begin, ensure you have met the following requirements:
 -   Laragon(preferred)/XAMPP
 -   Gemini
 -   Mailtrap (If to use email delivery platform to test, send and control email infrastructure in one place)
+-   Microsoft Azure SSO
 
 ## Installation
 

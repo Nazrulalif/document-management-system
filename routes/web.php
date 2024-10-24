@@ -8,6 +8,7 @@ use App\Http\Controllers\admin\MyProfilController;
 use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SearchController;
+use App\Http\Controllers\admin\SettingController;
 use App\Http\Controllers\admin\StarredController as AdminStarredController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\AuthController;
@@ -47,6 +48,7 @@ Route::get('/', function () {
 
     return view('session.login-form', compact('isParentExist'));
 })->name('login');
+
 // Log out
 Route::get('/logout', function (Request $request) {
     AuditLog::create([
@@ -55,7 +57,6 @@ Route::get('/logout', function (Request $request) {
         'user_guid' => Auth::user()->id,
         'ip_address' => $request->ip(),
     ]);
-    Auth::guard()->logout();
     // $request->session()->invalidate();
     // $request->session()->regenerateToken();
 
@@ -72,7 +73,8 @@ Route::get('/logout', function (Request $request) {
 
 //Log in
 Route::get('/login', [AuthController::class, 'index'])->name('login');
-Route::post('/login-post', [AuthController::class, 'post'])->name('login.post');;
+Route::post('/login-post', [AuthController::class, 'post'])->name('login.post');
+
 //Login SSO azure
 Route::get('/auth/microsoft', [AuthController::class, 'azure_redirect'])->name('azure.redirect');
 Route::get('/auth/microsoft/callback', [AuthController::class, 'callbackAzure']);
@@ -87,6 +89,10 @@ Route::post('/new-password', [ForgotPasswordController::class, 'reset_password_p
 Route::get('/register-main', [AuthController::class, 'register_parent'])->name('register.parent');
 Route::post('/register-main-post', [AuthController::class, 'register_parent_post'])->name('register.parent.post');
 Route::get('/register-success', [AuthController::class, 'register_success'])->name('register.parent.success');
+
+Route::fallback(function () {
+    return redirect('/');
+});
 
 // Admin Routes
 route::prefix('admin')->middleware('isadmin')->group(function () {
@@ -115,6 +121,10 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
         Route::post('/role-update/{id}', [RoleController::class, 'update'])->name('role.update');
         //view role
         Route::get('/view-role/{uuid}', [RoleController::class, 'view'])->name('role.view');
+
+        //system setting
+        route::get('/system-setting', [SettingController::class, 'index'])->name('setting.index');
+        route::post('/system-setting-post', [SettingController::class, 'main_post'])->name('setting.index.post');
     });
 
     Route::middleware('role:1,2')->group(function () {

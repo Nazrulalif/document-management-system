@@ -17,8 +17,15 @@
         <!--end::Sidebar mobile toggle-->
         <!--begin::Mobile logo-->
         <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
+            @php
+            // Retrieve the logos from the database directly in the view
+            $favicon = \App\Models\SystemSetting::where('name', 'favicon')->first();
+            @endphp
+            
             <a href="{{ route('dashboard.admin') }}" class="d-lg-none">
-                <img alt="Logo" src="{{ asset('assets/media/logos/docms-favicon.svg') }}" class="h-30px" />
+                <img alt="Logo"
+                    src="{{ $favicon && $favicon->attribute ? asset('storage/' . $favicon->attribute) : asset('assets/media/logos/docms-favicon.svg') }}"
+                    class="h-30px" />
             </a>
         </div>
         <!--begin::Header wrapper-->
@@ -59,8 +66,7 @@
                         data-kt-menu="true" data-kt-element="theme-mode-menu">
                         <!--begin::Menu item-->
                         <div class="menu-item px-3 my-0">
-                            <a href="#" class="menu-link px-3 py-2" data-kt-element="mode"
-                                data-kt-value="light">
+                            <a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="light">
                                 <span class="menu-icon" data-kt-element="icon">
                                     <i class="ki-duotone ki-night-day fs-2">
                                         <span class="path1"></span>
@@ -81,8 +87,7 @@
                         <!--end::Menu item-->
                         <!--begin::Menu item-->
                         <div class="menu-item px-3 my-0">
-                            <a href="#" class="menu-link px-3 py-2" data-kt-element="mode"
-                                data-kt-value="dark">
+                            <a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="dark">
                                 <span class="menu-icon" data-kt-element="icon">
                                     <i class="ki-duotone ki-moon fs-2">
                                         <span class="path1"></span>
@@ -104,7 +109,8 @@
                     <div class="cursor-pointer symbol symbol-35px"
                         data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
                         data-kt-menu-placement="bottom-end">
-                        <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}" class="rounded-3" alt="user">
+                        <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}"
+                            class="rounded-3" alt="user">
                     </div>
                     <!--begin::User account menu-->
                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px"
@@ -114,7 +120,8 @@
                             <div class="menu-content d-flex align-items-center px-3">
                                 <!--begin::Avatar-->
                                 <div class="symbol symbol-50px me-5">
-                                    <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}" class="rounded-3" alt="user">
+                                    <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}"
+                                        class="rounded-3" alt="user">
                                 </div>
                                 <!--end::Avatar-->
                                 <!--begin::Username-->

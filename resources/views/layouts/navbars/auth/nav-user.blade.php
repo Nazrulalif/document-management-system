@@ -17,8 +17,14 @@
         <!--end::Sidebar mobile toggle-->
         <!--begin::Mobile logo-->
         <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
-            <a href="{{ route('dashboard.admin') }}" class="d-lg-none">
-                <img alt="Logo" src="{{ asset('assets/media/logos/docms-favicon.svg') }}" class="h-30px" />
+            @php
+            // Retrieve the logos from the database directly in the view
+            $favicon = \App\Models\SystemSetting::where('name', 'favicon')->first();
+            @endphp
+            <a href="{{ route('home.user') }}" class="d-lg-none">
+                <img alt="Logo"
+                    src="{{ $favicon && $favicon->attribute ? asset('storage/' . $favicon->attribute) : asset('assets/media/logos/docms-favicon.svg') }}"
+                    class="h-30px" />
             </a>
         </div>
         <!--begin::Header wrapper-->

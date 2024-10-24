@@ -4,13 +4,23 @@
     data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
     <!--begin::Logo-->
     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
+        @php
+        // Retrieve the logos from the database directly in the view
+        $lightLogo = \App\Models\SystemSetting::where('name', 'nav_light_logo')->first();
+        $darkLogo = \App\Models\SystemSetting::where('name', 'nav_dark_logo')->first();
+        @endphp
         <!--begin::Logo image-->
         <a href="{{ route('dashboard.admin') }}">
-            <img alt="Logo" src="{{ asset('assets/media/logos/docms-light.svg') }}"
+            <img alt="Logo"
+                src="{{ $lightLogo && $lightLogo->attribute ? asset('storage/' . $lightLogo->attribute) : asset('assets/media/logos/docms-light.svg') }}"
                 class="h-25px app-sidebar-logo-default theme-light-show" />
-            <img alt="Logo" src="{{ asset('assets/media/logos/docms-light.svg') }}"
+
+            <img alt="Logo"
+                src="{{ $lightLogo && $lightLogo->attribute ? asset('storage/' . $lightLogo->attribute) : asset('assets/media/logos/docms-light.svg') }}"
                 class="h-20px app-sidebar-logo-minimize" />
-            <img alt="Logo" src="{{ asset('assets/media/logos/docms-dark.svg') }}"
+
+            <img alt="Logo"
+                src="{{ $darkLogo && $darkLogo->attribute ? asset('storage/' . $darkLogo->attribute) : asset('assets/media/logos/docms-dark.svg') }}"
                 class="h-25px app-sidebar-logo-default theme-dark-show">
         </a>
         <div id="kt_app_sidebar_toggle"
@@ -190,6 +200,30 @@
                         </a>
                         <!--end:Menu link-->
                     </div>
+
+                    @if (Auth::user()->role_guid == 1)
+                    <div class="menu-item pt-5">
+                        <!--begin:Menu content-->
+                        <div class="menu-content">
+                            <span class="menu-heading fw-bold text-uppercase fs-7">System Setting</span>
+                        </div>
+                        <!--end:Menu content-->
+                    </div>
+
+                    <div class="menu-item">
+                        <!--begin:Menu link-->
+                        <a class="menu-link {{ (Request::is('admin/system-setting',) ? 'active' : '') }}"
+                            href="{{ route('setting.index') }}">
+                            <span class="menu-icon">
+                                <i class="ki-outline ki-gear fs-2"></i>
+                            </span>
+                            <span class="menu-title">Settings</span>
+                        </a>
+                        <!--end:Menu link-->
+                    </div>
+
+                    @endif
+
 
                     <div class="menu-item pt-5">
                         <!--begin:Menu content-->

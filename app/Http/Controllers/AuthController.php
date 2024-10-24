@@ -50,7 +50,7 @@ class AuthController extends Controller
                         'user_guid' => $user->id,
                         'ip_address' => $request->ip(),
                     ]);
-                    return redirect()->intended(route('dashboard.admin'))->with("success", "Log in Successfully");
+                    return redirect()->intended(route('dashboard.admin'))->with("success", "Authentication success");
                 } else {
                     AuditLog::create([
                         'action' => 'Login',
@@ -58,15 +58,15 @@ class AuthController extends Controller
                         'user_guid' => $user->id,
                         'ip_address' => $request->ip(),
                     ]);
-                    return redirect()->intended(route('home.user'))->with("success", "Log in Successfully");
+                    return redirect()->intended(route('home.user'))->with("success", "Authentication success");
                 }
             } else {
                 Auth::logout();
-                return redirect(route('login'))->with("error", "Your account has been deactivated");
+                return redirect(route('login'))->with("error", "Authentication failed, your account not exist in this system. please select another account.");
             }
         }
 
-        return redirect(route('login'))->with("error", "The details you entered are incorrect");
+        return redirect(route('login'))->with("error", "Authentication failed, the details you entered are incorrect.");
     }
 
     public function azure_redirect()
@@ -98,22 +98,35 @@ class AuthController extends Controller
                     // Redirect based on user role
                     if (in_array($finduser->role_guid, [1, 2, 3])) {
                         return redirect()->intended(route('dashboard.admin'))
-                            ->with("success", "Log in Successfully");
+                            ->with("success", "Authentication success");
                     } else {
                         return redirect()->intended(route('home.user'))
-                            ->with("success", "Log in Successfully");
+                            ->with("success", "Authentication success");
                     }
                 } else {
                     Auth::guard()->logout();
                     $request->session()->invalidate();
                     $request->session()->regenerateToken();
 
-                    return redirect(route('login'))
-                        ->with("error", "Your account has been deactivated");
+                    // return redirect(route('login'))
+                    //     ->with("error", "Your account has been deactivated");
+
+                    $logoutUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/logout?" .
+                        "post_logout_redirect_uri=" . urlencode(route('login'));
+                    return redirect($logoutUrl)
+                        ->with("error", "Authentication failed, Your account has been deactivated.");
                 }
             } else {
-                // No user found
-                return redirect(route('login'))->with("error", "Authentication failed, your account not exist in this system");
+                Auth::guard()->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                //     return redirect(route('login'))
+                //         ->with("error", "Authentication failed, your account not exist in this system. please select another account.");
+                $logoutUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/logout?" .
+                    "post_logout_redirect_uri=" . urlencode(route('login'));
+                return redirect($logoutUrl)
+                    ->with("error", "Authentication failed, your account not exist in this system. please select another account.");
             }
         } catch (\Exception $e) {
             // Redirect with an error message

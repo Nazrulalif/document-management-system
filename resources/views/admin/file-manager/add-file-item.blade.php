@@ -232,6 +232,29 @@
         }
     });
 
+    let hasError = false; // Flag to track if any errors occur
+
+    // Handle errors
+    myDropzone.on("error", function (file, errorMessage) {
+        hasError = true; // Set flag to true if an error occurs
+
+        Swal.fire({
+        text: `Upload failed for ${file.name}`,
+        icon: "error",
+        buttonsStyling: false,
+        confirmButtonText: "Ok, got it!",
+        allowOutsideClick: false, // Prevent closing by clicking outside
+        allowEscapeKey: false,    // Prevent closing with the Escape key
+        customClass: {
+            confirmButton: "btn btn-primary"
+        }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.reload(); // Reload after clicking "Ok"
+            }
+        });
+    });
+
     // Hide the total progress bar when nothing's uploading anymore
     myDropzone.on("queuecomplete", function () {
         const progressBars = dropzone.querySelectorAll('.dz-complete');
@@ -242,7 +265,9 @@
                 progressBar.querySelector('.progress').style.opacity = "0";
             });
             // Reload the page after all files are processed
-            window.location.reload();
+            if (!hasError) {
+                window.location.reload();
+            }
         }, 500);
     });
 

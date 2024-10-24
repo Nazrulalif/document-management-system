@@ -390,7 +390,8 @@ class FileManagerController extends Controller
             DocumentVersion::where('doc_guid', $doc->id)->delete();
 
             // Delete the document itself
-            $doc->delete();
+            Document::join('document_versions', 'document_versions.doc_guid', '=', 'documents.id')
+                ->where('documents.folder_guid', '=', $folder->id)->delete();
         }
 
         // Find all subfolders of the current folder

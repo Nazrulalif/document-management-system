@@ -68,6 +68,7 @@
     <!--end::Submit button-->
     @else
     <div class="row g-3 mb-9">
+       
         <!--begin::Col-->
         <div class="col-md-12">
             <!--begin::Google link=-->
@@ -78,10 +79,11 @@
             <!--end::Google link=-->
         </div>
         <!--end::Col-->
+        <div class="separator separator-content my-14">
+            <span class="w-1000px text-gray-500 fw-semibold fs-7">Sign Up parent company to continue sign in</span>
+        </div>
     </div>
-    <div class="separator separator-content my-14">
-        <span class="w-300px text-gray-500 fw-semibold fs-7">Sign Up parent company to continue sign in</span>
-    </div>
+    
     @endif
 
 

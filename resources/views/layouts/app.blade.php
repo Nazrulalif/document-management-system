@@ -4,11 +4,18 @@
 <!--begin::Head-->
 
 <head>
-    <title>DocMS</title>
+    @php
+    $favicon = \App\Models\SystemSetting::where('name', 'favicon')->first();
+    $systemName = \App\Models\SystemSetting::where('name', 'system_name')->first();
+    $pageLoader = \App\Models\SystemSetting::where('name', 'page_loader')->first();
+    $loginBackground = \App\Models\SystemSetting::where('name', 'page_loader')->first();
+    @endphp
+    <title>{{ $systemName && $systemName->attribute ? $systemName->attribute : 'DocMS' }}</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="shortcut icon" href="{{ asset('assets/media/logos/docms-favicon.svg') }}" />
+    
+    <link rel="shortcut icon" href="{{ $favicon && $favicon->attribute ? asset('storage/' . $favicon->attribute) : asset('assets/media/logos/docms-favicon.svg') }}" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!--begin::Fonts(mandatory for all pages)-->
@@ -32,10 +39,12 @@
     data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" class="app-default" data-kt-app-page-loading-enabled="true" data-kt-app-page-loading="on"
     >
 
+    @if($pageLoader && $pageLoader->attribute == 'Y')
     <div class="page-loader flex-column bg-dark bg-opacity-25">
         <span class="spinner-border text-primary" role="status"></span>
         <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
     </div>
+    @endif
 
     <!--begin::Theme mode setup on page load-->
     <script>
