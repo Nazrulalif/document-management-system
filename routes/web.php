@@ -55,19 +55,28 @@ Route::get('/logout', function (Request $request) {
         'user_guid' => Auth::user()->id,
         'ip_address' => $request->ip(),
     ]);
+    Auth::guard()->logout();
+    // $request->session()->invalidate();
+    // $request->session()->regenerateToken();
 
-    // Invalidate the session (destroy all session data)
-    $request->session()->invalidate();
+    // return redirect(route('login'));
 
-    // Regenerate session token
-    $request->session()->regenerateToken();
+    Auth::guard()->logout();
+    $postLogoutRedirectUri = route('login') . "?prompt=login";
 
-    // Redirect to login page
-    return redirect(route('login'));
+    $azureLogoutUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri="
+        . urlencode($postLogoutRedirectUri);
+
+    return redirect($azureLogoutUrl);
 })->name('logout');
+
 //Log in
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('/login-post', [AuthController::class, 'post'])->name('login.post');;
+//Login SSO azure
+Route::get('/auth/microsoft', [AuthController::class, 'azure_redirect'])->name('azure.redirect');
+Route::get('/auth/microsoft/callback', [AuthController::class, 'callbackAzure']);
+
 // forget password
 Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('password.request');
 Route::post('/email-verify', [ForgotPasswordController::class, 'email_verify'])->name('email.verify');

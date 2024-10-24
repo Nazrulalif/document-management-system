@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -67,6 +68,60 @@ class AuthController extends Controller
 
         return redirect(route('login'))->with("error", "The details you entered are incorrect");
     }
+
+    public function azure_redirect()
+    {
+        return Socialite::with('azure')->redirect();
+    }
+
+    public function callbackAzure(Request $request)
+    {
+        try {
+            $azureUser = Socialite::with('azure')->user();
+
+            // Find user by email
+            $finduser = User::where('email', $azureUser->getEmail())->first();
+
+            if ($finduser) {
+                // Login the user
+                Auth::loginUsingId($finduser->id);
+
+                if ($finduser->is_active === "Y") {
+                    // Log the login action
+                    AuditLog::create([
+                        'action' => 'Login',
+                        'model' => 'User',
+                        'user_guid' => $finduser->id,
+                        'ip_address' => $request->ip(),
+                    ]);
+
+                    // Redirect based on user role
+                    if (in_array($finduser->role_guid, [1, 2, 3])) {
+                        return redirect()->intended(route('dashboard.admin'))
+                            ->with("success", "Log in Successfully");
+                    } else {
+                        return redirect()->intended(route('home.user'))
+                            ->with("success", "Log in Successfully");
+                    }
+                } else {
+                    Auth::guard()->logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+
+                    return redirect(route('login'))
+                        ->with("error", "Your account has been deactivated");
+                }
+            } else {
+                // No user found
+                return redirect(route('login'))->with("error", "Authentication failed, your account not exist in this system");
+            }
+        } catch (\Exception $e) {
+            // Redirect with an error message
+            return redirect(route('login'))
+                ->with("error", "Authentication failed, kindly contact the Administrator!");
+        }
+    }
+
 
     public function register_parent()
     {

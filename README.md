@@ -1,16 +1,24 @@
 # Document Management System (DMS)
 
 <p align="center">
-  <a href="https://laravel.com" target="_blank">
-    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
-  </a>
+    <a href="https://laravel.com" target="_blank">
+        <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg"
+            width="400" alt="Laravel Logo">
+    </a>
 </p>
 
 ## About DMS
 
-The Document Management System (DMS) is a comprehensive solution designed for corporate entities to efficiently manage and control their documents and records across various companies under their umbrella. This system integrates seamlessly with the existing Corporate Information System (CIS), enhancing its capabilities by adding robust document version control, secure file storage, and user access management.
+The Document Management System (DMS) is a comprehensive solution designed for corporate entities to efficiently manage
+and control their documents and records across various companies under their umbrella. This system integrates seamlessly
+with the existing Corporate Information System (CIS), enhancing its capabilities by adding robust document version
+control, secure file storage, and user access management.
 
-The DMS allows for the streamlined upload, organization, and retrieval of documents, ensuring that every version of a document is tracked and accessible, thereby facilitating better compliance and audit trails. By centralizing document management, the DMS helps companies maintain accurate records, manage sensitive information securely, and provide controlled access to essential corporate documents. This ensures that all critical documentation is easily accessible and properly managed, supporting the efficient operation and oversight of multiple business entities.
+The DMS allows for the streamlined upload, organization, and retrieval of documents, ensuring that every version of a
+document is tracked and accessible, thereby facilitating better compliance and audit trails. By centralizing document
+management, the DMS helps companies maintain accurate records, manage sensitive information securely, and provide
+controlled access to essential corporate documents. This ensures that all critical documentation is easily accessible
+and properly managed, supporting the efficient operation and oversight of multiple business entities.
 
 ## Prerequisites
 
@@ -76,10 +84,13 @@ php artisan storage:link
 8. **Paste the Gemini API key in the .env file.**
    _(Refer to the section "Get Gemini API" below)_
 
-9. **Paste the Mailtrap username and password in the .env file.**
+9. **Paste the Mailtrap username and password in the `.env` file.**
    _(Refer to the section "Get Mailtrap API" below)_
 
-10. **Clear configuration:**
+10. **Paste the Microsoft Azure client ID, client secret, redirect URI and tenant ID in the `.env` file.**
+    _(Refer to the section "Get Microsoft Azure API Configuration" below)_
+
+11. **Clear configuration:**
 
 ```bash
 php artisan config:clear
@@ -87,13 +98,13 @@ php artisan cache:clear
 php artisan route:clear
 ```
 
-11. **Run the Laravel development server:**
+12. **Run the Laravel development server:**
 
 ```bash
 php artisan serve
 ```
 
-12. **Run the mail queue:**
+13. **Run the mail queue:**
 
 ```bash
 php artisan queue:work
@@ -121,4 +132,47 @@ _p/s: run this command to check connection port with mailtrap:_
 
 ```bash
 telnet sandbox.smtp.mailtrap.io 587
+```
+
+## Get Microsoft Azure API Configuration
+
+To get your Microsoft Azure API credentials:
+
+### Step 1: Register Your App in Microsoft Azure
+
+1. Sign in to the Azure Portal. (https://azure.microsoft.com/)
+2. In the left sidebar, go to Microsoft Entra ID.
+3. Click App registrations > New registration.
+4. Fill in the app details.
+
+### Step 2: Get the Client ID and Tenant ID
+
+1. After registering, go to Overview.
+2. Copy the following:
+    - Application (client) ID: This is your Client ID.
+    - Directory (tenant) ID: This is your Tenant ID. (use 'common' for testing)
+
+### Step 3: Create a Client Secret
+
+1. In the Certificates & secrets section (left menu), click New client secret.
+2. Add a description (e.g., MyAppSecret).
+3. Set an expiration period (1 year, 2 years, etc.).
+4. Click Add.
+5. Copy the value of the secret immediately — it will not be shown again. This is your Client Secret.
+
+### Step 4: Configure the Redirect URI
+
+1. In the Authentication section (left menu), click Add a platform.
+2. Choose Web.
+3. Add the redirect URI (http://localhost:8000/auth/microsoft/callback).
+4. Enable ID tokens (used for implicit and hybrid flows).
+5. Click Save.
+
+### Step 5: Paste Credentials in `.env` File
+
+```bash
+AZURE_CLIENT_ID=<your-client-id>
+AZURE_CLIENT_SECRET=<your-client-secret>
+AZURE_REDIRECT_URI=http://localhost:8000/auth/microsoft/callback
+AZURE_TENANT_ID=<your-tenant-id>
 ```
