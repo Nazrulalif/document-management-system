@@ -35,6 +35,19 @@ return [
 
     'connections' => [
 
+        'sqlsrv'  => [
+            'driver'         => 'sqlsrv',
+            'url'            => env('DATABASE_URL'),
+            'host'           => env('DB_HOST', 'BIZSERVER'),
+            'port'           => env('DB_PORT', '1433'),
+            'database'       => env('DB_DATABASE', 'DMS'),
+            'username'       => env('DB_USERNAME', 'sa'),
+            'password'       => env('DB_PASSWORD', 'p@ssw0rd'),
+            'charset'        => 'utf8',
+            'prefix'         => '',
+            'prefix_indexes' => true,
+        ],
+
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DATABASE_URL'),
