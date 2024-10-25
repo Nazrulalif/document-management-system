@@ -31,7 +31,12 @@ Before you begin, ensure you have met the following requirements:
 -   Mailtrap (If to use email delivery platform to test, send and control email infrastructure in one place)
 -   Microsoft Azure SSO
 
-## Installation
+## Installation situation
+
+-   Install in localhost (personal PC)
+-   Install in KCTECH Server using SQL SERVER
+
+## Installation in localhost (personal PC)
 
 **OPTION 1: Download zip file**
 
@@ -45,53 +50,65 @@ Follow these steps to install and set up the DMS:
 
 1. **Rename `.env.example` to `.env`**
 
-2. **Run the Composer install**
+2. **Run the Composer update:**
    _(download composer `exe` if you don't have it installed yet.https://getcomposer.org/download/)_
-
-```bash
-composer install
-```
-
-3. **Run the Composer update:**
 
 ```bash
 composer update
 ```
 
-4. **Migrate database:**
+3. **Comment these line in `database/seeders/role.php`**
+
+```bash
+DB::unprepared('SET IDENTITY_INSERT roles ON');
+```
+
+```bash
+DB::unprepared('SET IDENTITY_INSERT roles OFF');
+```
+
+4. **In `database/migration` need to Comment/Uncomment some foreign key based on server you use. It in this file:**
+
+-   folders table
+-   documents table
+-   document versions table
+-   starred folders table
+-   starred documents table
+
+5. **Migrate database:**
 
 ```bash
 php artisan migrate
 ```
 
-5. **Seed the factory for system roles:**
+6. **Seed the factory for system roles:**
 
 ```bash
 php artisan db:seed role
 ```
 
-6. **Generate app key:**
+7. **Generate app key:**
 
 ```bash
 php artisan key:generate
 ```
 
-7. **Create uploads folders:**
+8. **Create uploads folders:**
 
 ```bash
 php artisan storage:link
 ```
 
-8. **Paste the Gemini API key in the .env file.**
+9. **Paste the Gemini API key in the .env file.**
    _(Refer to the section "Get Gemini API" below)_
 
-9. **Paste the Mailtrap username and password in the `.env` file.**
-   _(Refer to the section "Get Mailtrap API" below)_
+10. **[Optional] If using Mailtrap, Paste the Mailtrap username and password in the `.env` file.**
+    _(Refer to the section "Get Mailtrap API" below)_
 
-10. **Paste the Microsoft Azure client ID, client secret, redirect URI and tenant ID in the `.env` file.**
+11. **Paste the Microsoft Azure client ID, client secret, redirect URI and tenant ID in the `.env` file.**
     _(Refer to the section "Get Microsoft Azure API Configuration" below)_
 
-11. **Clear configuration:**
+12. **Clear configuration:**
 
 ```bash
 php artisan config:clear
@@ -99,16 +116,110 @@ php artisan cache:clear
 php artisan route:clear
 ```
 
-12. **Run the Laravel development server:**
+13. **Run the Laravel development server:**
 
 ```bash
-php artisan serve
+php artisan serve --port=8080
 ```
 
-13. **Run the mail queue:**
+14. **Run the mail queue:**
 
 ```bash
 php artisan queue:work
+```
+
+## Installation in KCTECH Server using SQL Server
+
+### NOTE: Laravel must install in `C:\Users\CISAdmin\Documents\applications\`.
+
+**OPTION 1: Download zip file**
+
+**OPTION 2: Clone repository:**
+
+```bash
+git clone {{ Clone with HTTPS }}
+```
+
+Follow these steps to install and set up the DMS:
+
+1. **Rename `.env.example` to `.env`**
+
+2. **Run the Composer update:**
+   _(download composer `exe` if you don't have it installed yet.https://getcomposer.org/download/)_
+
+```bash
+C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe C:\ProgramData\ComposerSetup\bin\composer.phar update
+```
+
+3. **Uncomment these line in `database/seeders/role.php` if using sqlsvr**
+
+```bash
+DB::unprepared('SET IDENTITY_INSERT roles ON');
+```
+
+```bash
+DB::unprepared('SET IDENTITY_INSERT roles OFF');
+```
+
+4. **In `database/migration` need to Comment/Uncomment some foreign key based on server you use. It in this file:**
+
+-   folders table
+-   documents table
+-   document versions table
+-   starred folders table
+-   starred documents table
+
+5. **Migrate database:**
+
+```bash
+C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan migrate
+```
+
+6. **Seed the factory for system roles:**
+
+```bash
+C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan db:seed role
+```
+
+7. **Generate app key:**
+
+```bash
+C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan key:generate
+```
+
+8. **Create uploads folders:**
+
+```bash
+C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan storage:link
+```
+
+9. **Paste the Gemini API key in the .env file.**
+   _(Refer to the section "Get Gemini API" below)_
+
+10. **[Optional] If using Mailtrap, Paste the Mailtrap username and password in the `.env` file.**
+    _(Refer to the section "Get Mailtrap API" below)_
+
+11. **Paste the Microsoft Azure client ID, client secret, redirect URI and tenant ID in the `.env` file.**
+    _(Refer to the section "Get Microsoft Azure API Configuration" below)_
+
+12. **Clear configuration:**
+
+```bash
+C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan config:clear
+C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan cache:clear
+C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan route:clear
+```
+
+13. **Run the Laravel development server:**
+
+```bash
+C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan serve --port=8080
+```
+
+14. **Run the mail queue:**
+
+```bash
+C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan queue:work
 ```
 
 ## Get Gemini API

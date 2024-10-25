@@ -38,11 +38,11 @@ return [
         'sqlsrv'  => [
             'driver'         => 'sqlsrv',
             'url'            => env('DATABASE_URL'),
-            'host'           => env('DB_HOST', 'BIZSERVER'),
-            'port'           => env('DB_PORT', '1433'),
+            'host'           => env('DB_HOST', 'KCTEH-CIS\CIS'),
+            'port'           => env('DB_PORT', 'null'),
             'database'       => env('DB_DATABASE', 'DMS'),
             'username'       => env('DB_USERNAME', 'sa'),
-            'password'       => env('DB_PASSWORD', 'p@ssw0rd'),
+            'password'       => env('DB_PASSWORD', '@s1@nSecrets'),
             'charset'        => 'utf8',
             'prefix'         => '',
             'prefix_indexes' => true,
@@ -90,22 +90,6 @@ return [
             'search_path' => 'public',
             'sslmode' => 'prefer',
         ],
-
-        'sqlsrv' => [
-            'driver' => 'sqlsrv',
-            'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', 'localhost'),
-            'port' => env('DB_PORT', '1433'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => 'utf8',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
-            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
-        ],
-
     ],
 
     /*

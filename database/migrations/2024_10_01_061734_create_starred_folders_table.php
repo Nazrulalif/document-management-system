@@ -17,8 +17,16 @@ return new class extends Migration
             $table->unsignedBigInteger('folder_guid')->nullable();
             $table->timestamps();
 
+            //Start: If using Sql Server
             $table->foreign('user_guid')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('folder_guid')->references('id')->on('folders')->onDelete('cascade');
+            $table->foreign('folder_guid')->references('id')->on('folders')->onDelete('no action')->onUpdate('no action');
+            //End: If using Sql Server
+
+            //Start: If using MYSQL
+            // $table->foreign('user_guid')->references('id')->on('users')->onDelete('cascade');
+            // $table->foreign('folder_guid')->references('id')->on('folders')->onDelete('cascade');
+            //End: If using MYSQL
+
         });
     }
 
