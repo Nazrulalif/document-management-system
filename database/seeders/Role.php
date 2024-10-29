@@ -17,7 +17,7 @@ class Role extends Seeder
         // Start the SQL Server transaction
         DB::transaction(function () {
             // Uncomment line below if using sql server
-            DB::unprepared('SET IDENTITY_INSERT roles ON');
+            // DB::unprepared('SET IDENTITY_INSERT roles ON');
 
             // Define roles and their descriptions
             $roles = [
@@ -40,7 +40,7 @@ class Role extends Seeder
             }
 
             // Uncomment line below if using sql server
-            DB::unprepared('SET IDENTITY_INSERT roles OFF');
+            // DB::unprepared('SET IDENTITY_INSERT roles OFF');
         });
     }
 }

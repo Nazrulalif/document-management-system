@@ -23,6 +23,7 @@ class SearchBar extends Component
         // Query for folders
         $this->folderResults = Folder::select('folders.*')
             ->join('users', 'users.id', '=', 'folders.created_by')
+            ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id') // Left join with shared_folders
             ->where(function ($query) {
                 // First check if org_guid matches the user's org_guid
                 $query->where('folders.org_guid', Auth::user()->org_guid)
@@ -34,12 +35,18 @@ class SearchBar extends Component
                 $query->where('users.role_guid', '1')
                     ->where('folders.folder_name', 'like', "%{$this->query}%");
             })
+            ->where(function ($query) {
+                $query->orWhere('shared_folders.org_guid', Auth::user()->org_guid) // Check for shared folders
+                    ->orWhereNull('shared_folders.org_guid'); // Ensure it can return non-shared folders too
+            })
             ->take(5) // Limit to 5 results
             ->get();
 
         // Query for documents
         $this->documentResults = Document::select('documents.*')
             ->join('users', 'users.id', '=', 'documents.upload_by')
+            ->leftJoin('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id') // Left join with shared_documents
+
             ->where(function ($query) {
                 // First check if org_guid matches the user's org_guid
                 $query->where('documents.org_guid', Auth::user()->org_guid)
@@ -50,6 +57,10 @@ class SearchBar extends Component
                 // Allow users with role_guid = 1 to see all results
                 $query->where('users.role_guid', '1')
                     ->where('documents.doc_title', 'like', "%{$this->query}%");
+            })
+            ->where(function ($query) {
+                $query->where('shared_documents.org_guid', Auth::user()->org_guid) // Check for shared documents
+                    ->orWhereNull('shared_documents.org_guid'); // Allow non-shared documents
             })
             ->take(5) // Limit to 5 results
             ->get();

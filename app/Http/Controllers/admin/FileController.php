@@ -373,8 +373,8 @@ class FileController extends Controller
                 }
 
                 // Delete the version and the document
-                $documentVersion->delete();
-                $document->delete();
+                $documentVersion = documentVersion::where('uuid', '=', $uuid)->delete();
+                $document = Document::where('latest_version_guid', '=', $uuid)->delete();
 
                 return response()->json(['success' => true, 'message' => 'File and document deleted successfully']);
             }

@@ -164,8 +164,10 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
     route::get('/file-manager/{uuid}', [FileManagerController::class, 'show_folder'])->name('folder.show');
     //create folder
     Route::post('/create-folder', [FileManagerController::class, 'create'])->name('folder.create');
-    // rename folder
+    // rename folder and file
     Route::post('/folder-rename/{id}', [FileManagerController::class, 'rename'])->name('folder.rename');
+    Route::post('/file-rename/{id}', [FileManagerController::class, 'rename_file'])->name('file.rename');
+
     //delete folder by row
     Route::post('/folder-destroy/{id}', [FileManagerController::class, 'destroy'])->name('folder.destroy');
     // delete folder by selected rows

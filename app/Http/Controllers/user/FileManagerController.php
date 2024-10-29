@@ -31,9 +31,14 @@ class FileManagerController extends Controller
                 )
                 ->join('users', 'users.id', '=', 'folders.created_by')
                 ->join('organizations', 'organizations.id', '=', 'folders.org_guid')
+                ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id') // Join with the shared_folders table
                 ->where(function ($query) {
-                    $query->where('folders.org_guid', Auth::user()->org_guid)
-                        ->orWhere('users.role_guid', '1');
+                    $query->where('folders.org_guid', Auth::user()->org_guid) // Check if folders belong to user's organization
+                        ->orWhere('users.role_guid', '1'); // Allow access for users with role_id = 1
+                })
+                ->where(function ($query) {
+                    $query->orWhere('shared_folders.org_guid', Auth::user()->org_guid) // Check for shared folders
+                        ->orWhereNull('shared_folders.org_guid'); // Ensure it can return non-shared folders too
                 })
                 ->whereNull('folders.parent_folder_guid')
                 ->get()
@@ -52,9 +57,15 @@ class FileManagerController extends Controller
             )
                 ->join('users', 'users.id', '=', 'documents.upload_by')
                 ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
-                ->where('users.org_guid', Auth::user()->org_guid)
-                ->orWhere('users.role_guid', '1')
-                ->whereNull('documents.folder_guid')
+                ->leftJoin('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id') // Join with the shared_folder table
+                ->where(function ($query) {
+                    $query->where('documents.org_guid', Auth::user()->org_guid) // Belongs to user's organization
+                        ->orWhere('users.role_guid', '1'); // Or role_guid is 1 (admin access)
+                })
+                ->where(function ($query) {
+                    $query->where('shared_documents.org_guid', Auth::user()->org_guid) // Check for shared documents within the allowed set
+                        ->orWhereNull('shared_documents.org_guid'); // Allow non-shared documents as well
+                })
                 ->get()
                 ->map(function ($document) use ($starredDocs) {
                     $document->is_starred = in_array($document->id, $starredDocs);

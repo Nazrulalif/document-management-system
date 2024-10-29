@@ -60,6 +60,7 @@
                             @include('admin.file-manager.add-folder-item')
                             @include('admin.file-manager.edit-folder')
                             @include('admin.file-manager.add-file-item')
+                            @include('admin.file-manager.rename-file')
                             <!--end::Modal - Add task-->
                         </div>
                         <!--end::Card toolbar-->

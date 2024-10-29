@@ -186,7 +186,7 @@
                             <!--end::Card body-->
                         </div>
                     </div>
-                    <div class="col-sm-2 col-md-6 col-xl-2 mb-xl-10">
+                    <div class="col-sm-2 col-md-6 col-xl-2 mb-xl-10 mb-5">
                         <!--begin::Slider Widget 1-->
                         <div class="card card-flush h-lg-100">
                             <div class="card-body d-flex justify-content-between align-items-start flex-column">

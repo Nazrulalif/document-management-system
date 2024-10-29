@@ -7,6 +7,8 @@ var KTDatatablesServerSide = function () {
     var dt;
     var filterPayment;
 
+    const roleElement = document.getElementById('role_id');
+    const roleid = roleElement.value;
     // Private functions
     var initDatatable = function () {
         dt = $("#kt_datatable_example_2").DataTable({
@@ -97,11 +99,23 @@ var KTDatatablesServerSide = function () {
                             :
                             `/admin/file-details/${row.latest_version_guid}`; // Document link
 
-                        // Return the rendered HTML
+                        let sharedIcon = row.is_shared && roleid == 1 ?
+                            `<i class="ki-duotone ki-people fs-2" data-bs-toggle="tooltip" 
+                                 data-bs-placement="top" title="${row.shared_orgs}">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                    <span class="path4"></span>
+                                    <span class="path5"></span>
+                               </i>` :
+                            '';
+
+                        // Return the rendered HTML for the row
                         return `
                             <div class="d-flex align-items-center">
                                 <span class="icon-wrapper">${iconHtml}</span>
                                 <a href="${linkUrl}" class="text-gray-800 text-hover-primary">${data}</a>
+                                ${sharedIcon}
                             </div>
                         `;
                     }
@@ -114,10 +128,10 @@ var KTDatatablesServerSide = function () {
                             <input class="form-check-input" type="checkbox" value="${data}" data-type="${row.doc_type === null ? 'folder' : 'document'}" />
                         </div>`;
                     }
-                },{
+                }, {
                     targets: 1,
                     orderable: false,
-                    width: '300px'  
+                    width: '300px'
                 },
                 {
                     targets: -2, // Adjust to the appropriate column index
@@ -147,11 +161,11 @@ var KTDatatablesServerSide = function () {
                             :
                             `/admin/file-details/${row.latest_version_guid}`; // Document link
 
-                        let renameMenuItem = row.doc_type === null
-                            ? `<div class="menu-item px-3">
-                                   <a class="menu-link px-3" data-kt-docs-table-filter="edit_row" data-id="${data.id}">Rename</a>
-                               </div>`
-                            : '';
+                        // let renameMenuItem = row.doc_type === null ?
+                        //     `<div class="menu-item px-3">
+                        //            <a class="menu-link px-3" data-kt-docs-table-filter="edit_row" data-id="${data.id}" data-share-company="${row.shared_orgs_guid}">Edit</a>
+                        //        </div>` :
+                        //     '';
                         // Return the rendered HTML
 
                         return `
@@ -173,7 +187,9 @@ var KTDatatablesServerSide = function () {
                                                     <a href="${linkUrl}"
                                                         class="menu-link px-3">View</a>
                                                 </div>
-                                                ${renameMenuItem}
+                                                <div class="menu-item px-3">
+                                                    <a class="menu-link px-3" data-type="${row.doc_type === null ? 'folder' : 'document'}" data-kt-docs-table-filter="edit_row" data-id="${data.id}" data-share-company="${row.shared_orgs_guid}">Edit</a>
+                                                </div>
                                                 <div class="menu-item px-3">
                                                     <a href="#" class="menu-link text-danger px-3" data-kt-docs-table-filter="delete_row" data-id="${data.id}"
                                                     data-type="${row.doc_type === null ? 'folder' : 'document'}">Delete</a>
@@ -210,7 +226,6 @@ var KTDatatablesServerSide = function () {
         });
     }
 
-    // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
     var handleSearchDatatable = function () {
         const filterSearch = document.querySelector('[data-kt-docs-table-filter="search"]');
         filterSearch.addEventListener('keyup', function (e) {
@@ -226,18 +241,65 @@ var KTDatatablesServerSide = function () {
             button.addEventListener('click', function (e) {
                 e.preventDefault();
                 const rowId = this.getAttribute('data-id');
-                const rowData = dt.row($(this).closest('tr')).data(); // Get row data using DataTable
+                const rowData = dt.row($(this).closest('tr')).data();
 
-                // Populate modal input with the current folder name
-                document.getElementById('edit_folder').value = rowData.item_name;
-                document.getElementById('folderId').value = rowId;
+                const type= this.getAttribute('data-type');
+                // Safely parse shared org IDs, defaulting to an empty array if null or undefined
+                const rowShare = this.getAttribute('data-share-company');
+                const sharedOrgs = rowShare ? rowShare.split(",") : [];
 
-                // Show the modal
-                const editModal = new bootstrap.Modal(document.getElementById('kt_modal_edit_folder'));
-                editModal.show();
+                if(type == 'folder'){
+                    // Populate modal input with the current folder name
+                    document.getElementById('edit_folder').value = rowData.item_name;
+                    document.getElementById('folderId').value = rowId;
+
+                    if (sharedOrgs.length > 0 && sharedOrgs[0] !== 'null') {
+                        // If there are shared orgs, uncheck the checkbox and show the select2 dropdown
+                        $('#all_company_edit').prop('checked', false);
+                        $('#company_selection_container_edit').show();
+                        $('#org_select_edit').val(sharedOrgs).trigger('change');
+                        $('#org_select_edit').attr('required', true);
+                    } else {
+                        // If no shared orgs or the value is null, check the checkbox and hide the select2 dropdown
+                        $('#all_company_edit').prop('checked', true);
+                        $('#company_selection_container_edit').hide();
+                        $('#org_select_edit').val(null).trigger('change'); // Clear the select2 dropdown
+                        $('#org_select_edit').attr('required', false);
+                    }
+
+                    // Show the modal
+                    const editModal = new bootstrap.Modal(document.getElementById('kt_modal_edit_folder'));
+                    editModal.show();
+                    
+                }else{
+                     // Populate modal input with the current folder name
+                     document.getElementById('edit_file').value = rowData.item_name;
+                     document.getElementById('fileId').value = rowId;
+ 
+                     if (sharedOrgs.length > 0 && sharedOrgs[0] !== 'null') {
+                         // If there are shared orgs, uncheck the checkbox and show the select2 dropdown
+                         $('#all_company_file_edit').prop('checked', false);
+                         $('#company_selection_container_file_edit').show();
+                         $('#org_select_file_edit').val(sharedOrgs).trigger('change');
+                         $('#org_select_file_edit').attr('required', true);
+                     } else {
+                         // If no shared orgs or the value is null, check the checkbox and hide the select2 dropdown
+                         $('#all_company_file_edit').prop('checked', true);
+                         $('#company_selection_container_file_edit').hide();
+                         $('#org_select_file_edit').val(null).trigger('change'); // Clear the select2 dropdown
+                         $('#org_select_file_edit').attr('required', false);
+                     }
+ 
+                     // Show the modal
+                     const editModal = new bootstrap.Modal(document.getElementById('kt_modal_edit_file'));
+                     editModal.show();
+
+                }
             });
         });
-    }
+    };
+
+
 
     var handleEditFormSubmission = () => {
         // Get the form element
@@ -255,6 +317,7 @@ var KTDatatablesServerSide = function () {
             const formData = new FormData(this);
             const id = formData.get('folderId');
             const name = formData.get('edit_folder');
+            const share_guids = formData.getAll('org_name_edit[]');
 
             // Perform AJAX request
             $.ajax({
@@ -265,6 +328,7 @@ var KTDatatablesServerSide = function () {
                 },
                 data: {
                     folder_name: name, // Data to be sent to the backend
+                    org_name_edit: share_guids 
                 },
                 success: function (response) {
                     // Show success message
@@ -284,6 +348,77 @@ var KTDatatablesServerSide = function () {
 
                         // Hide the modal
                         const editModal = document.getElementById('kt_modal_edit_folder');
+                        if (editModal) {
+                            const modalInstance = bootstrap.Modal.getInstance(editModal);
+                            if (modalInstance) {
+                                modalInstance.hide();
+                            }
+                        }
+                    });
+                },
+                error: function (xhr, error) {
+                    Swal.fire({
+                        text: "There was an error updating the folder. Please try again.",
+                        icon: "error",
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok, got it!",
+                        customClass: {
+                            confirmButton: "btn fw-bold btn-primary",
+                        }
+                    });
+                }
+            });
+        });
+    };
+
+    
+    var handleEditFileFormSubmission = () => {
+        // Get the form element
+        const editForm = document.getElementById('kt_modal_edit_file_form');
+
+        if (!editForm) {
+            console.error('Edit form not found!');
+            return;
+        }
+
+        // Add submit event listener to the form
+        editForm.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(this);
+            const id = formData.get('fileId');
+            const name = formData.get('edit_file');
+            const share_guids = formData.getAll('org_name_file_edit[]');
+
+            // Perform AJAX request
+            $.ajax({
+                url: `/admin/file-rename/${id}`, // Adjusted to match your route
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token
+                },
+                data: {
+                    edit_file: name, // Data to be sent to the backend
+                    org_name_edit: share_guids 
+                },
+                success: function (response) {
+                    // Show success message
+                    console.log(response.message);
+
+                    Swal.fire({
+                        text: response.message,
+                        icon: "success",
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok, got it!",
+                        customClass: {
+                            confirmButton: "btn fw-bold btn-primary",
+                        }
+                    }).then(function () {
+                        // Refresh DataTable if applicable
+                        if (typeof dt !== 'undefined') dt.draw();
+
+                        // Hide the modal
+                        const editModal = document.getElementById('kt_modal_edit_file');
                         if (editModal) {
                             const modalInstance = bootstrap.Modal.getInstance(editModal);
                             if (modalInstance) {
@@ -574,6 +709,7 @@ var KTDatatablesServerSide = function () {
             handleEditRows();
             handleDeactiveRows();
             handleEditFormSubmission();
+            handleEditFileFormSubmission();
             toggleStarred();
         }
     }

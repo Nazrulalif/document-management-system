@@ -60,6 +60,7 @@
                             @include('admin.file-manager.add-folder')
                             @include('admin.file-manager.edit-folder')
                             @include('admin.file-manager.add-file')
+                            @include('admin.file-manager.rename-file')
                             <!--end::Modal - Add task-->
                         </div>
                         <!--end::Card toolbar-->
@@ -67,6 +68,8 @@
 
                     <!--end::Card header-->
                     <!--begin::Card body-->
+                    <input type="hidden" value="{{ Auth::user()->role_guid }}" id="role_id">
+
                     <div class="card-body py-4">
                         <div class="d-flex flex-stack">
                             <!--begin::Folder path-->
@@ -124,5 +127,5 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
 <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
-<script src="{{ asset('assets/js/custom/apps/file-manager/table-files.js') }}"></script>
+<script src="{{ asset('assets/js/custom/apps/file-manager/table-file.js') }}"></script>
 @endsection

@@ -104,7 +104,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation
 
         // Dispatch the email job to the queue
         Mail::to($user->email)
-            ->later(3, new UserRegistered($user, $generatedPassword)); // Using queue
+            ->later(1, new UserRegistered($user, $generatedPassword)); // Using queue
 
         return $user;
     }

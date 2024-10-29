@@ -35,6 +35,26 @@
                                 <a class="dropzone-remove-all btn btn-sm btn-light-primary">Remove
                                     All</a>
                             </div>
+                            @if (Auth::user()->role_guid == 1)
+                            <div class="form-check form-switch form-check-custom form-check-solid me-10 mb-5">
+                                <input class="form-check-input h-30px w-50px" name="all_company_file" type="checkbox"
+                                    value="1" id="all_company_file" />
+                                <label class="form-check-label fw-semibold text-muted" for="all_company_file">
+                                    All Companies
+                                </label>
+                            </div>
+                            
+                            <div id="company_selection_container_file" style="display: none;">
+                                <select class="form-select form-select-solid" id="org_select_file" data-control="select2"
+                                    data-close-on-select="true" data-placeholder="Select company..."
+                                    data-allow-clear="true" multiple="multiple" name="org_name_file[]">
+                                    @foreach ($company as $item)
+                                        <option value="{{ $item->id }}">{{ $item->org_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            
+                            @endif
                             <!--end::Controls-->
                             <!-- Progress bar -->
                             <div class="progress mt-3" style="display: none">
@@ -105,6 +125,32 @@
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js')}}"></script>
 
 <script>
+     // Check initial state of the checkbox
+       // Check initial state of the checkbox
+    // Initialize the toggle function on page load
+    toggleCompanySelectionFile();
+
+    // Handle the checkbox change event to toggle the company selection
+    $('#all_company_file').on('change', function () {
+        toggleCompanySelectionFile();
+    });
+
+    // Function to show/hide the company selection dropdown
+    function toggleCompanySelectionFile() {
+        if ($('#all_company_file').is(':checked')) {
+            // Hide the company selection if the checkbox is checked
+            $('#company_selection_container_file').hide();
+            // Clear any selected companies and reset the Select2 dropdown
+            $('#org_select_file').val(null).trigger('change');
+            $('#org_select_file').attr('required', false);
+        } else {
+            // Show the company selection if the checkbox is unchecked
+            $('#company_selection_container_file').show();
+            $('#org_select_file').attr('required', true);
+        }
+    }
+
+
     const id = "#kt_modal_upload_dropzone";
     const dropzone = document.querySelector(id);
 
@@ -222,6 +268,16 @@
         // Append OCR content to the form if available
         if (file.ocrText) {
             formData.append("ocr_content", file.ocrText);
+        }
+
+           // Add "all_company_file" field based on checkbox state
+        const allCompanies = document.getElementById('all_company_file').checked;
+        formData.append("all_company_file", allCompanies ? true: false);
+
+        if (!allCompanies) {
+            // If not sharing to all companies, append selected organization IDs
+            const selectedOrgs = $('#org_select_file').val() || []; // Get selected values from the select2 element
+            selectedOrgs.forEach(orgGuid => formData.append("org_name_file[]", orgGuid));
         }
     });
 

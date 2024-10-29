@@ -19,18 +19,19 @@ return new class extends Migration
             $table->unsignedBigInteger('org_guid')->nullable();
             $table->unsignedBigInteger('parent_folder_guid')->nullable();
             $table->string('is_meeting')->nullable();
+            $table->string('is_all_company')->nullable();
             $table->timestamps();
 
             //Start: If using Sql Server
-            $table->foreign('parent_folder_guid')->references('id')->on('folders')->onDelete('no action')->onUpdate('no action');
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('no action')->onUpdate('no action');
-            $table->foreign('org_guid')->references('id')->on('organizations')->onDelete('cascade');
+            // $table->foreign('parent_folder_guid')->references('id')->on('folders')->onDelete('no action')->onUpdate('no action');
+            // $table->foreign('created_by')->references('id')->on('users')->onDelete('no action')->onUpdate('no action');
+            // $table->foreign('org_guid')->references('id')->on('organizations')->onDelete('cascade');
             //End: If using Sql Server
 
             //Start: If using MYSQL
-            // $table->foreign('parent_folder_guid')->references('id')->on('folders')->onDelete('cascade');
-            // $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
-            // $table->foreign('org_guid')->references('id')->on('organizations')->onDelete('cascade');
+            $table->foreign('parent_folder_guid')->references('id')->on('folders')->onDelete('cascade');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('org_guid')->references('id')->on('organizations')->onDelete('cascade');
             //End: If using MYSQL
 
         });

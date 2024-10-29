@@ -19,6 +19,8 @@ class Folder extends Model
         'org_guid',
         'parent_folder_guid',
         'is_meeting',
+        'is_all_company',
+
     ];
 
     public function parent()
