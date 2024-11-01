@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Folder extends Model
@@ -30,23 +31,44 @@ class Folder extends Model
 
     public function children()
     {
-        // Check if the authenticated user is an admin (role_guid == 1)
+        $query = $this->hasMany(Folder::class, 'parent_folder_guid', 'id')
+            ->with('organization');
+
         if (Auth::user()->role_guid == 1) {
-            // If the user is an admin, return all child folders
-            return $this->hasMany(Folder::class, 'parent_folder_guid', 'id')
-                ->with('organization');
+            // Admin: Return all child folders, including shared ones.
+            return $query
+                ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
+                ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_folders.org_guid')
+                ->select(
+                    'folders.*',
+                    DB::raw('MAX(IF(shared_folders.folder_guid IS NOT NULL, 1, 0)) as is_shared'), // Check shared status
+                    DB::raw('GROUP_CONCAT(DISTINCT share_name.org_name SEPARATOR "\n") as shared_orgs'), // Aggregate shared org names
+                    DB::raw('GROUP_CONCAT(DISTINCT share_name.id SEPARATOR ",") as shared_orgs_guid'), // Aggregate shared org names
+
+                )
+                ->groupBy('folders.id') // Group to avoid duplicates
+                ->orderBy('folders.created_at', 'DESC'); // Order by newest first
+
         } else {
-            // For non-admin users, fetch child folders based on org_guid or admin status
-            return $this->hasMany(Folder::class, 'parent_folder_guid', 'id')
-                ->with('organization')
+            // Non-admin: Limit by org_guid or shared folders involving the user's org.
+            return $query
+                ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
+                ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_folders.org_guid')
                 ->where(function ($query) {
                     $query->where('folders.org_guid', Auth::user()->org_guid)
-                        ->orWhereHas('creator', function ($query) {
-                            $query->where('users.role_guid', '1'); // Admin users
-                        });
-                });
+                        ->orWhere('shared_folders.org_guid', Auth::user()->org_guid); // Shared with user's org
+                })
+                ->select(
+                    'folders.*',
+                    DB::raw('MAX(IF(shared_folders.folder_guid IS NOT NULL, 1, 0)) as is_shared'), // Check shared status
+                    DB::raw('GROUP_CONCAT(DISTINCT share_name.org_name SEPARATOR "\n") as shared_orgs') // Aggregate shared org names
+                )
+                ->groupBy('folders.id') // Group to avoid duplicates
+                ->orderBy('folders.created_at', 'DESC'); // Order by newest first
+
         }
     }
+
     public function documents()
     {
         return $this->hasMany(Document::class, 'folder_guid', 'id');

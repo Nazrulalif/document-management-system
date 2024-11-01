@@ -32,29 +32,17 @@
                             <!--begin::Input-->
                             <input type="text" name="edit_folder" id="edit_folder"
                                 class="form-control form-control-solid mb-3 mb-lg-0" required />
-                            <input type="hidden" id="folderId" name="folderId"> <!-- Changed to hidden input -->
+                            <input type="hidden" id="folderId" name="folderId"> 
                         </div>
                         @if (Auth::user()->role_guid === 1 && !Request::is('admin/file-manager/*'))
                         <div class="fv-row mb-7">
                             <!--begin::Label-->
                             <label class="required fw-semibold fs-6 mb-2">Share to</label>
-                            <!--end::Label-->
-                            <div class="form-check form-switch form-check-custom form-check-solid me-10 mb-5">
-                                <input class="form-check-input h-30px w-50px" name="all_company_edit" type="checkbox"
-                                    value="1" id="all_company_edit" />
-                                <label class="form-check-label fw-semibold text-muted" for="all_company_edit">All
-                                    Companies</label>
-                            </div>
-                            <div id="company_selection_container_edit" style="display: none;">
-    
-                                <select class="form-select form-select-solid" id="org_select_edit" data-control="select2"
-                                    data-close-on-select="true" data-placeholder="Select company..."
-                                    data-allow-clear="true" multiple="multiple" name="org_name_edit[]">
-                                    @foreach ($company as $item)
-                                    <option value="{{ $item->id }}">{{ $item->org_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Select an option" id="org_select_edit"  name="org_name_edit" >
+                                @foreach ($company as $item )
+                                <option value="{{ $item->id }}">{{ $item->org_name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         @endif
                     </div>
@@ -82,29 +70,6 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
 <script>
-    // Check initial state of the checkbox
-    toggleCompanySelectionEdit();
-
-    // Handle checkbox change event
-    $('#all_company_edit').on('change', function () {
-        toggleCompanySelectionEdit();
-    });
-
-    // Function to show/hide the company selection dropdown
-    function toggleCompanySelectionEdit() {
-        if ($('#all_company_edit').is(':checked')) {
-            // If checkbox is checked, hide the company selection
-            $('#company_selection_container_edit').hide();
-            // Clear any selected companies
-            $('#org_select_edit').val(null).trigger('change');
-            $('#org_select_edit').attr('required', false);
-        } else {
-            // If checkbox is unchecked, show the company selection
-            $('#company_selection_container_edit').show();
-            $('#org_select_edit').attr('required', true);
-        }
-    }
-
     // Element to indecate
     var button = document.querySelector("#button_submit");
 

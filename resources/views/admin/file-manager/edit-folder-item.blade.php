@@ -1,4 +1,4 @@
-<div class="modal fade" id="kt_modal_edit_file" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="kt_modal_edit_folder" tabindex="-1" aria-hidden="true">
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
         <!--begin::Modal content-->
@@ -6,7 +6,7 @@
             <!--begin::Modal header-->
             <div class="modal-header" id="kt_modal_add_user_header">
                 <!--begin::Modal title-->
-                <h2 class="fw-bold">Rename File</h2>
+                <h2 class="fw-bold">Rename Folder</h2>
                 <!--end::Modal title-->
                 <!--begin::Close-->
                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
@@ -19,7 +19,7 @@
             <!--begin::Modal body-->
             <div class="modal-body px-5 my-7">
                 <!--begin::Form-->
-                <form id="kt_modal_edit_file_form" class="form" autocomplete="off" action=""
+                <form id="kt_modal_edit_folder_form" class="form" autocomplete="off" action=""
                     enctype="multipart/form-data">
                     @csrf
                     <!--begin::Scroll-->
@@ -27,24 +27,25 @@
                         data-kt-scroll-activate="true" data-kt-scroll-max-height="auto" data-kt-scroll-offset="300px">
                         <div class="fv-row mb-7">
                             <!--begin::Label-->
-                            <label class="required fw-semibold fs-6 mb-2">File Name</label>
+                            <label class="required fw-semibold fs-6 mb-2">Folder Name</label>
                             <!--end::Label-->
                             <!--begin::Input-->
-                            <input type="text" name="edit_file" id="edit_file"
+                            <input type="text" name="edit_folder" id="edit_folder"
                                 class="form-control form-control-solid mb-3 mb-lg-0" required />
-                            <input type="hidden" id="fileId" name="fileId"> <!-- Changed to hidden input -->
+                            <input type="hidden" id="folderId" name="folderId"> 
                         </div>
                         @if (Auth::user()->role_guid === 1 && !Request::is('admin/file-manager/*'))
                         <div class="fv-row mb-7">
                             <!--begin::Label-->
                             <label class="required fw-semibold fs-6 mb-2">Share to</label>
-                            <select class="form-select form-select-solid" id="org_select_file_edit" data-control="select2"
-                                data-placeholder="Select company..." name="org_name_file_edit" data-hide-search="true">
-                                @foreach ($company as $item)
+                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Select an option" id="org_select_edit"  name="org_name_edit" >
+                                @foreach ($company as $item )
                                 <option value="{{ $item->id }}">{{ $item->org_name }}</option>
                                 @endforeach
                             </select>
                         </div>
+                        @else
+                        <input type="hidden" value="{{$folder_shared_id->org_guid }}" id="org_select_edit" name="org_name_edit" readonly>
                         @endif
                     </div>
                     <!--end::Scroll-->
@@ -71,29 +72,6 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
 <script>
-    // Check initial state of the checkbox
-    toggleCompanySelectionFileEdit();
-
-    // Handle checkbox change event
-    $('#all_company_file_edit').on('change', function () {
-        toggleCompanySelectionFileEdit();
-    });
-
-    // Function to show/hide the company selection dropdown
-    function toggleCompanySelectionFileEdit() {
-        if ($('#all_company_file_edit').is(':checked')) {
-            // If checkbox is checked, hide the company selection
-            $('#company_selection_container_file_edit').hide();
-            // Clear any selected companies
-            $('#org_select_file_edit').val(null).trigger('change');
-            $('#org_select_file_edit').attr('required', false);
-        } else {
-            // If checkbox is unchecked, show the company selection
-            $('#company_selection_container_file_edit').show();
-            $('#org_select_file_edit').attr('required', true);
-        }
-    }
-
     // Element to indecate
     var button = document.querySelector("#button_submit");
 

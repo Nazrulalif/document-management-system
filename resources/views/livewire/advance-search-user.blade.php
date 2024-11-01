@@ -163,7 +163,7 @@
                                             <img src="{{ $result->profile_picture ? asset('storage/' . $result->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}" alt="user">
 
                                         </div>
-                                        {{ $result->full_name }} | {{ $result->org_name }} |
+                                        {{ $result->full_name }} | Shared to: {{ $result->shared_orgs }} |
                                         {{ $result->created_at->format('d/m/Y') }}
                                     </div>
                                 </div>

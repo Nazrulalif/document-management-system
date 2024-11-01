@@ -38,24 +38,13 @@
                     <div class="fv-row mb-7">
                         <!--begin::Label-->
                         <label class="required fw-semibold fs-6 mb-2">Share to</label>
-                        <!--end::Label-->
-                        <!--begin::Input-->
-                        <div class="form-check form-switch form-check-custom form-check-solid me-10 mb-5">
-                            <input class="form-check-input h-30px w-50px" name="all_company" type="checkbox"
-                                value="1" id="all_company" />
-                            <label class="form-check-label fw-semibold text-muted" for="all_company">All
-                                Companies</label>
-                        </div>
-                        <div id="company_selection_container" style="display: none;">
-
-                            <select class="form-select form-select-solid" id="org_select" data-control="select2"
-                                data-close-on-select="true" data-placeholder="Select company..."
-                                data-allow-clear="true" multiple="multiple" name="org_name[]">
-                                @foreach ($company as $item)
-                                <option value="{{ $item->id }}">{{ $item->org_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        <select class="form-select form-select-solid" id="org_select" data-control="select2" 
+                            data-placeholder="Select company..." name="org_name" required>
+                            <option></option>
+                            @foreach ($company as $item)
+                            <option value="{{ $item->id }}">{{ $item->org_name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     @endif
                     </div>
@@ -122,27 +111,5 @@
         });
     });
 
-    // Check initial state of the checkbox
-    toggleCompanySelection();
-
-    // Handle checkbox change event
-    $('#all_company').on('change', function () {
-        toggleCompanySelection();
-    });
-
-    // Function to show/hide the company selection dropdown
-    function toggleCompanySelection() {
-        if ($('#all_company').is(':checked')) {
-            // If checkbox is checked, hide the company selection
-            $('#company_selection_container').hide();
-            // Clear any selected companies
-            $('#org_select').val(null).trigger('change');
-            $('#org_select').attr('required', false);
-        } else {
-            // If checkbox is unchecked, show the company selection
-            $('#company_selection_container').show();
-            $('#org_select').attr('required', true);
-        }
-    }
 
 </script>

@@ -36,6 +36,8 @@
                                 <a class="dropzone-remove-all btn btn-sm btn-light-primary">Remove
                                     All</a>
                             </div>
+                            <input type="hidden" value="{{$folder_shared_id->org_guid }}" id="org_select_file" name="org_name_file" readonly>
+
                             <!--end::Controls-->
                             <!-- Progress bar -->
                             <div class="progress mt-3" style="display: none">
@@ -218,41 +220,57 @@
     });
 
     myDropzone.on("sending", function (file, xhr, formData) {
-        formData.append('folder_id', folderId);
-
         // Show the total progress bar when upload starts
         const progressBars = dropzone.querySelectorAll('.progress-bar');
         progressBars.forEach(progressBar => {
             progressBar.style.opacity = "1";
         });
 
-        // Append OCR content to the form if available
+       // Get the selected organization from Select2
+        const selectedOrgs = $('#org_select_file').val();
+
+        // Check if the org_name is selected (validation)
+        if (!selectedOrgs || selectedOrgs.length === 0) {
+            // Cancel the upload and show an error
+            myDropzone.removeFile(file); // Prevents the upload
+            return;
+        }
+
+        // Append OCR content and org_name to the form if available
         if (file.ocrText) {
             formData.append("ocr_content", file.ocrText);
         }
+        formData.append("org_name_file", selectedOrgs);
+        formData.append('folder_id', folderId);
+
+       
     });
 
     let hasError = false; // Flag to track if any errors occur
 
     // Handle errors
     myDropzone.on("error", function (file, errorMessage) {
-        hasError = true; // Set flag to true if an error occurs
+    if (!hasError) { // Only show the alert if no error has been shown yet
+        hasError = true; // Set flag to true
 
         Swal.fire({
-        text: `Upload failed for ${file.name}`,
-        icon: "error",
-        buttonsStyling: false,
-        confirmButtonText: "Ok, got it!",
-        allowOutsideClick: false, // Prevent closing by clicking outside
-        allowEscapeKey: false,    // Prevent closing with the Escape key
-        customClass: {
-            confirmButton: "btn btn-primary"
-        }
+            text: `Uploading failed`,
+            icon: "error",
+            buttonsStyling: false,
+            confirmButtonText: "Ok, got it!",
+            allowOutsideClick: false, // Prevent closing by clicking outside
+            allowEscapeKey: false,    // Prevent closing with the Escape key
+            customClass: {
+                confirmButton: "btn btn-primary"
+            }
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.reload(); // Reload after clicking "Ok"
-            }
-        });
+                }
+            });
+        }
+
+        myDropzone.removeFile(file); // This line can be kept if you want to remove the file from the dropzone on error
     });
 
     // Hide the total progress bar when nothing's uploading anymore

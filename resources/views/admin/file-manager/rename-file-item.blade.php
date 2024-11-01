@@ -45,6 +45,8 @@
                                 @endforeach
                             </select>
                         </div>
+                        @else
+                        <input type="hidden" value="{{$folder_shared_id->org_guid }}" id="org_select_file_edit" name="org_name_file_edit" readonly>
                         @endif
                     </div>
                     <!--end::Scroll-->

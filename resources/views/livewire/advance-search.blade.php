@@ -51,7 +51,7 @@
 
                         @if(Auth::user()->role_guid == 1)
                         <div class="mb-10">
-                            <label class="fs-6 form-label fw-bold text-gray-900 mb-5">Company</label>
+                            <label class="fs-6 form-label fw-bold text-gray-900 mb-5">Company (Shared to)</label>
 
                             @foreach ($companyList as $item)
                             <!--begin::Checkbox-->
@@ -163,7 +163,7 @@
                                             <img src="{{ $result->profile_picture ? asset('storage/' . $result->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}" alt="user">
 
                                         </div>
-                                        {{ $result->full_name }} | {{ $result->org_name }} |
+                                        {{ $result->full_name }} | Shared to: {{ $result->shared_orgs }} |
                                         {{ $result->created_at->format('d/m/Y') }}
                                     </div>
                                 </div>

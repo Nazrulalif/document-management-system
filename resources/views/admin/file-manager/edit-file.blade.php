@@ -107,7 +107,7 @@
                             <div class="d-flex flex-stack">
                                 <label class="required fw-semibold fs-6 mb-2">Summary</label>
 
-                                @if ( $data->doc_type != 'images' && $data->doc_type != 'pptx')
+                                @if ( $data->doc_type != 'images' && $data->doc_type != 'pptx' && $data->doc_type != 'doc')
 
                                 <a type="button"
                                     class="btn btn-sm mw-120px btn-active-color-info me-5 text-info hover-scale pulse"

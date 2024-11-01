@@ -34,7 +34,7 @@ var KTDatatablesServerSide = function () {
                     data: 'item_name'
                 },
                 {
-                    data: 'org_name'
+                    data: 'shared_orgs'
                 },
                 {
                     data: 'full_name'
@@ -224,64 +224,36 @@ var KTDatatablesServerSide = function () {
     var handleEditRows = () => {
         // Select all edit buttons
         const editButtons = document.querySelectorAll('[data-kt-docs-table-filter="edit_row"]');
-
+    
         editButtons.forEach(button => {
             button.addEventListener('click', function (e) {
                 e.preventDefault();
+                
                 const rowId = this.getAttribute('data-id');
                 const rowData = dt.row($(this).closest('tr')).data();
+                const type = this.getAttribute('data-type');
 
-                const type= this.getAttribute('data-type');
-                // Safely parse shared org IDs, defaulting to an empty array if null or undefined
-                const rowShare = this.getAttribute('data-share-company');
-                const sharedOrgs = rowShare ? rowShare.split(",") : [];
-
-                if(type == 'folder'){
-                    // Populate modal input with the current folder name
+                // Safely retrieve the organization ID (or default to empty)
+                const rowShare = this.getAttribute('data-share-company') || '';
+    
+                if (type === 'folder') {
+                    // Populate modal input with folder data
                     document.getElementById('edit_folder').value = rowData.item_name;
                     document.getElementById('folderId').value = rowId;
-
-                    if (sharedOrgs.length > 0 && sharedOrgs[0] !== 'null') {
-                        // If there are shared orgs, uncheck the checkbox and show the select2 dropdown
-                        $('#all_company_edit').prop('checked', false);
-                        $('#company_selection_container_edit').show();
-                        $('#org_select_edit').val(sharedOrgs).trigger('change');
-                        $('#org_select_edit').attr('required', true);
-                    } else {
-                        // If no shared orgs or the value is null, check the checkbox and hide the select2 dropdown
-                        $('#all_company_edit').prop('checked', true);
-                        $('#company_selection_container_edit').hide();
-                        $('#org_select_edit').val(null).trigger('change'); // Clear the select2 dropdown
-                        $('#org_select_edit').attr('required', false);
-                    }
-
+                    document.getElementById('org_select_edit').value = rowData.shared_orgs_guid;
+    
                     // Show the modal
                     const editModal = new bootstrap.Modal(document.getElementById('kt_modal_edit_folder'));
                     editModal.show();
-                    
-                }else{
-                     // Populate modal input with the current folder name
-                     document.getElementById('edit_file').value = rowData.item_name;
-                     document.getElementById('fileId').value = rowId;
- 
-                     if (sharedOrgs.length > 0 && sharedOrgs[0] !== 'null') {
-                         // If there are shared orgs, uncheck the checkbox and show the select2 dropdown
-                         $('#all_company_file_edit').prop('checked', false);
-                         $('#company_selection_container_file_edit').show();
-                         $('#org_select_file_edit').val(sharedOrgs).trigger('change');
-                         $('#org_select_file_edit').attr('required', true);
-                     } else {
-                         // If no shared orgs or the value is null, check the checkbox and hide the select2 dropdown
-                         $('#all_company_file_edit').prop('checked', true);
-                         $('#company_selection_container_file_edit').hide();
-                         $('#org_select_file_edit').val(null).trigger('change'); // Clear the select2 dropdown
-                         $('#org_select_file_edit').attr('required', false);
-                     }
- 
-                     // Show the modal
-                     const editModal = new bootstrap.Modal(document.getElementById('kt_modal_edit_file'));
-                     editModal.show();
+                } else {
+                    // Populate modal input with file data
+                    document.getElementById('edit_file').value = rowData.item_name;
+                    document.getElementById('fileId').value = rowId;
+                    document.getElementById('org_select_file_edit').value = rowData.shared_orgs_guid;
 
+                    // Show the modal
+                    const editModal = new bootstrap.Modal(document.getElementById('kt_modal_edit_file'));
+                    editModal.show();
                 }
             });
         });
@@ -303,6 +275,7 @@ var KTDatatablesServerSide = function () {
             const formData = new FormData(this);
             const id = formData.get('folderId');
             const name = formData.get('edit_folder');
+            const share_guids = formData.get('org_name_edit');
 
             // Perform AJAX request
             $.ajax({
@@ -313,6 +286,7 @@ var KTDatatablesServerSide = function () {
                 },
                 data: {
                     folder_name: name, // Data to be sent to the backend
+                    org_name_edit: share_guids 
                 },
                 success: function (response) {
                     // Show success message
@@ -371,7 +345,7 @@ var KTDatatablesServerSide = function () {
             const formData = new FormData(this);
             const id = formData.get('fileId');
             const name = formData.get('edit_file');
-            const share_guids = formData.getAll('org_name_file_edit[]');
+            const share_guids = formData.get('org_name_file_edit');
 
             // Perform AJAX request
             $.ajax({

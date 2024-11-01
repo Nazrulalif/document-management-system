@@ -27,7 +27,7 @@ class FileController extends Controller
             ->get();
 
         if (!$file) {
-            return abort(404, 'Document not found'); // Or you could redirect to another page with an error message
+            return redirect()->route('file-manager.user')->with('error', 'File not found or has been deleted.');
         }
 
         $audit_logs = AuditLog::select('*', 'audit_logs.created_at as created_at')

@@ -65,7 +65,7 @@
                             <thead>
                                 <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
                                     <th class="min-w-125px">Name</th>
-                                    <th class="min-w-125px">Company</th>
+                                    <th class="min-w-125px">Shared to</th>
                                     <th class="min-w-125px">Upload by</th>
                                     <th class="min-w-125px">Add to starred</th>
                                     <th class="text-end min-w-100px"></th>

@@ -58,9 +58,9 @@
                             <!--end::Group actions-->
                             <!--begin::Modal - Add task-->
                             @include('admin.file-manager.add-folder-item')
-                            @include('admin.file-manager.edit-folder')
+                            @include('admin.file-manager.edit-folder-item')
                             @include('admin.file-manager.add-file-item')
-                            @include('admin.file-manager.rename-file')
+                            @include('admin.file-manager.rename-file-item')
                             <!--end::Modal - Add task-->
                         </div>
                         <!--end::Card toolbar-->
@@ -109,7 +109,7 @@
                                         </div>
                                     </th>
                                     <th class="min-w-125px">Name</th>
-                                    <th class="min-w-125px">Company</th>
+                                    <th class="min-w-125px">Shared to</th>
                                     <th class="min-w-125px">Upload by</th>
                                     <th class="min-w-125px">Add to starred</th>
                                     <th class="text-end min-w-100px"></th>

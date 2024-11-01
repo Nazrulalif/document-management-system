@@ -7,6 +7,7 @@ use App\Models\Document;
 use App\Models\Folder;
 use App\Models\Organization;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
 
@@ -88,16 +89,19 @@ class AdvanceSearch extends Component
             'folders.uuid',
             'folders.created_at',
             'folders.folder_name',
-            'organizations.org_name'
+            'organizations.org_name',
+            DB::raw('share_name.org_name as shared_orgs'), // Aggregate shared org names
+
         )
             ->join('users', 'users.id', '=', 'folders.created_by')
             ->join('organizations', 'organizations.id', '=', 'folders.org_guid')
             ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id') // Left join with shared_folders
+            ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_folders.org_guid')
             ->when($this->query, function ($query) {
                 $query->where('folders.folder_name', 'like', "%{$this->query}%");
             })
             ->when($this->companies, function ($query) {
-                $query->whereIn('folders.org_guid', $this->companies);
+                $query->whereIn('shared_folders.org_guid', $this->companies);
             });
 
         // Check user role and apply additional conditions
@@ -107,13 +111,9 @@ class AdvanceSearch extends Component
         } else {
             // Non-admin user sees only their organization's folders
             $folders = $query->where(function ($query) {
-                $query->where('folders.org_guid', Auth::user()->org_guid)
-                    ->orWhere('users.role_guid', '1'); // Include folders created by admins
+                $query->orWhere('shared_folders.org_guid', Auth::user()->org_guid) // Check for shared folders
+                    ->orWhereNull('shared_folders.org_guid'); // Ensure it can return non-shared folders too
             })
-                ->where(function ($query) {
-                    $query->orWhere('shared_folders.org_guid', Auth::user()->org_guid) // Check for shared folders
-                        ->orWhereNull('shared_folders.org_guid'); // Ensure it can return non-shared folders too
-                })
                 ->paginate(5)
                 ->withQueryString();
         }
@@ -142,12 +142,14 @@ class AdvanceSearch extends Component
             'documents.doc_title',
             'documents.doc_keyword',
             'document_versions.doc_content',
-            'organizations.org_name'
+            'organizations.org_name',
+            DB::raw('share_name.org_name as shared_orgs'), // Aggregate shared org names
         )
             ->join('users', 'users.id', '=', 'documents.upload_by')
             ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
             ->join('document_versions', 'documents.latest_version_guid', '=', 'document_versions.uuid')
             ->leftJoin('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id') // Left join with shared_documents
+            ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_documents.org_guid') // Join with organizations for shared names
             ->when($this->query, function ($query) {
                 $query->where(function ($subQuery) {
                     $subQuery->where('documents.doc_title', 'like', "%{$this->query}%")
@@ -159,20 +161,16 @@ class AdvanceSearch extends Component
                 return $query->where('documents.doc_type', $this->fileType);
             })
             ->when($this->companies, function ($query) {
-                return $query->whereIn('documents.org_guid', $this->companies);
+                return $query->whereIn('shared_documents.org_guid', $this->companies);
             });
 
         if (Auth::user()->role_guid == 1) {
             $documents = $query->paginate(5)->withQueryString();
         } else {
             $documents = $query->where(function ($query) {
-                $query->where('documents.org_guid', Auth::user()->org_guid) // User's own organization
-                    ->orWhere('users.role_guid', '1'); // Include folders created by admins
+                $query->where('shared_documents.org_guid', Auth::user()->org_guid) // Check for shared documents
+                    ->orWhereNull('shared_documents.org_guid');
             })
-                ->where(function ($query) {
-                    $query->where('shared_documents.org_guid', Auth::user()->org_guid) // Check for shared documents
-                        ->orWhereNull('shared_documents.org_guid'); // Allow non-shared documents
-                })
                 ->paginate(5)
                 ->withQueryString();
         }

@@ -25,7 +25,7 @@ var KTDatatablesServerSide = function () {
                     data: 'item_name',
                 },
                 {
-                    data: 'org_name'
+                    data: 'shared_orgs'
                 },
                 {
                     data: 'full_name'
@@ -165,13 +165,24 @@ var KTDatatablesServerSide = function () {
         });
 
         table = dt.$;
-
+        dt.search('').draw();
+        dt.column(1).search('').draw(); 
         dt.on('draw', function () {
             let itemCount = dt.rows({
                 search: 'applied'
             }).count();
             $('#kt_file_manager_items_counter').text(`${itemCount} items`);
+            // Apply filter on button click
+            $('#applyFilter').on('click', function () {
+                var selectedOrgName = $('#org_select_filter option:selected').text().trim();
+                dt.column(1).search(selectedOrgName || '', true, false).draw();
+            });
 
+            // Reset filter on button click
+            $('#resetFilter').on('click', function () {
+                $('#org_select_filter').val(null).trigger('change');
+                dt.column(1).search('').draw(); 
+            });
             toggleStarred();
 
             KTMenu.createInstances();

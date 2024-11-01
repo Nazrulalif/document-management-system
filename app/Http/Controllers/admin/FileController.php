@@ -40,7 +40,7 @@ class FileController extends Controller
 
         // Check if the document exists
         if (!$file) {
-            return abort(404, 'Document not found'); // Or you could redirect to another page with an error message
+            return redirect()->route('fileManager.index')->with('error', 'File not found or has been deleted.');
         }
 
         $audit_logs = AuditLog::select('*', 'audit_logs.created_at as created_at')

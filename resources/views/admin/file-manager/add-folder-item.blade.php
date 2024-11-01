@@ -37,6 +37,8 @@
                                     <input type="hidden" value="{{$folder_id->id }}" id="new_folder_id" name="new_folder_id" readonly>
                                 @endif
 
+                                <input type="hidden" value="{{$folder_shared_id->org_guid }}" id="org_name" name="org_name" readonly>
+
                         </div>
                     </div>
                     <!--end::Scroll-->

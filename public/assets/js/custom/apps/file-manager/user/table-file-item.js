@@ -32,7 +32,7 @@ var KTDatatablesServerSide = function () {
                     data: 'item_name'
                 },
                 {
-                    data: 'org_name'
+                    data: 'shared_orgs'
                 },
                 {
                     data: 'full_name'
