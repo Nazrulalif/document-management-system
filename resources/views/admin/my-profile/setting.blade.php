@@ -134,9 +134,11 @@
                     <label class="col-lg-4 col-form-label required fw-semibold fs-6">Company</label>
                     <!--end::Label-->
                     <!--begin::Col-->
-                    <div class="col-lg-8 fv-row">
-                        <input type="text" name="company" class="form-control form-control-lg form-control-solid"
-                            placeholder="Company name" value="{{ $data->org_name }}" readonly />
+                    <div class="col-lg-8 d-flex flex-column">
+                        @foreach($org_list as $organization)
+                        <input type="text" name="company" class="form-control form-control-lg form-control-solid mb-3"
+                            placeholder="Company name" value="{{ $organization->org_name }}" readonly />
+                        @endforeach
                     </div>
                     <!--end::Col-->
                 </div>

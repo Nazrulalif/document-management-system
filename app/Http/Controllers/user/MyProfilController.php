@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Folder;
 use App\Models\User;
+use App\Models\User_organization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,33 +17,41 @@ class MyProfilController extends Controller
     public function index()
     {
         $userId = Auth::user()->id;
-        $data = User::join('organizations', 'organizations.id', '=', 'users.org_guid')
-            ->join('roles', 'roles.id', '=', 'users.role_guid')
+        $data = User::join('roles', 'roles.id', '=', 'users.role_guid')
             ->where('users.id', $userId)
             ->first();
+
+        $org_list = User_organization::join('organizations', 'organizations.id', '=', 'user_organizations.org_guid')
+            ->where('user_organizations.user_guid', $userId)
+            ->get();
+
 
         $fileCount =  Document::where('upload_by', $userId)->count();
         $folderCount = Folder::where('Created_by', $userId)->count();
 
-        return view('user.my-profile.detail', compact('data', 'fileCount', 'folderCount'));
+        return view('user.my-profile.detail', compact('data', 'fileCount', 'folderCount', 'org_list'));
     }
 
     public function setting()
     {
         $userId = Auth::user()->id;
-        $data = User::join('organizations', 'organizations.id', '=', 'users.org_guid')
-            ->join('roles', 'roles.id', '=', 'users.role_guid')
+        $data = User::join('roles', 'roles.id', '=', 'users.role_guid')
             ->where('users.id', $userId)
             ->first();
 
+        $org_list = User_organization::join('organizations', 'organizations.id', '=', 'user_organizations.org_guid')
+            ->where('user_organizations.user_guid', $userId)
+            ->get();
+
+
         $fileCount =  Document::where('upload_by', $userId)->count();
         $folderCount = Folder::where('Created_by', $userId)->count();
-
 
         return view('user.my-profile.setting', compact(
             'data',
             'fileCount',
             'folderCount',
+            'org_list'
         ));
     }
 

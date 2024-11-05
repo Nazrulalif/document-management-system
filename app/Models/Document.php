@@ -22,7 +22,6 @@ class Document extends Model
         'doc_keyword',
         'upload_by',
         'folder_guid',
-        'org_guid',
         'latest_version_guid',
         'version_limit',
     ];

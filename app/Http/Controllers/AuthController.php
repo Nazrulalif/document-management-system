@@ -7,9 +7,11 @@ use App\Models\AuditLog;
 use App\Models\Organization;
 use App\Models\Stat;
 use App\Models\User;
+use App\Models\User_organization;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -174,61 +176,77 @@ class AuthController extends Controller
             'ic_number.digits_between' => 'The IC number must be between 6 and 12 digits.',
         ]);
 
-        // Attempt to create the organization
-        $org = Organization::create([
-            'org_name' => $validatedData['org_name'],
-            'reg_date' => $validatedData['reg_date'],
-            'org_address' => $validatedData['org_address'],
-            'org_place' => $validatedData['org_place'],
-            'nature_of_business' => $validatedData['nature_of_business'],
-            'org_number' => $validatedData['org_number'],
-            'is_parent' => 'Y',
-            'is_operation' => 'Y',
-        ]);
 
-        $generatedPassword = Str::random(10);
-        // Attempt to create the organization
-        $user = User::create([
-            'full_name' => $validatedData['full_name'],
-            'email' => $validatedData['email'],
-            'ic_number' => $validatedData['ic_number'],
-            'nationality' => $validatedData['nationality'],
-            'gender' => $validatedData['gender'],
-            'position' => $validatedData['position'],
-            'role_guid' => '1',
-            'org_guid' => $org->id,
-            'race' => $validatedData['race'],
-            'password' => Hash::make($generatedPassword),
-            'is_active' => 'Y',
-        ]);
+        DB::beginTransaction();
 
-        // Get current counts
-        $userCount = User::where('is_active', '=', 'Y')->count();
-        $orgCount = Organization::where('is_operation', '=', 'Y')->count();
-
-        // Get today's stat entry (or create a new one if it doesn't exist)
-        $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
-
-        if (!$todayStats) {
-            // Create a new stat entry for today if it doesn't exist
-            Stat::create([
-                'user_count' => $userCount,
-                'org_count' => $orgCount,
+        try {
+            // Create the organization
+            $org = Organization::create([
+                'org_name' => $validatedData['org_name'],
+                'reg_date' => $validatedData['reg_date'],
+                'org_address' => $validatedData['org_address'],
+                'org_place' => $validatedData['org_place'],
+                'nature_of_business' => $validatedData['nature_of_business'],
+                'org_number' => $validatedData['org_number'],
+                'is_parent' => 'Y',
+                'is_operation' => 'Y',
             ]);
-        } else {
-            // Update today's counts if the entry already exists
-            $todayStats->update([
-                'user_count' => $userCount,
-                'org_count' => $orgCount,
+
+            $generatedPassword = Str::random(10);
+
+            // Create the user
+            $user = User::create([
+                'full_name' => $validatedData['full_name'],
+                'email' => $validatedData['email'],
+                'ic_number' => $validatedData['ic_number'],
+                'nationality' => $validatedData['nationality'],
+                'gender' => $validatedData['gender'],
+                'position' => $validatedData['position'],
+                'role_guid' => '1',
+                'race' => $validatedData['race'],
+                'password' => Hash::make($generatedPassword),
+                'is_active' => 'Y',
             ]);
+
+            // Create the user_organization link
+            $user_org = User_organization::create([
+                'org_guid' => $org->id,
+                'user_guid' => $user->id,
+            ]);
+
+            // Update user and organization counts
+            $userCount = User::where('is_active', '=', 'Y')->count();
+            $orgCount = Organization::where('is_operation', '=', 'Y')->count();
+
+            // Get today's stat entry or create a new one if it doesn't exist
+            $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+            if (!$todayStats) {
+                Stat::create([
+                    'user_count' => $userCount,
+                    'org_count' => $orgCount,
+                ]);
+            } else {
+                $todayStats->update([
+                    'user_count' => $userCount,
+                    'org_count' => $orgCount,
+                ]);
+            }
+
+            // Send email notification
+            Mail::to($user->email)
+                ->later(1, new UserRegistered($user, $generatedPassword));
+
+            // Commit transaction
+            DB::commit();
+
+            // Redirect with success message
+            return redirect()->intended(route('register.parent.success'))->with("success", "Your Account Successfully Registered!");
+        } catch (\Exception $e) {
+            // Rollback transaction in case of error
+            DB::rollBack();
+            return redirect()->intended(route('register.parent'))->with("error", "Registration Failed, Please try again.");
         }
-
-        Mail::to($user->email)
-            ->later(1, new UserRegistered($user, $generatedPassword));
-
-        // Set a success message
-
-        return redirect()->intended(route('register.parent.success'))->with("success", "Your Account Successfully Register!");
     }
 
     public function register_success()

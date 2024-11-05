@@ -10,9 +10,11 @@ use App\Models\Folder;
 use App\Models\Organization;
 use App\Models\Stat;
 use App\Models\User;
+use App\Models\User_organization;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class DashboardController extends Controller
@@ -28,10 +30,35 @@ class DashboardController extends Controller
                     ->orderBy('audit_logs.id', 'desc')
                     ->get();
             } else {
-                $data = AuditLog::select('*', 'audit_logs.created_at as created_at')
+                // Get the authenticated user's organization IDs
+                // Get the authenticated user's organization IDs
+                $userOrgIds = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
+
+                // Retrieve audit logs for users in the same organizations and group by user ID and action
+                $data = AuditLog::select(
+                    'audit_logs.user_guid',
+                    'users.full_name',
+                    'audit_logs.action',
+                    'audit_logs.ip_address',
+                    'audit_logs.model',
+                    'audit_logs.changes',
+                    DB::raw('COUNT(audit_logs.id) as action_count'),
+                    DB::raw('GROUP_CONCAT(audit_logs.created_at ORDER BY audit_logs.created_at DESC) as created_dates') // Aggregate created_at if needed
+                )
                     ->join('users', 'users.id', '=', 'audit_logs.user_guid')
-                    ->where('users.org_guid', Auth::user()->org_guid)
-                    ->orderBy('audit_logs.id', 'desc')
+                    ->join('user_organizations', 'user_organizations.user_guid', '=', 'users.id')
+                    ->join('roles', 'roles.id', '=', 'users.role_guid')
+                    ->whereIn('user_organizations.org_guid', $userOrgIds) // Filter by organization IDs
+                    ->orwhere('users.role_guid', '1') // Filter by organization IDs
+                    ->groupBy(
+                        'audit_logs.user_guid',
+                        'users.full_name',
+                        'audit_logs.action',
+                        'audit_logs.ip_address',
+                        'audit_logs.model',
+                        'audit_logs.changes' // Ensure all selected non-aggregated columns are here
+                    )
+                    ->orderBy('created_dates', 'desc') // Adjust ordering if needed
                     ->get();
             }
 
@@ -47,6 +74,7 @@ class DashboardController extends Controller
                 ->make(true);
         }
 
+        // $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
 
         if (Auth::user()->role_guid == 1) {
             $fileCount = Document::count();
@@ -80,49 +108,34 @@ class DashboardController extends Controller
             $previousStats = Stat::where('org_guid', '0')->orderBy('created_at', 'desc')->skip(1)->first();
             $todayLogin = AuditLog::where('action', '=', 'login')->whereDate('created_at', Carbon::today())->count();
         } else {
-            $fileCount = Document::join('users', 'users.id', '=', 'documents.upload_by')
-                ->where('documents.org_guid', Auth::user()->org_guid)
-                ->orwhere('users.role_guid', '1')
+            $userOrgIds = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
+
+            $fileCount = Document::join('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id')
+                ->whereIn('shared_documents.org_guid', $userOrgIds)
                 ->count();
 
-            $folderCount = Folder::join('users', 'users.id', '=', 'folders.created_by')
-                ->where('folders.org_guid', Auth::user()->org_guid)
-                ->orwhere('users.role_guid', '1')
+            $folderCount = Folder::join('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
+                ->whereIn('shared_folders.org_guid', $userOrgIds)
                 ->count();
 
-            $userCount = User::where('is_active', '=', 'Y')->where('org_guid', Auth::user()->org_guid)->count();
+            $userCount = User::select('users.*', 'roles.role_name as role_name')
+                ->where('users.is_active', '=', 'Y')
+                ->whereHas('organizations', function ($query) use ($userOrgIds) {
+                    $query->whereIn('organizations.id', $userOrgIds);
+                })
+                ->with('organizations')
+                ->count();
+
             $orgCount = Organization::where('is_operation', '=', 'Y')->count();
 
             // Get today's stat entry (or create a new one if it doesn't exist)
-            $todayStats = Stat::where('org_guid', Auth::user()->org_guid)->whereDate('created_at', Carbon::today())->first();
-
-            if (!$todayStats) {
-                // Create a new stat entry for today if it doesn't exist
-                Stat::create([
-                    'org_guid' =>  Auth::user()->org_guid,
-                    'file_count' => $fileCount,
-                    'folder_count' => $folderCount,
-                    'user_count' => $userCount,
-                    'org_count' => $orgCount,
-                ]);
-            } else {
-                // Update today's counts if the entry already exists
-                $todayStats->update([
-                    'file_count' => $fileCount,
-                    'folder_count' => $folderCount,
-                    'user_count' => $userCount,
-                    'org_count' => $orgCount,
-                ]);
-            }
+            $todayStats = Stat::whereIn('org_guid', $userOrgIds)->whereDate('created_at', Carbon::today())->first();
 
             // Get yesterday's stat entry
-            $previousStats = Stat::where('org_guid', Auth::user()->org_guid)
+            $previousStats = Stat::whereIn('org_guid', $userOrgIds)
                 ->orderBy('created_at', 'desc')->skip(1)->first();
 
-            $todayLogin = AuditLog::join('users', 'users.id', '=', 'audit_logs.user_guid')
-                ->where('audit_logs.action', '=', 'login')
-                ->where('users.org_guid', Auth::user()->org_guid)
-                ->whereDate('audit_logs.created_at', Carbon::today())->count();
+            $todayLogin = 0;
         }
 
         // Default previous counts to 0 if no entry is found for yesterday

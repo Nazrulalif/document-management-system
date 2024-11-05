@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('doc_keyword')->nullable();
             $table->unsignedBigInteger('upload_by')->nullable();
             $table->unsignedBigInteger('folder_guid')->nullable();
-            $table->unsignedBigInteger('org_guid')->nullable();
             $table->char('latest_version_guid')->nullable();
             $table->integer('version_limit')->nullable();
             $table->timestamps();
@@ -31,13 +30,11 @@ return new class extends Migration
             //Start: If using Sql Server
             // $table->foreign('upload_by')->references('id')->on('users')->onDelete('cascade');
             // $table->foreign('folder_guid')->references('id')->on('folders')->onDelete('no action')->onUpdate('no action');
-            // $table->foreign('org_guid')->references('id')->on('organizations')->onDelete('no action')->onUpdate('no action');
             //End: If using Sql Server
 
             //Start: If using MYSQL
             $table->foreign('upload_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('folder_guid')->references('id')->on('folders')->onDelete('cascade');
-            $table->foreign('org_guid')->references('id')->on('organizations')->onDelete('cascade');
             //End: If using MYSQL
 
         });

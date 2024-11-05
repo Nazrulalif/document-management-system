@@ -47,7 +47,9 @@
             <!--end::Label-->
             <!--begin::Col-->
             <div class="col-lg-8 fv-row">
-                <span class="fw-semibold text-gray-800 fs-6">{{ $data->org_name }}</span>
+                @foreach($org_list as $organization)
+                <span class="fw-semibold text-gray-800 fs-6">{{ $organization->org_name }}</span><br>
+                @endforeach
             </div>
             <!--end::Col-->
         </div>

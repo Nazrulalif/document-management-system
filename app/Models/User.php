@@ -32,9 +32,14 @@ class User extends Authenticatable
         'gender',
         'is_active',
         'role_guid',
-        'org_guid',
         'profile_picture',
     ];
+
+    public function organizations()
+    {
+        return $this->belongsToMany(Organization::class, 'user_organizations', 'user_guid', 'org_guid');
+    }
+
 
     public function role()
     {

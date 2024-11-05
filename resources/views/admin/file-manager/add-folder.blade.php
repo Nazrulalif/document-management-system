@@ -38,7 +38,7 @@
                     <div class="fv-row mb-7">
                         <!--begin::Label-->
                         <label class="required fw-semibold fs-6 mb-2">Share to</label>
-                        <select class="form-select form-select-solid" id="org_select" data-control="select2" 
+                        <select class="form-select form-select-solid" id="org_select" data-control="select2" data-hide-search="true"
                             data-placeholder="Select company..." name="org_name" required>
                             <option></option>
                             @foreach ($company as $item)
@@ -46,7 +46,20 @@
                             @endforeach
                         </select>
                     </div>
+                    @else
+                    <div class="fv-row mb-7">
+                        <!--begin::Label-->
+                        <label class="required fw-semibold fs-6 mb-2">Share to</label>
+                        <select class="form-select form-select-solid" id="org_select" data-control="select2" data-hide-search="true"
+                                data-placeholder="Select company..." name="org_name" required>
+                            <option></option>
+                            @foreach ($user_orgs as $item)
+                                <option value="{{ $item->id }}">{{ $item->org_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     @endif
+                   
                     </div>
                     <!--end::Scroll-->
                     <!--begin::Actions-->

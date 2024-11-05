@@ -25,13 +25,11 @@ return new class extends Migration
             $table->string('gender')->nullable();
             $table->string('is_active')->nullable();
             $table->unsignedBigInteger('role_guid')->nullable();
-            $table->unsignedBigInteger('org_guid')->nullable();
             $table->string('profile_picture')->nullable();
             $table->rememberToken();
             $table->timestamps();
 
             $table->foreign('role_guid')->references('id')->on('roles')->onDelete('cascade');
-            $table->foreign('org_guid')->references('id')->on('organizations')->onDelete('cascade');
         });
     }
 

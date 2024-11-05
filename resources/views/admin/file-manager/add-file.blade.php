@@ -46,7 +46,14 @@
                                     @endforeach
                                 </select>
                             @else
-                                <input type="hidden" value="{{ Auth::user()->org_guid }}" id="org_select_file" name="org_name_file">
+                                <label class="required fw-semibold fs-6 mb-2">Share to</label>
+                                <select class="form-select form-select-solid" id="org_select_file" data-control="select2"
+                                    data-placeholder="Select company..." name="org_name_file" required>
+                                    <option></option>
+                                    @foreach ($user_orgs as $item)
+                                        <option value="{{ $item->id }}">{{ $item->org_name }}</option>
+                                    @endforeach
+                                </select>
                             @endif
                             <!--end::Controls-->
                             <!-- Progress bar -->

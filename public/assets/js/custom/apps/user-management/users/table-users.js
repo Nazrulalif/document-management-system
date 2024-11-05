@@ -38,7 +38,7 @@ var KTDatatablesServerSide = function () {
                     data: 'role_name'
                 },
                 {
-                    data: 'org_name'
+                    data: 'company_list'
                 },
                 {
                     data: 'formatted_date'
@@ -169,10 +169,12 @@ var KTDatatablesServerSide = function () {
                         document.getElementById('nationality').value = rowData.nationality;
                         document.getElementById('race').value = rowData.race;
                         document.getElementById('genders').value = rowData.gender;
-                        document.getElementById('org_name').value = rowData.org_guid;
                         document.getElementById('position').value = rowData.position;
                         document.getElementById('role_guid').value = rowData.role_guid;
                         // Add other fields as necessary
+                        const orgIds = rowData.organizations.map(org => org.id); // Get organization IDs
+                        $('#org_name').val(orgIds).trigger('change'); // Set selected values in Select2
+    
 
                         // Show the modal
                         new bootstrap.Modal(document.getElementById('kt_modal_edit_user')).show();
@@ -244,8 +246,8 @@ var KTDatatablesServerSide = function () {
                         }
                     });
                 },
-                error: function (xhr, error) {
-                    console.log(xhr);
+                error: function (xhr, error, response) {
+                    console.log(response);
                     Swal.fire({
                         text: "There was an error updating the user details. Please try again.",
                         icon: "error",

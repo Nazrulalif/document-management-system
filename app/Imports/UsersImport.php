@@ -6,6 +6,7 @@ use App\Mail\UserRegistered;
 use App\Models\Organization;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\User_organization;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Illuminate\Support\Facades\Hash;
@@ -59,6 +60,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation
         // Generate a random password
         $generatedPassword = Str::random(10);
         $uuid = (string) Str::uuid();
+        $userOrgIds = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
 
         if (Auth::user()->role_guid == 1) {
             // Lookup the company by name (org_guid)
@@ -68,7 +70,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation
             $role = Role::where('role_name', $row['role_guid'])->first();
         } else {
             // Lookup the company by name (org_guid)
-            $organization = Organization::where('id', Auth::user()->org_guid)->where('org_name', $row['org_guid'])->first();
+            $organization = Organization::whereIn('id', $userOrgIds)->where('org_name', $row['org_guid'])->first();
 
             // Lookup the role by name (role_guid)
             $role = Role::where('id', '!=', '1')->where('role_name', $row['role_guid'])->first();
@@ -94,13 +96,19 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation
             'gender'       => $row['gender'],
             'nationality'  => $row['nationality'],
             'race'         => $row['race'],
-            'org_guid'     => $organization->id,    // Use the organization ID
             'position'     => $row['position'],
             'role_guid'    => $role->id,            // Use the role ID
             'password'     => Hash::make($generatedPassword), // Hash the password
             'is_active'    => 'Y',                  // Mark the user as active
             'uuid'         => $uuid,                // Unique identifier for the user
         ]);
+
+        // Create the user_organization link
+        $user_org = User_organization::create([
+            'org_guid'     => $organization->id,    // Use the organization ID
+            'user_guid' => $user->id,
+        ]);
+
 
         // Dispatch the email job to the queue
         Mail::to($user->email)

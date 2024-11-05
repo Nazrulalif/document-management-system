@@ -17,7 +17,6 @@ class Folder extends Model
         'uuid',
         'folder_name',
         'created_by',
-        'org_guid',
         'parent_folder_guid',
         'is_meeting',
         'is_all_company',
@@ -31,8 +30,7 @@ class Folder extends Model
 
     public function children()
     {
-        $query = $this->hasMany(Folder::class, 'parent_folder_guid', 'id')
-            ->with('organization');
+        $query = $this->hasMany(Folder::class, 'parent_folder_guid', 'id');
 
         if (Auth::user()->role_guid == 1) {
             // Admin: Return all child folders, including shared ones.
@@ -44,24 +42,26 @@ class Folder extends Model
                     DB::raw('MAX(IF(shared_folders.folder_guid IS NOT NULL, 1, 0)) as is_shared'), // Check shared status
                     DB::raw('GROUP_CONCAT(DISTINCT share_name.org_name SEPARATOR "\n") as shared_orgs'), // Aggregate shared org names
                     DB::raw('GROUP_CONCAT(DISTINCT share_name.id SEPARATOR ",") as shared_orgs_guid'), // Aggregate shared org names
-
                 )
                 ->groupBy('folders.id') // Group to avoid duplicates
                 ->orderBy('folders.created_at', 'DESC'); // Order by newest first
 
         } else {
+            $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
+
             // Non-admin: Limit by org_guid or shared folders involving the user's org.
             return $query
                 ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
                 ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_folders.org_guid')
-                ->where(function ($query) {
-                    $query->where('folders.org_guid', Auth::user()->org_guid)
-                        ->orWhere('shared_folders.org_guid', Auth::user()->org_guid); // Shared with user's org
+                ->where(function ($query) use ($user_orgs) {
+                    $query->whereIn('shared_folders.org_guid', $user_orgs);
                 })
                 ->select(
                     'folders.*',
                     DB::raw('MAX(IF(shared_folders.folder_guid IS NOT NULL, 1, 0)) as is_shared'), // Check shared status
-                    DB::raw('GROUP_CONCAT(DISTINCT share_name.org_name SEPARATOR "\n") as shared_orgs') // Aggregate shared org names
+                    DB::raw('GROUP_CONCAT(DISTINCT share_name.org_name SEPARATOR "\n") as shared_orgs'), // Aggregate shared org names
+                    DB::raw('GROUP_CONCAT(DISTINCT share_name.id SEPARATOR ",") as shared_orgs_guid'), // Aggregate shared org names
+
                 )
                 ->groupBy('folders.id') // Group to avoid duplicates
                 ->orderBy('folders.created_at', 'DESC'); // Order by newest first
@@ -78,10 +78,10 @@ class Folder extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-    public function organization()
-    {
-        return $this->belongsTo(Organization::class, 'org_guid');
-    }
+    // public function organization()
+    // {
+    //     return $this->belongsTo(Organization::class, 'org_guid');
+    // }
 
 
     protected static function boot()

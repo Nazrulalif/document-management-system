@@ -119,14 +119,14 @@
                             <label class="required fw-semibold fs-6 mb-2">Company</label>
                             <!--end::Label-->
                             <!--begin::Input-->
-                            <select class="form-select form-control form-select-solid mb-3 mb-lg-0"
-                                data-control="select2" name="org_name" data-placeholder="Select a company" required>
+                            <select class="form-select form-control form-select-solid mb-3 mb-lg-0" data-control="select2"
+                             data-close-on-select="true"
+                             data-allow-clear="true" multiple="multiple" name="org_name[]" data-placeholder="Select a company" required>
                                 <option></option>
                                 @foreach ($company as $company )
                                 <option value="{{ $company->id }}">{{ $company->org_name }}</option>
                                 @endforeach
                             </select>
-
                             <!--end::Input-->
                             @error('organization')
                             <div class="text-danger">{{ $message }}</div>

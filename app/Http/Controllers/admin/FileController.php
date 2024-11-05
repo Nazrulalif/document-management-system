@@ -23,7 +23,6 @@ class FileController extends Controller
         $file = Document::select('*', 'documents.created_at as created_at', 'document_versions.uuid as uuid')
             ->join('document_versions', 'document_versions.uuid', '=', 'documents.latest_version_guid')
             ->join('users', 'users.id', '=', 'documents.upload_by')
-            ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
             ->where('document_versions.uuid', '=', $uuid)
             ->first();
 

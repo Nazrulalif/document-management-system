@@ -12,6 +12,7 @@ use App\Models\Organization;
 use App\Models\Role;
 use App\Models\Stat;
 use App\Models\User;
+use App\Models\User_organization;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,21 +31,27 @@ class UserController extends Controller
         if ($request->ajax()) {
 
             if (Auth::user()->role_guid == 1) {
-                $data = User::select('users.*', 'roles.role_name as role_name', 'organizations.org_name')
+                $data = User::select('users.*', 'roles.role_name as role_name')
                     ->join('roles', 'users.role_guid', '=', 'roles.id')
-                    ->leftjoin('organizations', 'organizations.id', '=', 'users.org_guid')
                     ->where('users.id', '!=', Auth::user()->id)
                     ->where('users.is_active', '=', 'Y')
                     ->orderBy('users.id', 'DESC')
+                    ->with(['organizations' => function ($query) {
+                        $query->where('is_operation', 'Y'); // Only include active organizations
+                    }])
                     ->get();
             } else {
-                $data = User::select('users.*', 'roles.role_name as role_name', 'organizations.org_name')
+                $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
+
+                $data = User::select('users.*', 'roles.role_name as role_name')
                     ->join('roles', 'users.role_guid', '=', 'roles.id')
-                    ->leftjoin('organizations', 'organizations.id', '=', 'users.org_guid')
                     ->where('users.id', '!=', Auth::user()->id)
-                    ->where('organizations.id', '=', Auth::user()->org_guid)
                     ->where('users.is_active', '=', 'Y')
+                    ->whereHas('organizations', function ($query) use ($user_orgs) {
+                        $query->whereIn('organizations.id', $user_orgs); // Check if user belongs to any of the user's organizations
+                    })
                     ->orderBy('users.id', 'DESC')
+                    ->with('organizations') // Assuming the relationship is defined in the User model
                     ->get();
             }
 
@@ -53,21 +60,28 @@ class UserController extends Controller
             // Format the date and time for each record
             $formatted_data = $data->map(function ($item) {
                 $item->formatted_date = Carbon::parse($item->created_at)->format('d-m-Y');
+                $item->company_list = $item->organizations->pluck('org_name')->implode('<br>'); // Concatenate organization names
                 return $item;
             });
 
             return DataTables::of($formatted_data)
                 ->addIndexColumn()
+                ->addColumn('company_list', function ($row) {
+                    return $row->company_list; // This will display the list of companies with line breaks
+                })
+                ->rawColumns(['company_list']) // Enable HTML rendering for this column
                 ->make(true);
         }
 
-        if (Auth::user()->role_guid == 1) {
-            $role = Role::all();
-        } else {
-            $role = Role::where('id', '!=', '1')->get();
-        }
+        $role = Role::where('id', '!=', '1')->get();
 
-        $company = Organization::where('is_operation', '=', 'Y')->get();
+        $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
+
+        if (Auth::user()->role_guid == 1) {
+            $company = Organization::where('is_operation', '=', 'Y')->get();
+        } else {
+            $company = Organization::where('is_operation', '=', 'Y')->whereIn('id', $user_orgs)->get();
+        }
 
         return view('admin.user.user-list', [
             'role' => $role,
@@ -85,53 +99,67 @@ class UserController extends Controller
             'gender' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'role_name' => 'required|string|max:255',
-            'org_name' => 'required|string|max:255',
+            // 'org_name' => 'required|string|max:255',
+            'org_name' => 'required|array',           // Ensure org_name is an array
+            'org_name.*' => 'exists:organizations,id',
             'race' => 'required|string|max:255',
         ], [
             'email.unique' => 'The email has already been taken.',
             'ic_number.digits_between' => 'The IC number must be between 6 and 12 digits.',
         ]);
 
-        $generatedPassword = Str::random(10);
-        // Attempt to create the organization
-        $user = User::create([
-            'full_name' => $validatedData['full_name'],
-            'email' => $validatedData['email'],
-            'ic_number' => $validatedData['ic_number'],
-            'nationality' => $validatedData['nationality'],
-            'gender' => $validatedData['gender'],
-            'position' => $validatedData['position'],
-            'role_guid' => $validatedData['role_name'],
-            'org_guid' => $validatedData['org_name'],
-            'race' => $validatedData['race'],
-            'password' => Hash::make($generatedPassword),
-            'is_active' => 'Y',
-        ]);
-
-        // Get current counts
-        $userCount = User::where('is_active', '=', 'Y')->count();
-        // Get today's stat entry (or create a new one if it doesn't exist)
-        $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
-
-        if (!$todayStats) {
-            // Create a new stat entry for today if it doesn't exist
-            Stat::create([
-                'user_count' => $userCount,
+        try {
+            $generatedPassword = Str::random(10);
+            // Attempt to create the organization
+            $user = User::create([
+                'full_name' => $validatedData['full_name'],
+                'email' => $validatedData['email'],
+                'ic_number' => $validatedData['ic_number'],
+                'nationality' => $validatedData['nationality'],
+                'gender' => $validatedData['gender'],
+                'position' => $validatedData['position'],
+                'role_guid' => $validatedData['role_name'],
+                'race' => $validatedData['race'],
+                'password' => Hash::make($generatedPassword),
+                'is_active' => 'Y',
             ]);
-        } else {
-            // Update today's counts if the entry already exists
-            $todayStats->update([
-                'user_count' => $userCount,
-            ]);
+
+            foreach ($validatedData['org_name'] as $org_name) {
+                User_organization::create([
+                    'user_guid' => $user->id,
+                    'org_guid' => $org_name,
+                ]);
+            }
+
+            // Get current counts
+            $userCount = User::where('is_active', '=', 'Y')->count();
+            // Get today's stat entry (or create a new one if it doesn't exist)
+            $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+            if (!$todayStats) {
+                // Create a new stat entry for today if it doesn't exist
+                Stat::create([
+                    'user_count' => $userCount,
+                ]);
+            } else {
+                // Update today's counts if the entry already exists
+                $todayStats->update([
+                    'user_count' => $userCount,
+                ]);
+            }
+
+            Mail::to($user->email)
+                ->later(1, new UserRegistered($user, $generatedPassword));
+
+            // Set a success message
+            session()->flash('success', 'New User Successfully added!');
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Registration failed, please try again.');
+
+            return redirect()->back();
         }
-
-        Mail::to($user->email)
-            ->later(1, new UserRegistered($user, $generatedPassword));
-
-        // Set a success message
-        session()->flash('success', 'New User Successfully added!');
-
-        return redirect()->back();
     }
 
     public function deactive($id)
@@ -225,7 +253,7 @@ class UserController extends Controller
     public function show($id)
     {
         // Fetch the company data from the database
-        $user = User::find($id);
+        $user = User::with('organizations')->find($id);
 
         if ($user) {
             return response()->json(['data' => $user]);
@@ -244,7 +272,13 @@ class UserController extends Controller
             return response()->json(['error' => 'User not found'], 404);
         }
 
-        // Update the company details
+        // Get current organizations associated with the user
+        $currentOrganizations = User_organization::where('user_guid', $user->id)->pluck('org_guid')->toArray();
+
+        // Get the new organizations from the request
+        $newOrganizations = request('org_name', []); // Default to an empty array if not provided
+
+        // Update the user details
         $user->update([
             'full_name' => request('full_name'),
             'email' => request('email'),
@@ -253,10 +287,26 @@ class UserController extends Controller
             'gender' => request('gender'),
             'position' => request('position'),
             'role_guid' => request('role_guid'),
-            'org_guid' => request('org_name'),
             'race' => request('race'),
         ]);
 
+        // Update user_organizations: 
+        // 1. Delete organizations that are no longer associated
+        foreach ($currentOrganizations as $org) {
+            if (!in_array($org, $newOrganizations)) {
+                User_organization::where('user_guid', $user->id)->where('org_guid', $org)->delete();
+            }
+        }
+
+        // 2. Add new organizations that are not already associated
+        foreach ($newOrganizations as $org) {
+            if (!in_array($org, $currentOrganizations)) {
+                User_organization::create([
+                    'user_guid' => $user->id,
+                    'org_guid' => $org,
+                ]);
+            }
+        }
 
         // Return success response
         return response()->json(['message' => 'User details updated successfully']);
@@ -265,16 +315,16 @@ class UserController extends Controller
 
     public function downloadTemplate()
     {
+        $userOrgIds = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
 
         if (Auth::user()->role_guid == 1) {
             // Fetch companies and roles from the database
             $companies = Organization::where('is_operation', '=', 'Y')->pluck('org_name')->toArray(); // Fetch company names
-            $roles = Role::pluck('role_name')->toArray();            // Fetch role names
         } else {
             // Fetch companies and roles from the database
-            $companies = Organization::where('is_operation', '=', 'Y')->where('id', Auth::user()->org_guid)->pluck('org_name')->toArray(); // Fetch company names
-            $roles = Role::where('id', '!=', '1')->pluck('role_name')->toArray();            // Fetch role names
+            $companies = Organization::where('is_operation', '=', 'Y')->whereIn('id', $userOrgIds)->pluck('org_name')->toArray(); // Fetch company names
         }
+        $roles = Role::where('id', '!=', '1')->pluck('role_name')->toArray();            // Fetch role names
 
 
         // Create a new Spreadsheet
@@ -386,9 +436,10 @@ class UserController extends Controller
 
     public function view($uuid)
     {
+
         // $userId = Auth::user()->id;
-        $data = User::select('*', 'users.uuid as uuid')
-            ->join('organizations', 'organizations.id', '=', 'users.org_guid')
+        $data = User::with('organizations')
+            ->select('*', 'users.uuid as uuid')
             ->join('roles', 'roles.id', '=', 'users.role_guid')
             ->where('users.uuid', '=', $uuid)
             ->first();
@@ -408,8 +459,8 @@ class UserController extends Controller
     public function setting($uuid)
     {
         // $userId = Auth::user()->id;
-        $data = User::select('*', 'users.uuid as uuid', 'users.id as id')
-            ->join('organizations', 'organizations.id', '=', 'users.org_guid')
+        $data = User::with('organizations')
+            ->select('*', 'users.uuid as uuid', 'users.id as id')
             ->join('roles', 'roles.id', '=', 'users.role_guid')
             ->where('users.uuid', '=', $uuid)
             ->first();
@@ -418,8 +469,14 @@ class UserController extends Controller
             ->where('users.uuid', $uuid)->count();
         $folderCount =  Folder::join('users', 'users.id', '=', 'folders.created_by')
             ->where('users.uuid', $uuid)->count();
+        $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
 
-        $org = Organization::where('is_operation', '=', 'Y')->get();
+        if (Auth::user()->role_guid == 1) {
+            $org = Organization::where('is_operation', '=', 'Y')->get();
+        } else {
+            $org = Organization::where('is_operation', '=', 'Y')->whereIn('id', $user_orgs)->get();
+        }
+
 
         return view('admin.user.setting', compact(
             'fileCount',
@@ -451,16 +508,38 @@ class UserController extends Controller
             'email' => $request->email,
             'race' => $request->race,
             'nationality' => $request->nationality,
-            'org_guid' => $request->org_name,
         ]);
+
+        // Get currently selected organizations
+        $selectedOrganizations = $request->org_name;
+
+        // Get current user organization IDs from the User_organization table
+        $currentOrganizations = User_organization::where('user_guid', $user->id)->pluck('org_guid')->toArray();
+
+        // Find organizations to add and remove
+        $organizationsToAdd = array_diff($selectedOrganizations, $currentOrganizations);
+        $organizationsToRemove = array_diff($currentOrganizations, $selectedOrganizations);
+
+        // Delete deselected organizations
+        User_organization::where('user_guid', $user->id)
+            ->whereIn('org_guid', $organizationsToRemove)
+            ->delete();
+
+        // Add newly selected organizations
+        foreach ($organizationsToAdd as $orgId) {
+            User_organization::create([
+                'user_guid' => $user->id,
+                'org_guid' => $orgId,
+            ]);
+        }
 
         return redirect()->back()->with(['success' => 'Your profile details updated successfully']);
     }
 
+
     public function file(Request $request, $uuid)
     {
         $data = User::select('*', 'users.uuid as uuid', 'users.id as id')
-            ->join('organizations', 'organizations.id', '=', 'users.org_guid')
             ->join('roles', 'roles.id', '=', 'users.role_guid')
             ->where('users.uuid', '=', $uuid)
             ->first();

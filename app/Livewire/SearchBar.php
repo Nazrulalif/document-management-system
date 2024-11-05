@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Document;
 use App\Models\Folder;
+use App\Models\User_organization;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -20,32 +21,33 @@ class SearchBar extends Component
     // }
     public function updatedQuery()
     {
+        $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
+
         // Query for folders
         $this->folderResults = Folder::select('folders.*')
             ->join('users', 'users.id', '=', 'folders.created_by')
             ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id') // Left join with shared_folders
-            ->where(function ($query) {
-                // First check if org_guid matches the user's org_guid
-                $query->where('shared_folders.org_guid', Auth::user()->org_guid)
-                    // Then, apply the folder name search query
-                    ->where('folders.folder_name', 'like', "%{$this->query}%")
-                    ->orWhereNull('shared_folders.org_guid'); // Ensure it can return non-shared folders too
-
+            ->where(function ($query) use ($user_orgs) {
+                // Apply org_guid filter and folder name search query
+                $query->where(function ($subQuery) use ($user_orgs) {
+                    $subQuery->whereIn('shared_folders.org_guid', $user_orgs)
+                        ->orWhereNull('shared_folders.org_guid'); // Include non-shared folders
+                })
+                    ->where('folders.folder_name', 'like', "%{$this->query}%");
             })
             ->take(5) // Limit to 5 results
             ->get();
 
-        // Query for documents
+
         $this->documentResults = Document::select('documents.*')
             ->join('users', 'users.id', '=', 'documents.upload_by')
             ->leftJoin('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id') // Left join with shared_documents
-
-            ->where(function ($query) {
-                // First check if org_guid matches the user's org_guid
-                $query->where('shared_documents.org_guid', Auth::user()->org_guid)
-                    // Then, apply the document title search query
-                    ->where('documents.doc_title', 'like', "%{$this->query}%")
-                    ->orWhereNull('shared_documents.org_guid');
+            ->where(function ($query) use ($user_orgs) {
+                $query->where(function ($subQuery) use ($user_orgs) {
+                    $subQuery->whereIn('shared_documents.org_guid', $user_orgs)
+                        ->orWhereNull('shared_documents.org_guid'); // Include non-shared documents
+                })
+                    ->where('documents.doc_title', 'like', "%{$this->query}%");
             })
             ->take(5) // Limit to 5 results
             ->get();

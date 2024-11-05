@@ -45,6 +45,18 @@
                                 @endforeach
                             </select>
                         </div>
+                        
+                        @else
+                        <div class="fv-row mb-7">
+                            <!--begin::Label-->
+                            <label class="required fw-semibold fs-6 mb-2">Share to</label>
+                            <select class="form-select form-select-solid" id="org_select_file_edit" data-control="select2"
+                                data-placeholder="Select company..." name="org_name_file_edit" data-hide-search="true">
+                                @foreach ($user_orgs as $item)
+                                <option value="{{ $item->id }}">{{ $item->org_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         @endif
                     </div>
                     <!--end::Scroll-->

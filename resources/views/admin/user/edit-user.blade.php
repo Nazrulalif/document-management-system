@@ -19,8 +19,8 @@
             <!--begin::Modal body-->
             <div class="modal-body px-5 my-7">
                 <!--begin::Form-->
-                <form id="kt_modal_edit_user_form" class="form" action="" method="post"
-                    autocomplete="off" enctype="multipart/form-data">
+                <form id="kt_modal_edit_user_form" class="form" action="" method="post" autocomplete="off"
+                    enctype="multipart/form-data">
                     @csrf
                     <!--begin::Scroll-->
                     <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll"
@@ -29,14 +29,14 @@
                         data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
                         <!--begin::Input group-->
                         <div class="fv-row mb-7">
-                        <input type="hidden" id="editId" name="id">
+                            <input type="hidden" id="editId" name="id">
 
                             <!--begin::Label-->
                             <label class="required fw-semibold fs-6 mb-2">Full Name</label>
                             <!--end::Label-->
                             <!--begin::Input-->
-                            <input type="text" name="full_name" id="full_name" class="form-control form-control-solid mb-3 mb-lg-0"
-                                placeholder="Full name" required />
+                            <input type="text" name="full_name" id="full_name"
+                                class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Full name" required />
                             <!--end::Input-->
                             @error('full_name')
                             <div class="text-danger">{{ $message }}</div>
@@ -47,8 +47,8 @@
                             <label class="required fw-semibold fs-6 mb-2">Email</label>
                             <!--end::Label-->
                             <!--begin::Input-->
-                            <input type="email" name="email" id="email" class="form-control form-control-solid mb-3 mb-lg-0"
-                                placeholder="Email" required />
+                            <input type="email" name="email" id="email"
+                                class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Email" required />
                             <!--end::Input-->
                             @error('email')
                             <div class="text-danger">{{ $message }}</div>
@@ -61,7 +61,8 @@
                                 <label class="required fw-semibold fs-6 mb-2">Ic Number/Passport Number</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" name="ic_number" id="ic_number" class="form-control form-control-solid mb-3 mb-lg-0"
+                                <input type="text" name="ic_number" id="ic_number"
+                                    class="form-control form-control-solid mb-3 mb-lg-0"
                                     placeholder="Ic Number/Passport Number" required />
                                 <!--end::Input-->
                                 @error('ic_number')
@@ -90,8 +91,8 @@
                                 <label class="required fw-semibold fs-6 mb-2">Race</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" name="race" id="race" class="form-control form-control-solid mb-3 mb-lg-0"
-                                    placeholder="race" required />
+                                <input type="text" name="race" id="race"
+                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="race" required />
                                 <!--end::Input-->
                                 @error('race')
                                 <div class="text-danger">{{ $message }}</div>
@@ -102,8 +103,8 @@
                                 <label class="required fw-semibold fs-6 mb-2">Gender</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <select class="form-select form-select-solid mb-3 mb-lg-0" 
-                                 name="gender" id="genders" data-placeholder="Select a gender" required>
+                                <select class="form-select form-select-solid mb-3 mb-lg-0" name="gender" id="genders"
+                                    data-placeholder="Select a gender" required>
                                     <option value="male">male</option>
                                     <option value="female">female</option>
                                 </select>
@@ -119,12 +120,15 @@
                             <label class="required fw-semibold fs-6 mb-2">Company</label>
                             <!--end::Label-->
                             <!--begin::Input-->
-                            <select class="form-select form-control form-select-solid mb-3 mb-lg-0"
-                                data-control="select2" name="org_name" id="org_name" data-placeholder="Select a company" required>
-                                @foreach ($company as $company )
+                            <select class="form-select form-control form-select-solid" data-control="select2"
+                                data-close-on-select="true" data-placeholder="Select a company" data-allow-clear="true"
+                                multiple="multiple" name="org_name[]" id="org_name" required>
+                                <option></option>
+                                @foreach ($company as $company)
                                 <option value="{{ $company->id }}">{{ $company->org_name }}</option>
                                 @endforeach
                             </select>
+
 
                             <!--end::Input-->
                             @error('organization')
@@ -138,8 +142,9 @@
                                 <label class="required fw-semibold fs-6 mb-2">Position</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" name="position" id="position" class="form-control form-control-solid mb-3 mb-lg-0"
-                                    placeholder="position" required />
+                                <input type="text" name="position" id="position"
+                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="position"
+                                    required />
                                 <!--end::Input-->
                                 @error('position')
                                 <div class="text-danger">{{ $message }}</div>
@@ -152,9 +157,10 @@
                                 <!--begin::Input-->
                                 {{-- <input type="text" name="role_guid" id="role_guid" class="form-control form-control-solid mb-3 mb-lg-0"
                                      required /> --}}
-                                <select class="form-select form-select-solid mb-3 mb-lg-0" name="role_guid" id="role_guid" data-placeholder="Select a role" required>
+                                <select class="form-select form-select-solid mb-3 mb-lg-0" name="role_guid"
+                                    id="role_guid" data-placeholder="Select a role" required>
                                     @foreach ($role as $role)
-                                        <option value="{{ $role->id }}">{{ $role->role_name }}</option>
+                                    <option value="{{ $role->id }}">{{ $role->role_name }}</option>
                                     @endforeach
                                 </select>
                                 <!--end::Input-->

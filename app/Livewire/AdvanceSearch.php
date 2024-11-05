@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Document;
 use App\Models\Folder;
 use App\Models\Organization;
+use App\Models\User_organization;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -83,18 +84,18 @@ class AdvanceSearch extends Component
 
     private function searchFolders()
     {
+        $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
+
         // Start the query on the Folder model
         $query = Folder::select(
             'users.full_name',
             'folders.uuid',
             'folders.created_at',
             'folders.folder_name',
-            'organizations.org_name',
             DB::raw('share_name.org_name as shared_orgs'), // Aggregate shared org names
 
         )
             ->join('users', 'users.id', '=', 'folders.created_by')
-            ->join('organizations', 'organizations.id', '=', 'folders.org_guid')
             ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id') // Left join with shared_folders
             ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_folders.org_guid')
             ->when($this->query, function ($query) {
@@ -110,10 +111,12 @@ class AdvanceSearch extends Component
             $folders = $query->paginate(5)->withQueryString();
         } else {
             // Non-admin user sees only their organization's folders
-            $folders = $query->where(function ($query) {
-                $query->orWhere('shared_folders.org_guid', Auth::user()->org_guid) // Check for shared folders
+            $folders = $query->where(function ($query) use ($user_orgs) {
+                // Only check for shared folders with the user's organizations or non-shared folders
+                $query->whereIn('shared_folders.org_guid', $user_orgs) // Check for shared folders
                     ->orWhereNull('shared_folders.org_guid'); // Ensure it can return non-shared folders too
             })
+
                 ->paginate(5)
                 ->withQueryString();
         }
@@ -132,6 +135,8 @@ class AdvanceSearch extends Component
 
     private function searchFiles()
     {
+        $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
+
         $query = Document::select(
             'users.full_name',
             'users.profile_picture',
@@ -142,11 +147,9 @@ class AdvanceSearch extends Component
             'documents.doc_title',
             'documents.doc_keyword',
             'document_versions.doc_content',
-            'organizations.org_name',
             DB::raw('share_name.org_name as shared_orgs'), // Aggregate shared org names
         )
             ->join('users', 'users.id', '=', 'documents.upload_by')
-            ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
             ->join('document_versions', 'documents.latest_version_guid', '=', 'document_versions.uuid')
             ->leftJoin('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id') // Left join with shared_documents
             ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_documents.org_guid') // Join with organizations for shared names
@@ -167,10 +170,11 @@ class AdvanceSearch extends Component
         if (Auth::user()->role_guid == 1) {
             $documents = $query->paginate(5)->withQueryString();
         } else {
-            $documents = $query->where(function ($query) {
-                $query->where('shared_documents.org_guid', Auth::user()->org_guid) // Check for shared documents
+            $documents = $query->where(function ($query) use ($user_orgs) {
+                $query->whereIn('shared_documents.org_guid', $user_orgs)
                     ->orWhereNull('shared_documents.org_guid');
             })
+
                 ->paginate(5)
                 ->withQueryString();
         }

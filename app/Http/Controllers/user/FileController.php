@@ -15,9 +15,9 @@ class FileController extends Controller
         $file = Document::select('*', 'documents.created_at as created_at', 'document_versions.uuid as uuid')
             ->join('document_versions', 'document_versions.uuid', '=', 'documents.latest_version_guid')
             ->join('users', 'users.id', '=', 'documents.upload_by')
-            ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
             ->where('document_versions.uuid', '=', $uuid)
             ->first();
+
 
         $version = documentVersion::select('*', 'document_versions.uuid as uuid', 'document_versions.created_at as created_at')
             ->join('documents', 'documents.id', '=', 'document_versions.doc_guid')
@@ -25,6 +25,7 @@ class FileController extends Controller
             ->where('documents.latest_version_guid', '=', $uuid)
             ->orderBy('document_versions.created_at', 'desc')
             ->get();
+
 
         if (!$file) {
             return redirect()->route('file-manager.user')->with('error', 'File not found or has been deleted.');
@@ -36,6 +37,8 @@ class FileController extends Controller
             ->where('documents.latest_version_guid', $uuid)
             ->orderBy('audit_logs.created_at', 'desc')
             ->get();
+
+
         // Split the doc_summary into lines (if applicable)
         $doc_summary = explode("\n", $file->doc_summary);
         return view('user.file-manager.detail-page', [

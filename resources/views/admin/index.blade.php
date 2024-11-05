@@ -34,18 +34,20 @@
                                     <!--end::Section-->
 
                                     <div class="d-flex align-items-center">
-                                        @if($fileTrend == 'up')
-                                        <i class="ki-duotone ki-arrow-up-right fs-2 text-success me-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                        @elseif($fileTrend == 'down')
-                                        <i class="ki-duotone ki-arrow-down-right fs-2 text-danger me-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                        @else
-                                        <i class="ki-duotone ki-minus fs-2 text-muted me-2"></i>
+                                        @if (Auth::user()->role_guid == 1)
+                                            @if($fileTrend == 'up')
+                                            <i class="ki-duotone ki-arrow-up-right fs-2 text-success me-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            @elseif($fileTrend == 'down')
+                                            <i class="ki-duotone ki-arrow-down-right fs-2 text-danger me-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                            @else
+                                            <i class="ki-duotone ki-minus fs-2 text-muted me-2"></i>
+                                            @endif
                                         @endif
                                         <span class="text-gray-900 fw-bolder fs-6">{{ $fileCount }}</span>
                                     </div>
@@ -62,6 +64,8 @@
 
                                     <!--begin::Statistics-->
                                     <div class="d-flex align-items-center">
+                                        @if (Auth::user()->role_guid == 1)
+
                                         @if($folderTrend == 'up')
                                         <i class="ki-duotone ki-arrow-up-right fs-2 text-success me-2">
                                             <span class="path1"></span>
@@ -74,6 +78,7 @@
                                         </i>
                                         @else
                                         <i class="ki-duotone ki-minus fs-2 text-muted me-2"></i>
+                                        @endif
                                         @endif
                                         <span class="text-gray-900 fw-bolder fs-6">{{ $folderCount }}</span>
                                     </div>
@@ -89,6 +94,7 @@
 
                                     <!--begin::Statistics-->
                                     <div class="d-flex align-items-center">
+
                                         @if($orgTrend == 'up')
                                         <i class="ki-duotone ki-arrow-up-right fs-2 text-success me-2">
                                             <span class="path1"></span>
@@ -114,6 +120,8 @@
                                     <!--end::Section-->
 
                                     <div class="d-flex align-items-center">
+                                        @if (Auth::user()->role_guid == 1)
+
                                         @if($userTrend == 'up')
                                         <i class="ki-duotone ki-arrow-up-right fs-2 text-success me-2">
                                             <span class="path1"></span>
@@ -127,6 +135,7 @@
                                         @else
                                         <i class="ki-duotone ki-minus fs-2 text-muted me-2"></i>
                                         @endif
+                                        @endif
                                         <span class="text-gray-900 fw-bolder fs-6">{{ $userCount }}</span>
                                     </div>
                                 </div>
@@ -136,7 +145,7 @@
                         </div>
                         <!--end::Slider Widget 1-->
                     </div>
-                    <div class="col-sm-5 col-md-6 col-xl-5 mb-xl-10">
+                    <div class="col-sm-5 col-md-6 col-xl-5 mb-xl-10 {{ Auth::user()->role_guid==1 ? 'col-xl-5' : 'col-xl-7'}}">
                         <div class="card card-flush h-lg-100 h-md-100">
                             <!--begin::Header-->
                             <div class="card-header pt-5">
@@ -186,6 +195,7 @@
                             <!--end::Card body-->
                         </div>
                     </div>
+                    @if (Auth::user()->role_guid==1)
                     <div class="col-sm-2 col-md-6 col-xl-2 mb-xl-10 mb-5">
                         <!--begin::Slider Widget 1-->
                         <div class="card card-flush h-lg-100">
@@ -208,6 +218,8 @@
                             </div>
                         </div>
                     </div>
+                    @endif
+                    
                 </div>
 
                 <div class="fv-row">

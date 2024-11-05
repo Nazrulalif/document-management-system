@@ -9,6 +9,7 @@ use App\Models\Folder;
 use App\Models\Organization;
 use App\Models\Stat;
 use App\Models\User;
+use App\Models\User_organization;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -87,21 +88,35 @@ class CompanyController extends Controller
 
     public function destroy($id)
     {
-
         try {
-            // Find the organization by ID and delete it
+            // Find the organization by ID and deactivate it
             $org = Organization::findOrFail($id);
             $org->is_operation = 'N';
             $org->save();
 
-            User::where('org_guid', '=', $id)->update([
-                'is_active' => 'N'
-            ]);
+            // Get the user IDs associated with the organization
+            $userIds = User_organization::where('org_guid', '=', $id)->pluck('user_guid');
 
+
+            // Check if users are associated with other organizations
+            foreach ($userIds as $userId) {
+                // Count the number of active organizations associated with this user
+                $activeOrgCount = User_organization::where('user_guid', $userId)
+                    ->join('organizations', 'user_organizations.org_guid', '=', 'organizations.id')
+                    ->where('organizations.is_operation', '=', 'Y') // Check only active organizations
+                    ->count();
+
+                // If the user has no other active organizations, deactivate the user account
+                if ($activeOrgCount == 0) { // means this is the only company they belong to
+                    User::where('id', $userId)->update(['is_active' => 'N']);
+                }
+            }
+
+            // Log the action
             AuditLog::create([
                 'action' => 'Deactivated',
                 'model' => 'Company',
-                'changes' =>  $org->org_name,
+                'changes' => $org->org_name,
                 'user_guid' => Auth::check() ? Auth::user()->id : null,
                 'ip_address' => request()->ip(),
             ]);
@@ -141,6 +156,8 @@ class CompanyController extends Controller
         }
     }
 
+
+
     public function bulk_destroy(Request $request)
     {
         $ids = $request->input('ids');
@@ -156,19 +173,19 @@ class CompanyController extends Controller
 
             // Use a transaction to ensure data integrity
             DB::transaction(function () use ($ids) {
+                // Retrieve organizations to deactivate
+                $orgs = Organization::whereIn('id', $ids)->get();
 
-                $org = Organization::whereIn('id', $ids)->get();
-                // Update organizations
+                // Update organizations to inactive
                 $orgUpdated = Organization::whereIn('id', $ids)->update([
                     'is_operation' => 'N'
                 ]);
 
-                // Update users
-                $userUpdated = User::whereIn('org_guid', $ids)->update([
-                    'is_active' => 'N'
-                ]);
+                // Get user IDs associated with the organizations to deactivate
+                $userIds = User_organization::whereIn('org_guid', $ids)->pluck('user_guid');
 
-                foreach ($org as $org) {
+
+                foreach ($orgs as $org) {
                     AuditLog::create([
                         'action' => "Deactivated",
                         'model' => 'Company',
@@ -176,6 +193,20 @@ class CompanyController extends Controller
                         'user_guid' => Auth::user()->id,
                         'ip_address' => request()->ip(),
                     ]);
+                }
+
+                // Check if any users should be deactivated based on their remaining organizations
+                foreach ($userIds as $userId) {
+                    // Count active organizations associated with this user
+                    $activeOrgCount = User_organization::where('user_guid', $userId)
+                        ->join('organizations', 'user_organizations.org_guid', '=', 'organizations.id')
+                        ->where('organizations.is_operation', '=', 'Y') // Only count active organizations
+                        ->count();
+
+                    // If the user has no active organizations, deactivate the user account
+                    if ($activeOrgCount == 0) {
+                        User::where('id', $userId)->update(['is_active' => 'N']);
+                    }
                 }
 
                 // Get current counts
@@ -202,13 +233,14 @@ class CompanyController extends Controller
                 return response()->json([
                     'success' => true,
                     'updated_organizations' => $orgUpdated,
-                    'updated_users' => $userUpdated,
+                    'updated_users' => $userIds->count(), // Return the count of users affected
                 ]);
             });
         }
 
         return response()->json(['success' => false, 'message' => 'No valid IDs provided.']);
     }
+
 
 
 
@@ -267,14 +299,16 @@ class CompanyController extends Controller
     public function view(Request $request, $uuid)
     {
         if ($request->ajax()) {
-
-            $data = User::select('users.*', 'roles.role_name as role_name', 'organizations.org_name')
+            // Fetch users who belong to the specified organization
+            $data = User::with('organizations')
+                ->select('users.*', 'roles.role_name as role_name')
                 ->join('roles', 'users.role_guid', '=', 'roles.id')
-                ->leftjoin('organizations', 'organizations.id', '=', 'users.org_guid')
-                ->where('users.id', '!=', Auth::user()->id)
-                ->where('organizations.uuid', '=', $uuid)
-                ->where('users.is_active', '=', 'Y')
-                ->orderBy('users.id', 'DESC')
+                ->join('user_organizations', 'users.id', '=', 'user_organizations.user_guid') // Join with user_organizations table
+                ->join('organizations', 'user_organizations.org_guid', '=', 'organizations.id') // Join with organizations table
+                ->where('users.id', '!=', Auth::user()->id) // Exclude the current user
+                ->where('organizations.uuid', '=', $uuid) // Filter by organization UUID
+                ->where('users.is_active', '=', 'Y') // Only include active users
+                ->orderBy('users.id', 'DESC') // Order by user ID descending
                 ->get();
 
             return DataTables::of($data)
@@ -282,17 +316,25 @@ class CompanyController extends Controller
                 ->make(true);
         }
 
+
+        // Retrieve the organization data based on UUID and operational status
         $data = Organization::where('uuid', $uuid)->where('is_operation', 'Y')->firstOrFail();
 
-        $fileCount = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
+        // Count documents associated with the organization identified by the UUID
+        $fileCount = Document::join('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id')
+            ->join('organizations', 'organizations.id', '=', 'shared_documents.org_guid')
             ->where('organizations.uuid', $uuid)
             ->count();
 
-        $folderCount = Folder::join('organizations', 'organizations.id', '=', 'folders.org_guid')
+        // Count folders associated with the organization identified by the UUID
+        $folderCount = Folder::join('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
+            ->join('organizations', 'organizations.id', '=', 'shared_folders.org_guid')
             ->where('organizations.uuid', $uuid)
             ->count();
 
-        $userCount = User::join('organizations', 'organizations.id', '=', 'users.org_guid')
+        // Count active users associated with the organization identified by the UUID
+        $userCount = User::join('user_organizations', 'user_organizations.user_guid', '=', 'users.id')
+            ->join('organizations', 'organizations.id', '=', 'user_organizations.org_guid') // Join organizations through user_organizations
             ->where('users.is_active', 'Y')
             ->where('organizations.uuid', $uuid)
             ->count();
@@ -308,15 +350,24 @@ class CompanyController extends Controller
 
     public function file(Request $request, $uuid)
     {
-        $fileCount = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
+        // Retrieve the organization data based on UUID and operational status
+        $data = Organization::where('uuid', $uuid)->where('is_operation', 'Y')->firstOrFail();
+
+        // Count documents associated with the organization identified by the UUID
+        $fileCount = Document::join('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id')
+            ->join('organizations', 'organizations.id', '=', 'shared_documents.org_guid')
             ->where('organizations.uuid', $uuid)
             ->count();
 
-        $folderCount = Folder::join('organizations', 'organizations.id', '=', 'folders.org_guid')
+        // Count folders associated with the organization identified by the UUID
+        $folderCount = Folder::join('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
+            ->join('organizations', 'organizations.id', '=', 'shared_folders.org_guid')
             ->where('organizations.uuid', $uuid)
             ->count();
 
-        $userCount = User::join('organizations', 'organizations.id', '=', 'users.org_guid')
+        // Count active users associated with the organization identified by the UUID
+        $userCount = User::join('user_organizations', 'user_organizations.user_guid', '=', 'users.id')
+            ->join('organizations', 'organizations.id', '=', 'user_organizations.org_guid') // Join organizations through user_organizations
             ->where('users.is_active', 'Y')
             ->where('organizations.uuid', $uuid)
             ->count();
@@ -327,7 +378,8 @@ class CompanyController extends Controller
 
         if ($query) {
             $fileList = Document::select('*', 'documents.created_at as created_at')
-                ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                ->join('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id')
+                ->join('organizations', 'organizations.id', '=', 'shared_documents.org_guid')
                 ->join('users', 'users.id', '=', 'documents.upload_by')
                 ->where(function ($q) use ($query) {
                     $q->where('documents.doc_title', 'LIKE', "%{$query}%")
@@ -338,7 +390,8 @@ class CompanyController extends Controller
                 ->paginate(8);
         } else {
             $fileList = Document::select('*', 'documents.created_at as created_at')
-                ->join('organizations', 'organizations.id', '=', 'documents.org_guid')
+                ->join('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id')
+                ->join('organizations', 'organizations.id', '=', 'shared_documents.org_guid')
                 ->join('users', 'users.id', '=', 'documents.upload_by')
                 ->where('organizations.uuid', $uuid)
                 ->paginate(8);
@@ -356,20 +409,27 @@ class CompanyController extends Controller
 
     public function setting(Request $request, $uuid)
     {
-        $fileCount = Document::join('organizations', 'organizations.id', '=', 'documents.org_guid')
+        // Retrieve the organization data based on UUID and operational status
+        $data = Organization::where('uuid', $uuid)->where('is_operation', 'Y')->firstOrFail();
+
+        // Count documents associated with the organization identified by the UUID
+        $fileCount = Document::join('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id')
+            ->join('organizations', 'organizations.id', '=', 'shared_documents.org_guid')
             ->where('organizations.uuid', $uuid)
             ->count();
 
-        $folderCount = Folder::join('organizations', 'organizations.id', '=', 'folders.org_guid')
+        // Count folders associated with the organization identified by the UUID
+        $folderCount = Folder::join('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
+            ->join('organizations', 'organizations.id', '=', 'shared_folders.org_guid')
             ->where('organizations.uuid', $uuid)
             ->count();
 
-        $userCount = User::join('organizations', 'organizations.id', '=', 'users.org_guid')
+        // Count active users associated with the organization identified by the UUID
+        $userCount = User::join('user_organizations', 'user_organizations.user_guid', '=', 'users.id')
+            ->join('organizations', 'organizations.id', '=', 'user_organizations.org_guid') // Join organizations through user_organizations
             ->where('users.is_active', 'Y')
             ->where('organizations.uuid', $uuid)
             ->count();
-
-        $data = Organization::where('uuid', $uuid)->where('is_operation', 'Y')->firstOrFail();
 
 
         return view('admin.company.setting', compact(

@@ -87,10 +87,14 @@
                     <!--begin::Col-->
                     <div class="col-lg-8 fv-row">
                         <select class="form-select form-control form-select-solid" data-control="select2"
-                            name="org_name" id="org_name" data-placeholder="Select a company" required>
-                            @foreach ($org as $company )
-                            <option value="{{ $company->id }}" {{  $company->id == $data->org_guid ? 'selected' : '' }}>
-                                {{ $company->org_name }}</option>
+                                data-close-on-select="true" 
+                                data-allow-clear="true" multiple="multiple" name="org_name[]" id="org_name" required>
+                            <option></option>
+                            @foreach ($org as $company)
+                                <option value="{{ $company->id }}" 
+                                    {{ $data->organizations->pluck('id')->contains($company->id) ? 'selected' : '' }}>
+                                    {{ $company->org_name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>

@@ -82,7 +82,6 @@ class RoleController extends Controller
                 ->join('roles', 'roles.id', '=', 'users.role_guid')
                 ->where('roles.uuid', '=', $uuid)
                 ->where('users.is_active', '=', 'Y')
-                ->where('users.id', '!=', Auth::user()->id)
                 ->get();
 
 
