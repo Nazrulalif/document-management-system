@@ -8,7 +8,7 @@
                 <!--begin::Avatar-->
                 <div class="symbol symbol-100px symbol-lg-160px">
                     @if($data->org_logo)
-                    <img class="mb-7" src="{{ asset('storage/' . $data->org_logo) }}" alt="image" />
+                    <img class="mb-7" src="{{ url('/file/' . base64_encode($data->org_logo)) }}" alt="image" />
                     @else
                     <div class="mb-7">
                         <i class="fa-solid fa-building fs-5x" ></i>

@@ -42,6 +42,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+            $userUpdate = User::findOrFail($user->id);
 
             if ($user->is_active == "Y") {
                 // dd($user->role_guid);
@@ -52,6 +53,12 @@ class AuthController extends Controller
                         'user_guid' => $user->id,
                         'ip_address' => $request->ip(),
                     ]);
+
+                    $userUpdate->update([
+                        'login_method' => 'email_password'
+
+                    ]);
+
                     return redirect()->intended(route('dashboard.admin'))->with("success", "Authentication success");
                 } else {
                     AuditLog::create([
@@ -59,6 +66,11 @@ class AuthController extends Controller
                         'model' => 'User',
                         'user_guid' => $user->id,
                         'ip_address' => $request->ip(),
+                    ]);
+
+                    $userUpdate->update([
+                        'login_method' => 'email_password'
+
                     ]);
                     return redirect()->intended(route('home.user'))->with("success", "Authentication success");
                 }
@@ -95,6 +107,10 @@ class AuthController extends Controller
                         'model' => 'User',
                         'user_guid' => $finduser->id,
                         'ip_address' => $request->ip(),
+                    ]);
+
+                    $finduser->update([
+                        'login_method' => 'azure'
                     ]);
 
                     // Redirect based on user role
@@ -203,6 +219,7 @@ class AuthController extends Controller
                 'gender' => $validatedData['gender'],
                 'position' => $validatedData['position'],
                 'role_guid' => '1',
+                'is_change_password' => 'N',
                 'race' => $validatedData['race'],
                 'password' => Hash::make($generatedPassword),
                 'is_active' => 'Y',

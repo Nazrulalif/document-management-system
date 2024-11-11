@@ -32,10 +32,10 @@
                             <div class="col-lg-12 fv-row">
                                 <!--begin::Image input-->
                                 <div class="image-input image-input-outline" data-kt-image-input="true"
-                                    style="background-image: url({{ $data->org_logo ? asset('storage/' . $data->org_logo) : asset('assets/media/svg/avatars/blank.svg') }})">
+                                    style="background-image: url({{ $data->org_logo ? url('/file/' . base64_encode( $data->org_logo)) : asset('assets/media/svg/avatars/blank.svg') }})">
                                     <!--begin::Preview existing avatar-->
                                     <div class="image-input-wrapper w-125px h-125px"
-                                        style="background-image: url({{ $data->org_logo ? asset('storage/' . $data->org_logo) : asset('assets/media/svg/avatars/blank.svg') }})">
+                                        style="background-image: url({{ $data->org_logo ? url('/file/' . base64_encode( $data->org_logo)) : asset('assets/media/svg/avatars/blank.svg') }})">
                                     </div>
                                     <!--end::Preview existing avatar-->
                                     <!--begin::Label-->

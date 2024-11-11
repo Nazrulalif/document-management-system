@@ -122,6 +122,8 @@ class UserController extends Controller
                 'race' => $validatedData['race'],
                 'password' => Hash::make($generatedPassword),
                 'is_active' => 'Y',
+                'is_change_password' => 'N',
+
             ]);
 
             foreach ($validatedData['org_name'] as $org_name) {

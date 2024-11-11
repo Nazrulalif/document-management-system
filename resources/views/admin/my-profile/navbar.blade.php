@@ -7,7 +7,8 @@
             <div class="me-7 mb-4">
                 <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
                     @if(Auth::user()->profile_picture)
-                    <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="image" />
+                    {{-- <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="image" /> --}}
+                    <img src="{{ url('/file/' . base64_encode(Auth::user()->profile_picture)) }}" alt="Profile Image" />
 
                     @else
                     <img src="{{ asset('assets/media/svg/avatars/blank.svg') }}" alt="Default Avatar" class="img-thumbnail" width="150">

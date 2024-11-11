@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
@@ -39,149 +40,19 @@ class SettingController extends Controller
             'nav_light_file' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
             'nav_dark_file' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
             'favicon_file' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
+            'login_background_file' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
+            'login_logo_file' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
         ]);
 
-        // Handle light theme logo upload
-        if ($request->hasFile('nav_light_file')) {
-            // Retrieve the old logo path from the database
-            $oldLightLogo = SystemSetting::where('name', 'nav_light_logo')->first();
+        // Handle different file uploads
+        $this->handleFileUpload($request, 'nav_light_file', 'nav_light_logo');
+        $this->handleFileUpload($request, 'nav_dark_file', 'nav_dark_logo');
+        $this->handleFileUpload($request, 'favicon_file', 'favicon');
+        $this->handleFileUpload($request, 'login_background_file', 'login_background');
+        $this->handleFileUpload($request, 'login_logo_file', 'login_logo');
 
-            // If there's an old logo, delete it from storage
-            if ($oldLightLogo && $oldLightLogo->attribute) {
-                $oldLightLogoPath = public_path('storage/' . $oldLightLogo->attribute);
-                if (file_exists($oldLightLogoPath)) {
-                    unlink($oldLightLogoPath); // Delete the old file
-                }
-            }
-
-            // Handle the new upload
-            $lightLogoPath = $request->file('nav_light_file');
-            $extension = $lightLogoPath->getClientOriginalExtension();
-            $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
-
-            // Store the file in the 'uploads/system-logo' directory
-            $lightLogoPath->storeAs('uploads/system-logo', $uniqueFileName, 'public');
-
-            // Update or create the logo in the database
-            SystemSetting::updateOrCreate(
-                ['name' => 'nav_light_logo'],
-                ['attribute' => 'uploads/system-logo/' . $uniqueFileName]
-            );
-        }
-
-        // Handle dark theme logo upload
-        if ($request->hasFile('nav_dark_file')) {
-            // Retrieve the old logo path from the database
-            $oldDarkLogo = SystemSetting::where('name', 'nav_dark_logo')->first();
-
-            // If there's an old logo, delete it from storage
-            if ($oldDarkLogo && $oldDarkLogo->attribute) {
-                $oldDarkLogoPath = public_path('storage/' . $oldDarkLogo->attribute);
-                if (file_exists($oldDarkLogoPath)) {
-                    unlink($oldDarkLogoPath); // Delete the old file
-                }
-            }
-
-            // Handle the new upload
-            $darkLogoPath = $request->file('nav_dark_file');
-            $extension = $darkLogoPath->getClientOriginalExtension();
-            $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
-
-            // Store the file in the 'uploads/system-logo' directory
-            $darkLogoPath->storeAs('uploads/system-logo', $uniqueFileName, 'public');
-
-            // Update or create the logo in the database
-            SystemSetting::updateOrCreate(
-                ['name' => 'nav_dark_logo'],
-                ['attribute' => 'uploads/system-logo/' . $uniqueFileName]
-            );
-        }
-
-        // Handle favicon logo upload
-        if ($request->hasFile('favicon_file')) {
-            // Retrieve the old logo path from the database
-            $oldFavicon = SystemSetting::where('name', 'favicon')->first();
-
-            // If there's an old logo, delete it from storage
-            if ($oldFavicon && $oldFavicon->attribute) {
-                $oldFaviconPath = public_path('storage/' . $oldFavicon->attribute);
-                if (file_exists($oldFaviconPath)) {
-                    unlink($oldFaviconPath); // Delete the old file
-                }
-            }
-
-            // Handle the new upload
-            $faviconPath = $request->file('favicon_file');
-            $extension = $faviconPath->getClientOriginalExtension();
-            $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
-
-            // Store the file in the 'uploads/system-logo' directory
-            $faviconPath->storeAs('uploads/system-logo', $uniqueFileName, 'public');
-
-            // Update or create the logo in the database
-            SystemSetting::updateOrCreate(
-                ['name' => 'favicon'],
-                ['attribute' => 'uploads/system-logo/' . $uniqueFileName]
-            );
-        }
-
-        // Handle login background upload
-        if ($request->hasFile('login_background_file')) {
-            // Retrieve the old image path from the database
-            $oldBackground = SystemSetting::where('name', 'login_background')->first();
-
-            // If there's an old logo, delete it from storage
-            if ($oldBackground && $oldBackground->attribute) {
-                $oldBackgroundPath = public_path('storage/' . $oldBackground->attribute);
-                if (file_exists($oldBackgroundPath)) {
-                    unlink($oldBackgroundPath); // Delete the old file
-                }
-            }
-
-            // Handle the new upload
-            $BackgroundPath = $request->file('login_background_file');
-            $extension = $BackgroundPath->getClientOriginalExtension();
-            $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
-
-            // Store the file in the 'uploads/system-logo' directory
-            $BackgroundPath->storeAs('uploads/system-logo', $uniqueFileName, 'public');
-
-            // Update or create the logo in the database
-            SystemSetting::updateOrCreate(
-                ['name' => 'login_background'],
-                ['attribute' => 'uploads/system-logo/' . $uniqueFileName]
-            );
-        }
-
-        if ($request->hasFile('login_logo_file')) {
-            // Retrieve the old image path from the database
-            $oldLoginLogo = SystemSetting::where('name', 'login_logo')->first();
-
-            // If there's an old logo, delete it from storage
-            if ($oldLoginLogo && $oldLoginLogo->attribute) {
-                $oldLoginLogoPath = public_path('storage/' . $oldLoginLogo->attribute);
-                if (file_exists($oldLoginLogoPath)) {
-                    unlink($oldLoginLogoPath); // Delete the old file
-                }
-            }
-
-            // Handle the new upload
-            $LoginLogoPath = $request->file('login_logo_file');
-            $extension = $LoginLogoPath->getClientOriginalExtension();
-            $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
-
-            // Store the file in the 'uploads/system-logo' directory
-            $LoginLogoPath->storeAs('uploads/system-logo', $uniqueFileName, 'public');
-
-            // Update or create the logo in the database
-            SystemSetting::updateOrCreate(
-                ['name' => 'login_logo'],
-                ['attribute' => 'uploads/system-logo/' . $uniqueFileName]
-            );
-        }
-
-
-        if ($request->logo_caption) {
+        // Update text-based settings
+        if ($request->system_name) {
             SystemSetting::updateOrCreate(
                 ['name' => 'system_name'],
                 ['attribute' => $request->system_name]
@@ -196,15 +67,43 @@ class SettingController extends Controller
         }
 
         $pageLoaderValue = $request->has('page_loader') ? 'Y' : 'N';
-
-        if ($pageLoaderValue) {
-            SystemSetting::updateOrCreate(
-                ['name' => 'page_loader'],
-                ['attribute' => $pageLoaderValue]
-            );
-        }
-
+        SystemSetting::updateOrCreate(
+            ['name' => 'page_loader'],
+            ['attribute' => $pageLoaderValue]
+        );
 
         return redirect()->back()->with('success', 'System setting updated successfully!');
+    }
+
+    /**
+     * Handle file upload for a given setting.
+     */
+    private function handleFileUpload(Request $request, $fileInput, $settingName)
+    {
+        if ($request->hasFile($fileInput)) {
+            // Retrieve the old file path from the database
+            $oldSetting = SystemSetting::where('name', $settingName)->first();
+
+            // If there's an old file, delete it from SFTP storage
+            if ($oldSetting && $oldSetting->attribute) {
+                if (Storage::exists($oldSetting->attribute)) {
+                    Storage::delete($oldSetting->attribute);
+                }
+            }
+
+            // Handle new file upload
+            $file = $request->file($fileInput);
+            $uniqueFileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $filePath = 'uploads/system-logo/' . $uniqueFileName;
+
+            // Store the file on SFTP disk
+            Storage::put($filePath, file_get_contents($file));
+
+            // Update or create the setting in the database
+            SystemSetting::updateOrCreate(
+                ['name' => $settingName],
+                ['attribute' => $filePath]
+            );
+        }
     }
 }

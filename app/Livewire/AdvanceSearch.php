@@ -17,7 +17,7 @@ class AdvanceSearch extends Component
     use WithPagination;
 
     public $query = '';
-    public $selectedType = 'folder'; // Default value
+    public $selectedType = 'file'; // Default value
     public $fileType = '';
     public $companies = [];
     public $folderCount = 0; // Store folder count
@@ -27,7 +27,7 @@ class AdvanceSearch extends Component
     {
         // Load previous search parameters from session storage
         $this->query = session('search_query', '');
-        $this->selectedType = session('search_type', 'folder');
+        $this->selectedType = session('search_type', 'file');
         $this->fileType = session('file_type', '');
         $this->companies = session('companies', []);
     }
@@ -92,6 +92,8 @@ class AdvanceSearch extends Component
             'folders.uuid',
             'folders.created_at',
             'folders.folder_name',
+            'users.profile_picture',
+
             DB::raw('share_name.org_name as shared_orgs'), // Aggregate shared org names
 
         )

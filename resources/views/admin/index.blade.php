@@ -9,6 +9,11 @@
         <div id="kt_app_content" class="app-content flex-column-fluid py-3 py-lg-8">
             <!--begin::Content container-->
             <div id="kt_app_content_container" class="app-container container-xxl">
+
+                @if (Auth::user()->is_change_password == 'N' && Auth::user()->login_method == 'email_password')
+                    @include('admin.modal-change-password')
+                @endif
+
                 <!--begin::Row-->
                 <div class="row gy-5 gx-xl-10">
 
@@ -274,7 +279,13 @@
 <script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
 
 <script>
+    
     "use strict";
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var myModal = new bootstrap.Modal(document.getElementById('kt_modal_1'));
+        myModal.show();
+    });
 
     // Class definition
     var KTDatatablesServerSide = function () {

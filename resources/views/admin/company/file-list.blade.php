@@ -60,7 +60,7 @@
                 <div class="fs-7 fw-semibold text-gray-500">{{ $item->created_at->format('d/m/Y') }}</div>
                 <div class="d-flex align-items-center justify-content-center pt-2">
                     <div class="symbol symbol-20px symbol-circle me-3">
-                        <img src="{{ $item->profile_picture ? asset('storage/' . $item->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}" alt="user">
+                        <img src="{{ $item->profile_picture ? url('/file/' . base64_encode($item->profile_picture)) : asset('assets/media/svg/avatars/blank.svg') }}" alt="user">
     
                     </div>
                     <div class="fs-7 fw-semibold text-gray-500">{{ $item->full_name }}</div>

@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     
-    <link rel="shortcut icon" href="{{ $favicon && $favicon->attribute ? asset('storage/' . $favicon->attribute) : asset('assets/media/logos/docms-favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ $favicon && $favicon->attribute ?url('/file/' . base64_encode($favicon->attribute)) : asset('assets/media/logos/docms-favicon.svg') }}" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!--begin::Fonts(mandatory for all pages)-->

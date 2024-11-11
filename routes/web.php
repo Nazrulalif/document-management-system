@@ -25,6 +25,7 @@ use App\Models\Organization;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |---------------------------------------------------------------------------
@@ -51,24 +52,36 @@ Route::get('/', function () {
 
 // Log out
 Route::get('/logout', function (Request $request) {
-    AuditLog::create([
-        'action' => 'Logout',
-        'model' => 'User',
-        'user_guid' => Auth::user()->id,
-        'ip_address' => $request->ip(),
-    ]);
-    // $request->session()->invalidate();
-    // $request->session()->regenerateToken();
 
-    // return redirect(route('login'));
+    $user = Auth::user();
 
-    Auth::guard()->logout();
-    $postLogoutRedirectUri = route('login') . "?prompt=login";
+    try {
 
-    $azureLogoutUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri="
-        . urlencode($postLogoutRedirectUri);
+        AuditLog::create([
+            'action' => 'Logout',
+            'model' => 'User',
+            'user_guid' => Auth::user()->id,
+            'ip_address' => $request->ip(),
+        ]);
 
-    return redirect($azureLogoutUrl);
+        if ($user->login_method == 'azure') {
+            Auth::guard()->logout();
+            $postLogoutRedirectUri = route('login') . "?prompt=login";
+
+            $azureLogoutUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri="
+                . urlencode($postLogoutRedirectUri);
+
+            return redirect($azureLogoutUrl);
+        } else {
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect(route('login'));
+        }
+    } catch (\Exception $th) {
+        return redirect()->back()->with("error", "Log out failed, kindly contact the Administrator!");
+    }
 })->name('logout');
 
 //Log in
@@ -93,6 +106,26 @@ Route::get('/register-success', [AuthController::class, 'register_success'])->na
 Route::fallback(function () {
     return redirect('/');
 });
+
+Route::get('/file/{encodedPath}', function ($encodedPath) {
+    // Decode the base64-encoded path
+    $filePath = base64_decode($encodedPath);
+
+    // Check if the file exists on the specified storage disk
+    if (Storage::exists($filePath)) {
+        // Get the file's contents from SFTP
+        $fileContents = Storage::get($filePath);
+
+        // Determine the MIME type of the file
+        $mimeType = Storage::mimeType($filePath);
+
+        // Return the file with the correct MIME type
+        return response($fileContents, 200)->header('Content-Type', $mimeType);
+    }
+
+    // Return a 404 error if the file is not found
+    abort(404, 'File not found.');
+})->where('encodedPath', '.*'); // Allow all characters in the encoded path
 
 // Admin Routes
 route::prefix('admin')->middleware('isadmin')->group(function () {

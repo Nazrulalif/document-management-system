@@ -67,7 +67,7 @@
 
                                     @if ($data->doc_type == 'images')
                                     <div class="d-flex flex-end">
-                                        <a href="{{ asset('storage/' . $data->file_path) }}"
+                                        <a href="{{ url('/file/' . base64_encode($data->file_path)) }}"
                                             download="{{ basename($data->file_path) }}" target="_blank"
                                             class="btn btn-sm btn-primary mt-5">
                                             Download
@@ -75,7 +75,7 @@
                                     </div>
                                     @else
                                     <div class="d-flex flex-end">
-                                        <a href="{{ asset('storage/' . $data->file_path) }}" target="_blank"
+                                        <a href="{{ url('/file/' . base64_encode($data->file_path)) }}" target="_blank"
                                             class="btn btn-sm btn-primary mt-5">
                                             Download
                                         </a>
@@ -318,7 +318,7 @@
                                     <div class="card-body">
                                         <div class="d-flex flex-center">
                                             <img src="{{ asset('assets/media/misc/spinner.gif') }}"
-                                                data-src="{{ asset('storage/' . $data->file_path) }}"
+                                                data-src="{{ url('/file/' . base64_encode($data->file_path)) }}"
                                                 class="lozad rounded " alt=""
                                                 style="max-width: -webkit-fill-available;" />
                                         </div>
@@ -385,7 +385,7 @@
                                                                 data-change-title="{{ $item->change_title ? $item->change_title : 'First Version' }}"
                                                                 data-change-description="{{ $item->change_description }}"
                                                                 data-created-by="{{ $item->full_name }}"
-                                                                data-file="{{ asset('storage/' . $item->file_path) }}"
+                                                                data-file="{{url('/file/' . base64_encode($data->file_path)) }}"
                                                                 data-created-at="{{ $item->created_at->format('d-m-Y') }}">{{($item->change_title ? $item->change_title : 'First Version')}}</a>
                                                             @endif
                                                         </div>

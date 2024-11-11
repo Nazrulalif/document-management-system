@@ -31,6 +31,8 @@ class User extends Authenticatable
         'nationality',
         'gender',
         'is_active',
+        'login_method',
+        'is_change_password',
         'role_guid',
         'profile_picture',
     ];

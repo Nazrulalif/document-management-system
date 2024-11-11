@@ -28,10 +28,10 @@
                     <div class="col-lg-8">
                         <!--begin::Image input-->
                         <div class="image-input image-input-outline" data-kt-image-input="true"
-                        style="background-image: url({{ $data->profile_picture ? asset('storage/' . $data->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }})">
+                        style="background-image: url({{ $data->profile_picture ? url('/file/' . base64_encode(Auth::user()->profile_picture)) : asset('assets/media/svg/avatars/blank.svg') }})">
                             <!--begin::Preview existing avatar-->
                             <div class="image-input-wrapper w-125px h-125px"
-                            style="background-image: url({{ $data->profile_picture ? asset('storage/' . $data->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }})">
+                            style="background-image: url({{ $data->profile_picture ? url('/file/' . base64_encode(Auth::user()->profile_picture)) : asset('assets/media/svg/avatars/blank.svg') }})">
                             </div>
                             <!--end::Preview existing avatar-->
                             <!--begin::Label-->

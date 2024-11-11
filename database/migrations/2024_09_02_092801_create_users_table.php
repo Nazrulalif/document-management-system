@@ -24,6 +24,8 @@ return new class extends Migration
             $table->string('nationality')->nullable();
             $table->string('gender')->nullable();
             $table->string('is_active')->nullable();
+            $table->string('login_method')->nullable();
+            $table->string('is_change_password')->nullable();
             $table->unsignedBigInteger('role_guid')->nullable();
             $table->string('profile_picture')->nullable();
             $table->rememberToken();

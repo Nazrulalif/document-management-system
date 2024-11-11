@@ -480,8 +480,8 @@ class FileManagerController extends Controller
             $filePath = $doc->file_path;
 
             // Delete the file from storage if it exists
-            if (Storage::disk('public')->exists($filePath)) {
-                Storage::disk('public')->delete($filePath);
+            if (Storage::exists($filePath)) {
+                Storage::delete($filePath);
             }
 
             // Delete associated document versions
@@ -692,8 +692,8 @@ class FileManagerController extends Controller
                 'ip_address' => request()->ip(),
             ]);
             // Assuming $filePath is relative to the 'public' disk (e.g., 'uploads/myfile.pdf')
-            if (Storage::disk('public')->exists($filePath)) {
-                Storage::disk('public')->delete($filePath); // Delete the file from 'public' disk
+            if (Storage::exists($filePath)) {
+                Storage::delete($filePath); // Delete the file from 'public' disk
             }
 
             // Find the document in the documents table and delete it
@@ -741,8 +741,8 @@ class FileManagerController extends Controller
                 $filePath = $version->file_path;
 
                 // Assuming $filePath is relative to the 'public' disk (e.g., 'uploads/myfile.pdf')
-                if (Storage::disk('public')->exists($filePath)) {
-                    Storage::disk('public')->delete($filePath); // Delete the file from 'public' disk
+                if (Storage::exists($filePath)) {
+                    Storage::delete($filePath); // Delete the file from 'public' disk
                 }
 
                 // Delete the version record from the database
@@ -796,12 +796,12 @@ class FileManagerController extends Controller
             $originalName = $file->getClientOriginalName();
             $fileSize = $file->getSize(); // Size in bytes
 
-
             // Define folder based on file extension
             $folder = $this->getFolderByFileType($extension); // Separate function to get the folder
 
-            // Store the file in the corresponding folder in 'storage/app/uploads/{folder}'
-            $filePath = $file->storeAs('uploads/' . $folder, $uniqueFileName, 'public');
+            // $filePath = $file->storeAs('uploads/' . $folder, $uniqueFileName, 'public');
+            $filePath = 'uploads/' . $folder . '/' . $uniqueFileName;
+            Storage::put($filePath, file_get_contents($file));
 
             $folder_id = $request->folder_id;
 
@@ -812,7 +812,9 @@ class FileManagerController extends Controller
             if ($extension === 'pdf') {
                 try {
                     $pdfParser = new Parser();
-                    $pdf = $pdfParser->parseFile(public_path('storage/' . $filePath));
+                    $fileContent = file_get_contents($file);
+                    // $pdf = $pdfParser->parseFile(public_path('storage/' . $filePath));
+                    $pdf = $pdfParser->parseContent($fileContent);
                     $docContent = $pdf->getText(); // Extract the text from the PDF
                 } catch (\Exception $e) {
                     $docContent = "Sorry, unable to extract the text";
@@ -822,7 +824,7 @@ class FileManagerController extends Controller
             // If the file is a DOCX, extract its content using the method defined below
             if ($extension === 'docx') {
                 try {
-                    $docContent = $this->extractTextFromDocx(public_path('storage/' . $filePath)); // Extract text from DOCX
+                    $docContent = $this->extractTextFromDocx($file); // Extract text from DOCX
                 } catch (\Exception $e) {
                     $docContent = "Sorry, unable to extract the text";
                 }
@@ -832,7 +834,7 @@ class FileManagerController extends Controller
             // Handle Excel file
             if (in_array($extension, ['xlsx', 'xls', 'csv'])) {
                 try {
-                    $docContent = $this->extractTextFromExcel(public_path('storage/' . $filePath)); // Extract text from Excel
+                    $docContent = $this->extractTextFromExcel($file); // Extract text from Excel
 
                 } catch (\Exception $e) {
                     $docContent = "Sorry, unable to extract the text";

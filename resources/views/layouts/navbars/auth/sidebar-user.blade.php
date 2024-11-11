@@ -12,15 +12,15 @@
         <!--begin::Logo image-->
         <a href="{{ route('home.user') }}">
             <img alt="Logo"
-                src="{{ $lightLogo && $lightLogo->attribute ? asset('storage/' . $lightLogo->attribute) : asset('assets/media/logos/docms-light.svg') }}"
+                src="{{ $lightLogo && $lightLogo->attribute ? url('/file/' . base64_encode($lightLogo->attribute)) : asset('assets/media/logos/docms-light.svg') }}"
                 class="h-25px app-sidebar-logo-default theme-light-show" />
 
             <img alt="Logo"
-                src="{{ $lightLogo && $lightLogo->attribute ? asset('storage/' . $lightLogo->attribute) : asset('assets/media/logos/docms-light.svg') }}"
+                src="{{ $lightLogo && $lightLogo->attribute ? url('/file/' . base64_encode($lightLogo->attribute)): asset('assets/media/logos/docms-light.svg') }}"
                 class="h-20px app-sidebar-logo-minimize" />
 
             <img alt="Logo"
-                src="{{ $darkLogo && $darkLogo->attribute ? asset('storage/' . $darkLogo->attribute) : asset('assets/media/logos/docms-dark.svg') }}"
+                src="{{ $darkLogo && $darkLogo->attribute ? url('/file/' . base64_encode($darkLogo->attribute)) : asset('assets/media/logos/docms-dark.svg') }}"
                 class="h-25px app-sidebar-logo-default theme-dark-show">
         </a>
         <div id="kt_app_sidebar_toggle"

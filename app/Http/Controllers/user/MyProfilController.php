@@ -93,8 +93,9 @@ class MyProfilController extends Controller
             $extension = $file->getClientOriginalExtension();
             $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
 
-            // Store the new picture
-            $filePath = $file->storeAs('uploads/profile-picture', $uniqueFileName, 'public');
+            // Store the file on the SFTP server
+            $filePath = 'uploads/profile-picture/' . $uniqueFileName;
+            Storage::put($filePath, file_get_contents($file));
             $user->profile_picture = $filePath;
         }
 
@@ -128,6 +129,7 @@ class MyProfilController extends Controller
 
         // Update the user's password
         $user->password = Hash::make($request->password);
+        $user->is_change_password = 'Y';
         $user->save();
 
         return redirect()->back()->with('success', 'Your password has been changed successfully.');

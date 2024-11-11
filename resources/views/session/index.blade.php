@@ -12,7 +12,7 @@
     @endphp
     <style>
         body {
-            background-image: url({{ $loginBackground && $loginBackground->attribute ? asset('storage/'. $loginBackground->attribute): asset('assets/media/auth/bg3.jpg')}});
+            background-image: url({{ $loginBackground && $loginBackground->attribute ? url('/file/' . base64_encode($loginBackground->attribute)): asset('assets/media/auth/bg3.jpg')}});
         }
 
         [data-bs-theme="dark"] body {
@@ -29,7 +29,7 @@
             <div class="d-flex flex-center flex-lg-start flex-column">
                 <!--begin::Logo-->
                 <a href="/" class="mb-7">
-                    <img alt="Logo" width="230" src="{{ $loginLogo && $loginLogo->attribute ? asset('storage/'. $loginLogo->attribute) : asset('assets/media/logos/docms.svg') }}" />
+                    <img alt="Logo" width="230" src="{{ $loginLogo && $loginLogo->attribute ? url('/file/' . base64_encode($loginLogo->attribute)) : asset('assets/media/logos/docms.svg') }}" />
                 </a>
                 <!--end::Logo-->
                 <!--begin::Title-->

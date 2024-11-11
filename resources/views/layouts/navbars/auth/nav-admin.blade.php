@@ -24,7 +24,7 @@
             
             <a href="{{ route('dashboard.admin') }}" class="d-lg-none">
                 <img alt="Logo"
-                    src="{{ $favicon && $favicon->attribute ? asset('storage/' . $favicon->attribute) : asset('assets/media/logos/docms-favicon.svg') }}"
+                    src="{{ $favicon && $favicon->attribute ? url('/file/' . base64_encode($favicon->attribute)) : asset('assets/media/logos/docms-favicon.svg') }}"
                     class="h-30px" />
             </a>
         </div>
@@ -109,7 +109,7 @@
                     <div class="cursor-pointer symbol symbol-35px"
                         data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
                         data-kt-menu-placement="bottom-end">
-                        <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}"
+                        <img src="{{ Auth::user()->profile_picture ? url('/file/' . base64_encode(Auth::user()->profile_picture)) : asset('assets/media/svg/avatars/blank.svg') }}"
                             class="rounded-3" alt="user">
                     </div>
                     <!--begin::User account menu-->
@@ -120,7 +120,7 @@
                             <div class="menu-content d-flex align-items-center px-3">
                                 <!--begin::Avatar-->
                                 <div class="symbol symbol-50px me-5">
-                                    <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}"
+                                    <img src="{{ Auth::user()->profile_picture ? url('/file/' . base64_encode(Auth::user()->profile_picture)) : asset('assets/media/svg/avatars/blank.svg') }}"
                                         class="rounded-3" alt="user">
                                 </div>
                                 <!--end::Avatar-->

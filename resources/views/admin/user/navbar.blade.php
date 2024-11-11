@@ -7,7 +7,7 @@
             <div class="me-7 mb-4">
                 <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
                     @if($data->profile_picture)
-                    <img src="{{ asset('storage/' . $data->profile_picture) }}" alt="image" />
+                    <img src="{{ url('/file/' . base64_encode($data->profile_picture)) }}" alt="image" />
 
                     @else
                     <img src="{{ asset('assets/media/svg/avatars/blank.svg') }}" alt="Default Avatar" class="img-thumbnail" width="150">

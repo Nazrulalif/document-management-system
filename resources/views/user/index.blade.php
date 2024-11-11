@@ -6,6 +6,11 @@
     <!--begin::Content wrapper-->
     <div class="d-flex flex-column flex-column-fluid">
         @include('layouts.appToolbar-user')
+
+        
+        @if (Auth::user()->is_change_password == 'N' && Auth::user()->login_method == 'email_password')
+            @include('user.modal-change-password')
+        @endif
         <!--begin::Content-->
         <div id="kt_app_content" class="app-content flex-column-fluid py-3 py-lg-8">
             <!--begin::Content container-->
@@ -90,6 +95,13 @@
     <!--end::Content wrapper-->
 
 </div>
+<script src="{{ asset('assets/js/scripts.bundle.js')}}"></script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var myModal = new bootstrap.Modal(document.getElementById('kt_modal_1'));
+        myModal.show();
+    });
+</script>
 
 @endsection

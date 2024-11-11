@@ -107,12 +107,11 @@ class MyProfilController extends Controller
         // Get the user data
         $user = User::findOrFail($userId);
 
-
         // Handle profile picture removal
         if ($request->input('remove_avatar') == 1) {
             // Delete the old picture if it exists
             if ($user->profile_picture) {
-                Storage::delete('public/' . $user->profile_picture);
+                Storage::delete($user->profile_picture); // Delete from SFTP
             }
 
             // Set profile picture to null in the database
@@ -120,15 +119,17 @@ class MyProfilController extends Controller
         } elseif ($request->hasFile('profile_picture')) {
             // Handle profile picture upload
             if ($user->profile_picture) {
-                Storage::delete('public/' . $user->profile_picture);
+                Storage::delete($user->profile_picture); // Delete old picture from SFTP
             }
 
+            // Upload the new profile picture
             $file = $request->file('profile_picture');
             $extension = $file->getClientOriginalExtension();
             $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
 
-            // Store the new picture
-            $filePath = $file->storeAs('uploads/profile-picture', $uniqueFileName, 'public');
+            // Store the file on the SFTP server
+            $filePath = 'uploads/profile-picture/' . $uniqueFileName;
+            Storage::put($filePath, file_get_contents($file));
             $user->profile_picture = $filePath;
         }
 
@@ -141,14 +142,10 @@ class MyProfilController extends Controller
             'nationality' => $request->nationality,
         ]);
 
-        // Save the profile picture path if it was updated
-        if (isset($filePath)) {
-            $user->profile_picture = $filePath;
-            $user->save();
-        }
-
+        // Return success message
         return redirect()->back()->with(['success' => 'Your profile details updated successfully']);
     }
+
 
     public function change_password(Request $request)
     {
@@ -162,6 +159,7 @@ class MyProfilController extends Controller
 
         // Update the user's password
         $user->password = Hash::make($request->password);
+        $user->is_change_password = 'Y';
         $user->save();
 
         return redirect()->back()->with('success', 'Your password has been changed successfully.');

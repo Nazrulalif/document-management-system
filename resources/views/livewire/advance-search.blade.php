@@ -160,7 +160,7 @@
                                 <div class="fs-7 text-gray-600">
                                     <div class="d-flex align-items-center">
                                         <div class="symbol symbol-30px symbol-circle me-3">
-                                            <img src="{{ $result->profile_picture ? asset('storage/' . $result->profile_picture) : asset('assets/media/svg/avatars/blank.svg') }}" alt="user">
+                                            <img src="{{ $result->profile_picture ? url('/file/' . base64_encode($result->profile_picture)): asset('assets/media/svg/avatars/blank.svg') }}" alt="user">
 
                                         </div>
                                         {{ $result->full_name }} | Shared to: {{ $result->shared_orgs }} |

@@ -101,6 +101,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation
             'password'     => Hash::make($generatedPassword), // Hash the password
             'is_active'    => 'Y',                  // Mark the user as active
             'uuid'         => $uuid,                // Unique identifier for the user
+            'is_change_password' => 'N',
         ]);
 
         // Create the user_organization link

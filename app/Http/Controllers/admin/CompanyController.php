@@ -460,7 +460,7 @@ class CompanyController extends Controller
         if ($request->input('remove_avatar') == 1) {
             // Delete the old picture if it exists
             if ($data->profile_picture) {
-                Storage::delete('public/' . $data->org_logo);
+                Storage::delete($data->org_logo);
             }
 
             // Set profile picture to null in the database
@@ -468,7 +468,7 @@ class CompanyController extends Controller
         } elseif ($request->hasFile('org_logo')) {
             // Handle profile picture upload
             if ($data->org_logo) {
-                Storage::delete('public/' . $data->org_logo);
+                Storage::delete($data->org_logo);
             }
 
             $file = $request->file('org_logo');
@@ -476,7 +476,8 @@ class CompanyController extends Controller
             $uniqueFileName = time() . '_' . uniqid() . '.' . $extension;
 
             // Store the new picture
-            $filePath = $file->storeAs('uploads/company-logo', $uniqueFileName, 'public');
+            $filePath = 'uploads/company-logo/' . $uniqueFileName;
+            Storage::put($filePath, file_get_contents($file));
             $data->org_logo = $filePath;
         }
 

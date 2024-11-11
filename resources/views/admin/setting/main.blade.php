@@ -32,8 +32,8 @@
                 <div class="col-md-6">
 
                     <div class="image-input image-input-outline " data-kt-image-input="true"
-                        style="background-image: url({{ $lightLogo && $lightLogo->attribute  ? asset('storage/' . $lightLogo->attribute ) : asset('assets/media/svg/avatars/blank.svg') }})">
-                        <div class="image-input-wrapper w-125px h-125px bgi-size-contain" style="background-image: url({{ $lightLogo && $lightLogo->attribute  ? asset('storage/' . $lightLogo->attribute ) : asset('assets/media/svg/avatars/blank.svg') }})
+                        style="background-image: url({{ $lightLogo && $lightLogo->attribute  ? url('/file/' . base64_encode($lightLogo->attribute)) : asset('assets/media/svg/avatars/blank.svg') }})">
+                        <div class="image-input-wrapper w-125px h-125px bgi-size-contain" style="background-image: url({{ $lightLogo && $lightLogo->attribute  ? url('/file/' . base64_encode($lightLogo->attribute)) : asset('assets/media/svg/avatars/blank.svg') }})
                             ">
                         </div>
 
@@ -72,9 +72,9 @@
                 </div>
                 <div class="col-md-6">
                     <div class="image-input image-input-outline" data-kt-image-input="true"
-                        style="background-image: url({{ $darkLogo && $darkLogo->attribute ? asset('storage/' . $darkLogo->attribute) : asset('assets/media/svg/avatars/blank.svg') }})">
+                        style="background-image: url({{ $darkLogo && $darkLogo->attribute ? url('/file/' . base64_encode($darkLogo->attribute)) : asset('assets/media/svg/avatars/blank.svg') }})">
                         <div class="image-input-wrapper w-125px h-125px"
-                            style="background-image: url({{ $darkLogo && $darkLogo->attribute ? asset('storage/' . $darkLogo->attribute) : asset('assets/media/svg/avatars/blank.svg') }})">
+                            style="background-image: url({{ $darkLogo && $darkLogo->attribute ? url('/file/' . base64_encode($darkLogo->attribute)) : asset('assets/media/svg/avatars/blank.svg') }})">
                         </div>
 
                         <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
@@ -114,8 +114,8 @@
                 <div class="col-md-6">
 
                     <div class="image-input image-input-outline " data-kt-image-input="true"
-                        style="background-image: url({{ $favicon && $favicon->attribute  ? asset('storage/' . $favicon->attribute ) : asset('assets/media/svg/avatars/blank.svg') }})">
-                        <div class="image-input-wrapper w-125px h-125px bgi-size-contain" style="background-image: url({{ $favicon && $favicon->attribute  ? asset('storage/' . $favicon->attribute ) : asset('assets/media/svg/avatars/blank.svg') }})
+                        style="background-image: url({{ $favicon && $favicon->attribute  ? url('/file/' . base64_encode($favicon->attribute)) : asset('assets/media/svg/avatars/blank.svg') }})">
+                        <div class="image-input-wrapper w-125px h-125px bgi-size-contain" style="background-image: url({{ $favicon && $favicon->attribute  ? url('/file/' . base64_encode($favicon->attribute)) : asset('assets/media/svg/avatars/blank.svg') }})
                             ">
                         </div>
 
@@ -165,8 +165,8 @@
                 <div class="col-md-6">
 
                     <div class="image-input image-input-outline " data-kt-image-input="true"
-                        style="background-image: url({{ $loginBackground && $loginBackground->attribute  ? asset('storage/' . $loginBackground->attribute ) : asset('assets/media/svg/avatars/blank.svg') }})">
-                        <div class="image-input-wrapper w-125px h-125px bgi-size-contain" style="background-image: url({{ $loginBackground && $loginBackground->attribute  ? asset('storage/' . $loginBackground->attribute ) : asset('assets/media/svg/avatars/blank.svg') }})
+                        style="background-image: url({{ $loginBackground && $loginBackground->attribute  ? url('/file/' . base64_encode($loginBackground->attribute)) : asset('assets/media/svg/avatars/blank.svg') }})">
+                        <div class="image-input-wrapper w-125px h-125px bgi-size-contain" style="background-image: url({{ $loginBackground && $loginBackground->attribute  ? url('/file/' . base64_encode($loginBackground->attribute)) : asset('assets/media/svg/avatars/blank.svg') }})
                             ">
                         </div>
 
@@ -203,8 +203,8 @@
                 <div class="col-md-6">
 
                     <div class="image-input image-input-outline " data-kt-image-input="true"
-                        style="background-image: url({{ $loginLogo && $loginLogo->attribute  ? asset('storage/' . $loginLogo->attribute ) : asset('assets/media/svg/avatars/blank.svg') }})">
-                        <div class="image-input-wrapper w-125px h-125px bgi-size-contain" style="background-image: url({{ $loginLogo && $loginLogo->attribute  ? asset('storage/' . $loginLogo->attribute ) : asset('assets/media/svg/avatars/blank.svg') }})
+                        style="background-image: url({{ $loginLogo && $loginLogo->attribute  ? url('/file/' . base64_encode($loginLogo->attribute)) : asset('assets/media/svg/avatars/blank.svg') }})">
+                        <div class="image-input-wrapper w-125px h-125px bgi-size-contain" style="background-image: url({{ $loginLogo && $loginLogo->attribute  ? url('/file/' . base64_encode($loginLogo->attribute)) : asset('assets/media/svg/avatars/blank.svg') }})
                             ">
                         </div>
 

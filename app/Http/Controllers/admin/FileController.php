@@ -163,7 +163,10 @@ class FileController extends Controller
             $folder = $this->getFolderByFileType($extension);
 
             // Store the file in the corresponding folder in 'storage/app/uploads/{folder}'
-            $filePath = $file->storeAs('uploads/' . $folder, $uniqueFileName, 'public');
+            // $filePath = $file->storeAs('uploads/' . $folder, $uniqueFileName, 'public');
+
+            $filePath = 'uploads/' . $folder . '/' . $uniqueFileName;
+            Storage::put($filePath, file_get_contents($file));
 
             // Get the latest version number and increment it
             $lastVersion = DocumentVersion::where('doc_guid', $document->id)
@@ -185,18 +188,20 @@ class FileController extends Controller
             // If the file is a PDF, extract its content
             if ($extension === 'pdf') {
                 $pdfParser = new Parser();
-                $pdf = $pdfParser->parseFile(public_path('storage/' . $filePath));
+                $fileContent = file_get_contents($file);
+
+                $pdf = $pdfParser->parseContent($fileContent);
                 $docContent = $pdf->getText(); // Extract the text from the PDF
             }
 
             // If the file is a DOCX, extract its content using the method defined below
             if ($extension === 'docx') {
-                $docContent = $this->extractTextFromDocx(public_path('storage/' . $filePath)); // Extract text from DOCX
+                $docContent = $this->extractTextFromDocx($file); // Extract text from DOCX
             }
 
             // Handle Excel file
             if (in_array($extension, ['xlsx', 'xls', 'csv'])) {
-                $docContent = $this->extractTextFromExcel(public_path('storage/' . $filePath)); // Extract text from Excel
+                $docContent = $this->extractTextFromExcel($file); // Extract text from Excel
             }
 
             // Check if OCR content was sent for images
@@ -367,8 +372,8 @@ class FileController extends Controller
             if ($allVersions->count() === 1) {
                 // Delete the only version's file
                 $filePath = $documentVersion->file_path;
-                if (Storage::disk('public')->exists($filePath)) {
-                    Storage::disk('public')->delete($filePath); // Delete the file from 'public' disk
+                if (Storage::exists($filePath)) {
+                    Storage::delete($filePath); // Delete the file from 'public' disk
                 }
 
                 // Delete the version and the document
@@ -380,8 +385,8 @@ class FileController extends Controller
 
             // Otherwise, delete the current version and update the document's latest_version_guid
             $filePath = $documentVersion->file_path;
-            if (Storage::disk('public')->exists($filePath)) {
-                Storage::disk('public')->delete($filePath); // Delete the file from 'public' disk
+            if (Storage::exists($filePath)) {
+                Storage::delete($filePath); // Delete the file from 'public' disk
             }
 
             // Delete the current version record from the database
