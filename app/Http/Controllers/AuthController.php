@@ -98,7 +98,7 @@ class AuthController extends Controller
 
             if ($finduser) {
                 // Login the user
-                Auth::loginUsingId($finduser->id);
+                $auth = Auth::loginUsingId($finduser->id);
 
                 if ($finduser->is_active === "Y") {
                     // Log the login action
@@ -109,7 +109,7 @@ class AuthController extends Controller
                         'ip_address' => $request->ip(),
                     ]);
 
-                    $finduser->update([
+                    User::where('id', $finduser->id)->first()->update([
                         'login_method' => 'azure'
                     ]);
 
