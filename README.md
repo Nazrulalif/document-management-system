@@ -30,6 +30,7 @@ Before you begin, ensure you have met the following requirements:
 -   Gemini
 -   Mailtrap (If to use email delivery platform to test, send and control email infrastructure in one place)
 -   Microsoft Azure SSO
+-   SFTP (If to use SFTP, ensure your machine has install openSSH Server)
 
 ## Installation situation
 
@@ -99,16 +100,38 @@ php artisan key:generate
 php artisan storage:link
 ```
 
-9. **Paste the Gemini API key in the .env file.**
-   _(Refer to the section "Get Gemini API" below)_
+9. **Setup file sistem that you want to use in `.env`**
 
-10. **[Optional] If using Mailtrap, Paste the Mailtrap username and password in the `.env` file.**
+```bash
+# use public to save file in other server
+FILESYSTEM_DISK=sftp
+```
+
+```bash
+# use public to save file in public file
+FILESYSTEM_DISK=public
+```
+
+10. **Setup configuration SFTP in `.env` (Skip if use public filesystem)**
+
+```bash
+SFTP_HOST=127.0.0.1
+SFTP_USERNAME=
+SFTP_PASSWORD=
+SFTP_PORT=
+SFTP_ROOT=
+```
+
+11. **Paste the Gemini API key in the `.env` file.**
+    _(Refer to the section "Get Gemini API" below)_
+
+12. **[Optional] If using Mailtrap, Paste the Mailtrap username and password in the `.env` file.**
     _(Refer to the section "Get Mailtrap API" below)_
 
-11. **Paste the Microsoft Azure client ID, client secret, redirect URI and tenant ID in the `.env` file.**
+13. **Paste the Microsoft Azure client ID, client secret, redirect URI and tenant ID in the `.env` file.**
     _(Refer to the section "Get Microsoft Azure API Configuration" below)_
 
-12. **Clear configuration:**
+14. **Clear configuration:**
 
 ```bash
 php artisan config:clear
@@ -116,13 +139,13 @@ php artisan cache:clear
 php artisan route:clear
 ```
 
-13. **Run the Laravel development server:**
+15. **Run the Laravel development server:**
 
 ```bash
 php artisan serve --port=8080
 ```
 
-14. **Run the mail queue:**
+16. **Run the mail queue:**
 
 ```bash
 php artisan queue:work

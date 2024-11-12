@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -21,16 +22,19 @@ return new class extends Migration
             $table->string('is_all_company')->nullable();
             $table->timestamps();
 
-            //Start: If using Sql Server
-            // $table->foreign('parent_folder_guid')->references('id')->on('folders')->onDelete('no action')->onUpdate('no action');
-            // $table->foreign('created_by')->references('id')->on('users')->onDelete('no action')->onUpdate('no action');
-            //End: If using Sql Server
 
-            //Start: If using MYSQL
-            $table->foreign('parent_folder_guid')->references('id')->on('folders')->onDelete('cascade');
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
-            //End: If using MYSQL
+            // Check the database connection type
+            $dbDriver = DB::getDriverName();
 
+            if ($dbDriver === 'sqlsrv') {
+                // SQL Server constraints
+                $table->foreign('parent_folder_guid')->references('id')->on('folders')->onDelete('no action')->onUpdate('no action');
+                $table->foreign('created_by')->references('id')->on('users')->onDelete('no action')->onUpdate('no action');
+            } elseif ($dbDriver === 'mysql') {
+                // MySQL constraints
+                $table->foreign('parent_folder_guid')->references('id')->on('folders')->onDelete('cascade');
+                $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            }
         });
     }
 

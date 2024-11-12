@@ -39,13 +39,15 @@ return [
             'driver'         => 'sqlsrv',
             'url'            => env('DATABASE_URL'),
             'host'           => env('DB_HOST', 'KCTEH-CIS\CIS'),
-            'port'           => env('DB_PORT', 'null'),
-            'database'       => env('DB_DATABASE', 'DMS'),
+            'port'           => env('DB_PORT', ''),
+            'database'       => env('DB_DATABASE', 'cis-dms'),
             'username'       => env('DB_USERNAME', 'sa'),
+            // 'password'       => env('DB_PASSWORD', ''),
             'password'       => env('DB_PASSWORD', '@s1@nSecrets'),
             'charset'        => 'utf8',
             'prefix'         => '',
             'prefix_indexes' => true,
+            'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
         ],
 
         'sqlite' => [
