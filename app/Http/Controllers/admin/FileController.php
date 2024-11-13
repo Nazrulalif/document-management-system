@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\Document;
 use App\Models\documentVersion;
+use App\Models\Starred_document;
 use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -377,7 +378,10 @@ class FileController extends Controller
                 }
 
                 // Delete the version and the document
+
                 $documentVersion = documentVersion::where('uuid', '=', $uuid)->delete();
+                Starred_document::where('doc_guid', $document->id)->delete();
+
                 $document = Document::where('latest_version_guid', '=', $uuid)->delete();
 
                 return response()->json(['success' => true, 'message' => 'File and document deleted successfully']);
@@ -388,6 +392,7 @@ class FileController extends Controller
             if (Storage::exists($filePath)) {
                 Storage::delete($filePath); // Delete the file from 'public' disk
             }
+
 
             // Delete the current version record from the database
             $documentVersion->delete();

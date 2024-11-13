@@ -41,12 +41,12 @@ class FileManagerController extends Controller
             if (Auth::user()->role_guid == 1) {
 
                 // Fetch folders and documents
-                $folders = Folder::select('folders.*', 'folders.uuid as uuid', 'folders.id as id', 'folders.folder_name as item_name', 'users.full_name as full_name')
+                $folders = Folder::select('folders.uuid as uuid', 'folders.id as id', 'folders.folder_name as item_name', 'users.full_name as full_name')
                     ->join('users', 'users.id', '=', 'folders.created_by')
                     ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
                     ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_folders.org_guid')
                     ->whereNull('folders.parent_folder_guid')
-                    ->groupBy('folders.id')
+                    // ->groupBy('folders.id')
                     ->orderBy('folders.created_at', 'DESC')
                     ->get()
                     ->map(function ($folder) use ($starredFolders) {
@@ -89,7 +89,7 @@ class FileManagerController extends Controller
                             ->orWhereNull('shared_folders.org_guid');
                     })
                     ->whereNull('folders.parent_folder_guid')
-                    ->groupBy('folders.id')
+                    // ->groupBy('folders.id')
                     ->orderBy('folders.created_at', 'DESC')
                     ->get()
                     ->map(function ($folder) use ($starredFolders) {
@@ -357,6 +357,7 @@ class FileManagerController extends Controller
             // Finally, delete the folder itself
             $folder->delete();
 
+            // Get the updated folder count
             $folderCount = Folder::count();
 
             // Get today's stat entry (or create a new one if it doesn't exist)
@@ -394,13 +395,15 @@ class FileManagerController extends Controller
             if (Storage::exists($filePath)) {
                 Storage::delete($filePath);
             }
+            Starred_document::where('doc_guid', $doc->id)->delete();
+
+            // Delete the document itself
+            Document::where('documents.folder_guid', '=', $folder->id)
+                ->where('documents.id', '=', $doc->id)
+                ->delete();
 
             // Delete associated document versions
             DocumentVersion::where('doc_guid', $doc->id)->delete();
-
-            // Delete the document itself
-            Document::join('document_versions', 'document_versions.doc_guid', '=', 'documents.id')
-                ->where('documents.folder_guid', '=', $folder->id)->delete();
         }
 
         // Find all subfolders of the current folder
@@ -408,10 +411,14 @@ class FileManagerController extends Controller
 
         // Recursively delete each subfolder and its contents
         foreach ($subfolders as $subfolder) {
-            $this->deleteFolderContents($subfolder); // Recursive call to delete subfolder contents
-            $subfolder->delete(); // Delete the subfolder itself
+            // Recursively delete contents of the subfolder
+            $this->deleteFolderContents($subfolder); // Recursive call for nested subfolders
+
+            // Delete the subfolder itself
+            $subfolder->delete();
         }
     }
+
 
 
     public function rename(Request $request, $id)
@@ -607,6 +614,9 @@ class FileManagerController extends Controller
                 Storage::delete($filePath); // Delete the file from 'public' disk
             }
 
+            Starred_document::where('doc_guid', $document->doc_guid)->delete();
+
+
             // Find the document in the documents table and delete it
             Document::where('id', $document->doc_guid)->delete();
         }
@@ -659,6 +669,8 @@ class FileManagerController extends Controller
                 // Delete the version record from the database
                 $version->delete();
             }
+
+            Starred_document::where('doc_guid', $id)->delete();
 
             // Now delete the main document record from the database
             Document::where('id', $id)->delete();

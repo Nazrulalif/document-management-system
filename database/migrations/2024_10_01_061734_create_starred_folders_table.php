@@ -22,7 +22,7 @@ return new class extends Migration
 
             if ($dbDriver === 'sqlsrv') {
                 $table->foreign('user_guid')->references('id')->on('users')->onDelete('cascade');
-                $table->foreign('folder_guid')->references('id')->on('folders')->onDelete('no action')->onUpdate('no action');
+                $table->foreign('folder_guid')->references('id')->on('folders')->onDelete('cascade');
             } elseif ($dbDriver === 'mysql') {
                 // MySQL constraints
                 $table->foreign('user_guid')->references('id')->on('users')->onDelete('cascade');
