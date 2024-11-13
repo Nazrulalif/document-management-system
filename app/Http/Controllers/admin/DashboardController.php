@@ -33,36 +33,63 @@ class DashboardController extends Controller
                 // Get the authenticated user's organization IDs
                 // Get the authenticated user's organization IDs
                 $userOrgIds = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
+                $dbDriver = DB::getDriverName();
 
-                // Retrieve audit logs for users in the same organizations and group by user ID and action
-                $data = AuditLog::select(
-                    'audit_logs.user_guid',
-                    'users.full_name',
-                    'audit_logs.action',
-                    'audit_logs.ip_address',
-                    'audit_logs.model',
-                    'audit_logs.changes',
-                    DB::raw('COUNT(audit_logs.id) as action_count'),
-                    DB::raw('GROUP_CONCAT(audit_logs.created_at ORDER BY audit_logs.created_at DESC) as created_dates') // Aggregate created_at if needed
-                )
-                    ->join('users', 'users.id', '=', 'audit_logs.user_guid')
-                    ->join('user_organizations', 'user_organizations.user_guid', '=', 'users.id')
-                    ->join('roles', 'roles.id', '=', 'users.role_guid')
-                    ->whereIn('user_organizations.org_guid', $userOrgIds) // Filter by organization IDs
-                    ->orwhere('users.role_guid', '1') // Filter by organization IDs
-                    ->groupBy(
+                if ($dbDriver === 'sqlsrv') {
+                    $data = AuditLog::select(
                         'audit_logs.user_guid',
                         'users.full_name',
                         'audit_logs.action',
                         'audit_logs.ip_address',
                         'audit_logs.model',
-                        'audit_logs.changes' // Ensure all selected non-aggregated columns are here
+                        'audit_logs.changes',
+                        DB::raw('COUNT(audit_logs.id) as action_count'),
+                        DB::raw("STRING_AGG(CONVERT(varchar, audit_logs.created_at, 120), ',') WITHIN GROUP (ORDER BY audit_logs.created_at DESC) as created_dates")
                     )
-                    ->orderBy('created_dates', 'desc') // Adjust ordering if needed
-                    ->get();
+                        ->join('users', 'users.id', '=', 'audit_logs.user_guid')
+                        ->join('user_organizations', 'user_organizations.user_guid', '=', 'users.id')
+                        ->join('roles', 'roles.id', '=', 'users.role_guid')
+                        ->whereIn('user_organizations.org_guid', $userOrgIds) // Filter by organization IDs
+                        ->orwhere('users.role_guid', '1') // Filter by organization IDs
+                        ->groupBy(
+                            'audit_logs.user_guid',
+                            'users.full_name',
+                            'audit_logs.action',
+                            'audit_logs.ip_address',
+                            'audit_logs.model',
+                            'audit_logs.changes' // Ensure all selected non-aggregated columns are here
+                        )
+                        ->orderBy('created_dates', 'desc') // Adjust ordering if needed
+                        ->get();
+                } elseif ($dbDriver === 'mysql') {
+                    $data = AuditLog::select(
+                        'audit_logs.user_guid',
+                        'users.full_name',
+                        'audit_logs.action',
+                        'audit_logs.ip_address',
+                        'audit_logs.model',
+                        'audit_logs.changes',
+                        DB::raw('COUNT(audit_logs.id) as action_count'),
+                        DB::raw('GROUP_CONCAT(audit_logs.created_at ORDER BY audit_logs.created_at DESC) as created_dates'),
+
+                    )
+                        ->join('users', 'users.id', '=', 'audit_logs.user_guid')
+                        ->join('user_organizations', 'user_organizations.user_guid', '=', 'users.id')
+                        ->join('roles', 'roles.id', '=', 'users.role_guid')
+                        ->whereIn('user_organizations.org_guid', $userOrgIds) // Filter by organization IDs
+                        ->orwhere('users.role_guid', '1') // Filter by organization IDs
+                        ->groupBy(
+                            'audit_logs.user_guid',
+                            'users.full_name',
+                            'audit_logs.action',
+                            'audit_logs.ip_address',
+                            'audit_logs.model',
+                            'audit_logs.changes' // Ensure all selected non-aggregated columns are here
+                        )
+                        ->orderBy('created_dates', 'desc') // Adjust ordering if needed
+                        ->get();
+                }
             }
-
-
 
             // Format the date and time for each record
             $formatted_data = $data->map(function ($item) {

@@ -40,90 +40,118 @@ class FileManagerController extends Controller
 
             if (Auth::user()->role_guid == 1) {
 
-                // Fetch folders and documents
-                $folders = Folder::select('folders.*', 'folders.uuid as uuid', 'folders.id as id', 'folders.folder_name as item_name', 'users.full_name as full_name')
-                    ->join('users', 'users.id', '=', 'folders.created_by')
+                $folders = Folder::with(['children', 'documents'])
+                    ->select(
+                        'folders.*',
+                        'folders.uuid as uuid',
+                        'folders.id as id',
+                        'folders.folder_name as item_name',
+                        DB::raw('GROUP_CONCAT(DISTINCT share_name.org_name SEPARATOR "\n") as shared_orgs'), // Aggregate shared org names
+                        DB::raw('GROUP_CONCAT(DISTINCT share_name.id SEPARATOR ",") as shared_orgs_guid'), // Aggregate shared org names
+                        'users.full_name as full_name',
+                        DB::raw('NULL as doc_type'),
+                        DB::raw('MAX(IF(shared_folders.folder_guid IS NOT NULL, 1, 0)) as is_shared') // Handle duplicates
+                    )
+                    ->join('users', 'users.id', '=', 'folders.created_by') // Join with the users table
                     ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
                     ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_folders.org_guid')
-                    ->whereNull('folders.parent_folder_guid')
-                    ->groupBy('folders.id')
-                    ->orderBy('folders.created_at', 'DESC')
+                    ->whereNull('folders.parent_folder_guid') // Ensure top-level folders
+                    ->groupBy('folders.id') // Group by folder ID to avoid duplicates
+                    ->orderBy('folders.created_at', 'DESC') // Order by newest first
                     ->get()
                     ->map(function ($folder) use ($starredFolders) {
-                        // Aggregating the organization names and GUIDs
-                        $folder->shared_orgs = $folder->sharedOrganizations->pluck('org_name')->implode("\n");
-                        $folder->shared_orgs_guid = $folder->sharedOrganizations->pluck('id')->implode(",");
-                        // Check if the folder is starred
                         $folder->is_starred = in_array($folder->id, $starredFolders);
-                        $folder->doc_type = null;
                         return $folder;
                     });
 
-                $rootDocuments = Document::with('sharedOrganizations') // Eager load shared organizations
-                    ->select('documents.*', 'documents.uuid as uuid', 'documents.id as id', 'documents.doc_title as item_name', 'users.full_name as full_name')
+
+                // Fetch documents and add `is_starred` field
+                $rootDocuments = Document::select(
+                    'documents.*',
+                    'documents.uuid as uuid',
+                    'documents.id as id',
+                    'documents.doc_title as item_name',
+                    'documents.doc_type as doc_type',
+                    'users.full_name as full_name',
+                    DB::raw('GROUP_CONCAT(DISTINCT share_name.org_name SEPARATOR "\n") as shared_orgs'), // Aggregate shared org names
+                    DB::raw('GROUP_CONCAT(DISTINCT share_name.id SEPARATOR ",") as shared_orgs_guid'), // Aggregate shared org names
+                    DB::raw('MAX(IF(shared_documents.doc_guid IS NOT NULL, 1, 0)) as is_shared') // Handle duplicates
+                )
                     ->join('users', 'users.id', '=', 'documents.upload_by')
-                    ->leftJoin('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id')
-                    ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_documents.org_guid')
-                    ->whereNull('documents.folder_guid')
-                    ->orderBy('documents.created_at', 'DESC')
+                    ->leftJoin('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id') // Left join with shared_documents
+                    ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_documents.org_guid') // Join with organizations for shared names
+                    ->whereNull('documents.folder_guid') // Only root-level documents
+                    ->groupBy('documents.id') // Group by document ID to avoid duplicates
+                    ->orderBy('documents.created_at', 'DESC') // Order by newest first
                     ->get()
                     ->map(function ($document) use ($starredDocs) {
-                        // Aggregating the organization names and GUIDs
-                        $document->shared_orgs = $document->sharedOrganizations->pluck('org_name')->implode("\n");
-                        $document->shared_orgs_guid = $document->sharedOrganizations->pluck('id')->implode(",");
-                        // Check if the document is starred
-                        $document->is_starred = in_array($document->id, $starredDocs);
+                        $document->is_starred = in_array($document->id, $starredDocs); // Check if the document is starred
                         return $document;
                     });
             } else {
-                // User's organization IDs
+                // Fetch the user's organization IDs
                 $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
 
-                $folders = Folder::with(['children', 'documents', 'sharedOrganizations']) // Eager load shared organizations
-                    ->select('folders.*', 'folders.uuid as uuid', 'folders.id as id', 'folders.folder_name as item_name', 'users.full_name as full_name')
+                // Fetch all folders with necessary joins and add `is_starred` field
+                $folders = Folder::with(['children', 'documents'])
+                    ->select(
+                        'folders.*',
+                        'folders.uuid as uuid',
+                        'folders.id as id',
+                        'folders.folder_name as item_name',
+                        'users.full_name as full_name',
+                        DB::raw('NULL as doc_type'),
+                        DB::raw('IF(shared_folders.folder_guid IS NOT NULL, 1, 0) as is_shared'),
+                        DB::raw('GROUP_CONCAT(share_name.org_name) as shared_orgs'), // Aggregate shared org names
+                        DB::raw('GROUP_CONCAT(share_name.id) as shared_orgs_guid') // Aggregate shared org IDs
+                    )
                     ->join('users', 'users.id', '=', 'folders.created_by')
                     ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
                     ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_folders.org_guid')
                     ->where(function ($query) use ($user_orgs) {
-                        $query->whereIn('shared_folders.org_guid', $user_orgs)
-                            ->orWhereNull('shared_folders.org_guid');
+                        // Only check for shared folders with the user's organizations or non-shared folders
+                        $query->whereIn('shared_folders.org_guid', $user_orgs) // Check for shared folders
+                            ->orWhereNull('shared_folders.org_guid'); // Ensure it can return non-shared folders too
                     })
-                    ->whereNull('folders.parent_folder_guid')
-                    ->groupBy('folders.id')
-                    ->orderBy('folders.created_at', 'DESC')
+                    ->whereNull('folders.parent_folder_guid') // Ensure only top-level folders are fetched
+                    ->groupBy('folders.id') // Group by folder ID for aggregate functions
+                    ->orderBy('folders.created_at', 'DESC') // Order by newest first
                     ->get()
                     ->map(function ($folder) use ($starredFolders) {
-                        // Aggregating the organization names and GUIDs
-                        $folder->shared_orgs = $folder->sharedOrganizations->pluck('org_name')->implode("\n");
-                        $folder->shared_orgs_guid = $folder->sharedOrganizations->pluck('id')->implode(",");
-                        // Check if the folder is starred
                         $folder->is_starred = in_array($folder->id, $starredFolders);
-                        $folder->doc_type = null;
-
                         return $folder;
                     });
 
-                $rootDocuments = Document::with('sharedOrganizations') // Eager load shared organizations
-                    ->select('documents.*', 'documents.uuid as uuid', 'documents.id as id', 'documents.doc_title as item_name', 'users.full_name as full_name')
+
+                // Fetch documents and add `is_starred` field
+                $rootDocuments = Document::select(
+                    'documents.*',
+                    'documents.uuid as uuid',
+                    'documents.id as id',
+                    'documents.doc_title as item_name',
+                    'documents.doc_type as doc_type',
+                    'users.full_name as full_name',
+                    DB::raw('share_name.org_name as shared_orgs'), // Aggregate shared org names
+                    DB::raw('share_name.id as shared_orgs_guid'), // Aggregate shared org names
+
+
+                )
                     ->join('users', 'users.id', '=', 'documents.upload_by')
-                    ->leftJoin('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id')
-                    ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_documents.org_guid')
+                    ->leftJoin('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id') // Join with the shared_folder table
+                    ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_documents.org_guid') // Join with organizations for shared names
                     ->where(function ($query) use ($user_orgs) {
                         $query->whereIn('shared_documents.org_guid', $user_orgs)
                             ->orWhereNull('shared_documents.org_guid');
                     })
                     ->whereNull('documents.folder_guid')
-                    ->orderBy('documents.created_at', 'DESC')
+                    ->orderBy('documents.created_at', 'DESC') // Order by newest first
                     ->get()
                     ->map(function ($document) use ($starredDocs) {
-                        // Aggregating the organization names and GUIDs
-                        $document->shared_orgs = $document->sharedOrganizations->pluck('org_name')->implode("\n");
-                        $document->shared_orgs_guid = $document->sharedOrganizations->pluck('id')->implode(",");
-                        // Check if the document is starred
                         $document->is_starred = in_array($document->id, $starredDocs);
                         return $document;
                     });
             }
+
 
             // Merge folders and documents
             $data = $folders->concat($rootDocuments);
@@ -204,59 +232,114 @@ class FileManagerController extends Controller
 
     public function show_folder(Request $request, $uuid)
     {
-        $folder = Folder::where('uuid', $uuid)->with(['children', 'documents', 'creator'])->first();
-
+        $folder_id = Folder::where('uuid', $uuid)->first();
+        // Fetch the main folder with its children and documents
+        $folder = Folder::with(['children', 'documents', 'creator'])
+            ->select(
+                '*',
+                'folders.uuid as uuid',
+                'folders.id as id',
+                'folders.folder_name as item_name',
+                DB::raw('NULL as doc_type')
+            )
+            ->where('uuid', $uuid)
+            ->first();
         if (!$folder) {
             return redirect()->route('fileManager.index')->with('error', 'Folder not found or has been deleted.');
         }
-
         if ($request->ajax()) {
             // Fetch starred folders and documents for the authenticated user
             $starredFolders = Starred_folder::where('user_guid', Auth::user()->id)->pluck('folder_guid')->toArray();
             $starredDocs = Starred_document::where('user_guid', Auth::user()->id)->pluck('doc_guid')->toArray();
+
+
+            // Fetch the main folder with its children and documents
+            $folder = Folder::with(['children', 'documents', 'creator'])
+                ->select(
+                    '*',
+                    'folders.uuid as uuid',
+                    'folders.id as id',
+                    'folders.folder_name as item_name',
+                    DB::raw('NULL as doc_type')
+                )
+                ->where('uuid', $uuid)
+                ->first();
+
+
+
+            if (!$folder) {
+                return response()->json(['error' => 'Folder not found'], 404);
+            }
+
+            // Map the main folder to include the starred status
+            $folder->is_starred = in_array($folder->id, $starredFolders);
+            $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
 
             // Prepare the children folders
             $subfolders = $folder->children->map(function ($childFolder) use ($starredFolders) {
                 return [
                     'id' => $childFolder->id,
                     'uuid' => $childFolder->uuid,
-                    'shared_orgs' => $childFolder->shared_org_names, // Accessor provides concatenated org names
-                    'shared_orgs_guid' => $childFolder->shared_org_ids, // Accessor provides concatenated org IDs
+                    'shared_orgs' => $childFolder->shared_orgs,
+                    'shared_orgs_guid' => $childFolder->shared_orgs_guid,
                     'item_name' => $childFolder->folder_name,
+                    // 'org_name' => $childFolder->organization->org_name, // Ensure the relation exists
                     'full_name' => $childFolder->creator->full_name,
                     'doc_type' => null,
                     'is_starred' => in_array($childFolder->id, $starredFolders),
                 ];
             });
 
-            // Fetch documents related to the folder, adjusted for user roles
-            $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
+            if (Auth::user()->role_guid == 1) {
+                // Fetch documents related to the folder
+                $documents = Document::select(
+                    '*',
+                    'documents.uuid as uuid',
+                    'documents.id as id',
+                    'documents.doc_title as item_name',
+                    'documents.doc_type as doc_type',
+                    DB::raw('share_name.org_name as shared_orgs'), // Aggregate shared org names
+                    DB::raw('share_name.id as shared_orgs_guid'), // Aggregate shared org names
 
-            $documentsQuery = Document::with(['folder', 'uploadBy', 'sharedOrganizations'])
-                ->whereHas('folder', function ($query) use ($uuid) {
-                    $query->where('uuid', $uuid);
-                })
-                ->orderBy('created_at', 'DESC');
-
-            if (Auth::user()->role_guid != 1) {
-                $documentsQuery->whereHas('sharedOrganizations', function ($query) use ($user_orgs) {
-                    $query->whereIn('organizations.id', $user_orgs);
-                });
+                )
+                    ->join('folders', 'folders.id', '=', 'documents.folder_guid')
+                    ->join('users', 'users.id', '=', 'documents.upload_by')
+                    ->leftJoin('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id') // Left join with shared_documents
+                    ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_documents.org_guid')
+                    ->where('folders.uuid', '=', $uuid)
+                    ->orderBy('documents.created_at', 'DESC') // Order by newest first
+                    ->get()
+                    ->map(function ($document) use ($starredDocs) {
+                        $document->is_starred = in_array($document->id, $starredDocs);
+                        return $document;
+                    });
+            } else {
+                // Fetch documents related to the folder
+                $documents = Document::select(
+                    '*',
+                    'documents.uuid as uuid',
+                    'documents.id as id',
+                    'documents.doc_title as item_name',
+                    'documents.doc_type as doc_type',
+                    DB::raw('share_name.org_name as shared_orgs'), // Aggregate shared org names
+                    DB::raw('share_name.id as shared_orgs_guid'), // Aggregate shared org names
+                )
+                    ->join('folders', 'folders.id', '=', 'documents.folder_guid')
+                    ->join('users', 'users.id', '=', 'documents.upload_by')
+                    ->leftJoin('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id') // Left join with shared_documents
+                    ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_documents.org_guid')
+                    ->where('folders.uuid', '=', $uuid)
+                    ->where(function ($query) use ($user_orgs) {
+                        $query->whereIn('shared_documents.org_guid', $user_orgs);
+                    })
+                    ->orderBy('documents.created_at', 'DESC') // Order by newest first
+                    ->get()
+                    ->map(function ($document) use ($starredDocs) {
+                        $document->is_starred = in_array($document->id, $starredDocs);
+                        return $document;
+                    });
             }
 
-            $documents = $documentsQuery->get()->map(function ($document) use ($starredDocs) {
-                return [
-                    'id' => $document->id,
-                    'uuid' => $document->uuid,
-                    'full_name' => $document->full_name, // Full name of uploader from accessor
-                    'shared_orgs' => $document->shared_org_names, // Concatenated organization names
-                    'item_name' => $document->doc_title,
-                    'doc_type' => $document->doc_type,
-                    'shared_orgs_guid' => $document->shared_org_ids,
-                    'latest_version_guid' => $document->latest_version_guid,
-                    'is_starred' => in_array($document->id, $starredDocs),
-                ];
-            });
 
 
             // Merge subfolders and documents
@@ -267,21 +350,27 @@ class FileManagerController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
+        $folder = Folder::with(['children', 'documents', 'creator'])
+            ->select(
+                '*',
+                'folders.uuid as uuid',
+                'folders.id as id',
+                'folders.folder_name as item_name',
+                DB::raw('NULL as doc_type')
+            )
+            ->where('uuid', $uuid)
+            ->first();
 
-        // Additional data for non-AJAX requests
-        $folder_id = Folder::where('uuid', $uuid)->first();
         $path = $this->getFolderPath($folder);
         $company = Organization::all();
-        $folder_shared_id = Shared_folder::where('folder_guid', $folder->id)->first();
+        $folder_shared_id = shared_folder::where('folder_guid', $folder_id->id)->first();
         $user_orgs = User_organization::where('user_guid', Auth::user()->id)
             ->join('organizations', 'user_organizations.org_guid', '=', 'organizations.id')
             ->select('organizations.id', 'organizations.org_name')
             ->get();
-
         // Passing the folder to the view
-        return view('admin.file-manager.file-manager-item', compact('uuid', 'folder', 'folder_id', 'path', 'company', 'folder_shared_id', 'user_orgs'));
+        return view('admin.file-manager.file-manager-item', compact('uuid', 'folder_id', 'path', 'company', 'folder_shared_id', 'user_orgs'));
     }
-
 
     public function getFolderPath(Folder $folder)
     {

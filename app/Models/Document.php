@@ -26,6 +26,34 @@ class Document extends Model
         'version_limit',
     ];
 
+    public function sharedOrganizations()
+    {
+        return $this->belongsToMany(Organization::class, 'shared_documents', 'doc_guid', 'org_guid');
+    }
+    public function uploadBy()
+    {
+        return $this->belongsTo(User::class, 'upload_by'); // Adjust 'upload_by' as per your database column
+    }
+
+
+    // Accessor for concatenated shared organization names
+    public function getSharedOrgNamesAttribute()
+    {
+        return $this->sharedOrganizations->pluck('org_name')->implode(', ');
+    }
+
+    // Accessor for concatenated shared organization IDs
+    public function getSharedOrgIdsAttribute()
+    {
+        return $this->sharedOrganizations->pluck('id')->implode(', ');
+    }
+
+    // Accessor for uploader's full name
+    public function getFullNameAttribute()
+    {
+        return $this->uploadBy ? $this->uploadBy->full_name : 'Unknown';
+    }
+
     public function folder()
     {
         return $this->belongsTo(Folder::class, 'folder_guid', 'id');
