@@ -35,7 +35,6 @@ class UserFactory extends Factory
             'nationality' => $this->faker->randomElement(['Malaysia', 'Singapore', 'Indonesia', 'Brunei']),  // Include other nationalities for variety
             'gender' => $this->faker->randomElement(['male', 'female']),
             'race' => $this->faker->randomElement(['Malay', 'Chinese', 'Indian', 'Others']),  // Use specific races
-            'org_guid' => $this->faker->randomElement(['45', '42', '43', '44', '47', '46']),  // Retrieve from the organization IDs (ensure these exist)
             'position' => $this->faker->randomElement(['Manager', 'Developer', 'Designer', 'Tester']),  // Use common job positions
             'role_guid' => $this->faker->randomElement(['1', '2', '3', '4']),
         ];
