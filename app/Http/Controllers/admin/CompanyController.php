@@ -74,10 +74,10 @@ class CompanyController extends Controller
         // Update the company details
         $company->update([
             'org_name' => request('org_name'),
-            'org_address' => request('org_address'),
-            'org_place' => request('org_place'),
-            'nature_of_business' => request('nature_of_business'),
-            'org_number' => request('org_number'),
+            'org_address' => request('org_address') ?? 'not set',
+            'org_place' => request('org_place') ?? 'not set',
+            'nature_of_business' => request('nature_of_business') ?? 'not set',
+            'org_number' => request('org_number') ?? 'not set',
             'reg_date' => request('reg_date'),
         ]);
 
@@ -249,21 +249,26 @@ class CompanyController extends Controller
         // Validate the request data
         $validatedData = $request->validate([
             'org_name' => 'required|string|max:255',
-            'org_address' => 'required|string|max:255',
-            'org_place' => 'required|string|max:255',
-            'nature_of_business' => 'required|string|max:255',
-            'org_number' => 'required|string|max:255',
-            'reg_date' => 'required|date',
+            // 'org_address' => 'required|string|max:255',
+            // 'org_place' => 'required|string|max:255',
+            // 'nature_of_business' => 'required|string|max:255',
+            // 'org_number' => 'required|string|max:255',
+            // 'reg_date' => 'required|date',
         ]);
 
         // Attempt to create the organization
         Organization::create([
             'org_name' => $validatedData['org_name'],
-            'reg_date' => $validatedData['reg_date'],
-            'org_address' => $validatedData['org_address'],
-            'org_place' => $validatedData['org_place'],
-            'nature_of_business' => $validatedData['nature_of_business'],
-            'org_number' => $validatedData['org_number'],
+            'reg_date' => $request->reg_date,
+            'org_address' => $request->org_address ?? 'not set',
+            'org_place' => $request->org_place ?? 'not set' ,
+            'nature_of_business' => $request->nature_of_business ?? 'not set',
+            'org_number' => $request->org_number ?? 'not set',
+            // 'reg_date' => $validatedData['reg_date'],
+            // 'org_address' => $validatedData['org_address'],
+            // 'org_place' => $validatedData['org_place'],
+            // 'nature_of_business' => $validatedData['nature_of_business'],
+            // 'org_number' => $validatedData['org_number'],
             'is_parent' => 'N',
             'is_operation' => 'Y',
         ]);

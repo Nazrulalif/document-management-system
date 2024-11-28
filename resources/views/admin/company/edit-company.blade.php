@@ -22,7 +22,7 @@
                 <form id="kt_modal_edit_company_form" class="form" action="" method="post"
                     autocomplete="off" enctype="multipart/form-data">
                     @csrf
-                    
+
                     <!--begin::Scroll-->
                     <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll"
                         data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-max-height="auto"
@@ -45,11 +45,11 @@
                         <div class="row mb-7">
                             <div class="col-md-6">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Register Date</label>
+                                <label class=" fw-semibold fs-6 mb-2">Register Date</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="date" name="reg_date" id="reg_date" class="form-control form-control-solid mb-3 mb-lg-0"
-                                    placeholder="Register date" required />
+                                    placeholder="Register date"  />
                                 <!--end::Input-->
                                 @error('reg_date')
                                 <div class="text-danger">{{ $message }}</div>
@@ -57,12 +57,12 @@
                             </div>
                             <div class="col-md-6">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Register Number</label>
+                                <label class=" fw-semibold fs-6 mb-2">Register Number</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="org_number" id="org_number"
                                     class="form-control form-control-solid mb-3 mb-lg-0"
-                                    placeholder="Company Register Number" required />
+                                    placeholder="Company Register Number"  />
                                 <!--end::Input-->
                                 @error('org_number')
                                 <div class="text-danger">{{ $message }}</div>
@@ -72,11 +72,11 @@
 
                         <div class="fv-row mb-7">
                             <!--begin::Label-->
-                            <label class="required fw-semibold fs-6 mb-2">Address</label>
+                            <label class=" fw-semibold fs-6 mb-2">Address</label>
                             <!--end::Label-->
                             <!--begin::Input-->
                             <input type="text" name="org_address" id="org_address" class="form-control form-control-solid mb-3 mb-lg-0"
-                                placeholder="Company Address" required />
+                                placeholder="Company Address"  />
                             <!--end::Input-->
                             @error('org_address')
                             <div class="text-danger">{{ $message }}</div>
@@ -86,11 +86,11 @@
                         <div class="row mb-7">
                             <div class="col-md-6">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">State</label>
+                                <label class=" fw-semibold fs-6 mb-2">State</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="org_place" id="org_place" class="form-control form-control-solid mb-3 mb-lg-0"
-                                    placeholder="State" required />
+                                    placeholder="State"  />
                                 <!--end::Input-->
                                 @error('org_place')
                                 <div class="text-danger">{{ $message }}</div>
@@ -98,12 +98,12 @@
                             </div>
                             <div class="col-md-6">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Nature of Business</label>
+                                <label class=" fw-semibold fs-6 mb-2">Nature of Business</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" name="nature_of_business" id="nature_of_business"
                                     class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Food and Beverage"
-                                    required />
+                                     />
                                 <!--end::Input-->
                                 @error('nature_of_bussiness')
                                 <div class="text-danger">{{ $message }}</div>

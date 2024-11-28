@@ -54,67 +54,6 @@
                             <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
-
-                        <div class="row mb-7">
-                            <div class="col-md-6">
-                                <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Ic Number/Passport Number</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" name="ic_number" id="ic_number"
-                                    class="form-control form-control-solid mb-3 mb-lg-0"
-                                    placeholder="Ic Number/Passport Number" required />
-                                <!--end::Input-->
-                                @error('ic_number')
-                                <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Nationality</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" name="nationality" id="nationality"
-                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="nationality"
-                                    required />
-                                <!--end::Input-->
-                                @error('nationality')
-                                <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!--end::Input group-->
-                        <div class="row mb-7">
-                            <div class="col-md-6">
-                                <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Race</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" name="race" id="race"
-                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="race" required />
-                                <!--end::Input-->
-                                @error('race')
-                                <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Gender</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <select class="form-select form-select-solid mb-3 mb-lg-0" name="gender" id="genders"
-                                    data-placeholder="Select a gender" required>
-                                    <option value="male">male</option>
-                                    <option value="female">female</option>
-                                </select>
-                                <!--end::Input-->
-                                @error('gender')
-                                <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                        </div>
                         <div class="fv-row mb-7">
                             <!--begin::Label-->
                             <label class="required fw-semibold fs-6 mb-2">Company</label>
@@ -135,39 +74,99 @@
                             <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
+                        <div class="fv-row mb-7">
+                            <!--begin::Label-->
+                            <label class="required fw-semibold fs-6 mb-2">Role</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            {{-- <input type="text" name="role_guid" id="role_guid" class="form-control form-control-solid mb-3 mb-lg-0"
+                                 required /> --}}
+                            <select class="form-select form-select-solid mb-3 mb-lg-0" name="role_guid"
+                                id="role_guid" data-placeholder="Select a role" required>
+                                @foreach ($role as $role)
+                                <option value="{{ $role->id }}">{{ $role->role_name }}</option>
+                                @endforeach
+                            </select>
+                            <!--end::Input-->
+                            @error('role')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="row mb-7">
+                            <div class="col-md-6">
+                                <!--begin::Label-->
+                                <label class=" fw-semibold fs-6 mb-2">Ic Number/Passport Number</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" name="ic_number" id="ic_number"
+                                    class="form-control form-control-solid mb-3 mb-lg-0"
+                                    placeholder="Ic Number/Passport Number"  />
+                                <!--end::Input-->
+                                @error('ic_number')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <!--begin::Label-->
+                                <label class=" fw-semibold fs-6 mb-2">Nationality</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" name="nationality" id="nationality"
+                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="nationality"
+                                     />
+                                <!--end::Input-->
+                                @error('nationality')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                         <!--end::Input group-->
                         <div class="row mb-7">
                             <div class="col-md-6">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Position</label>
+                                <label class=" fw-semibold fs-6 mb-2">Race</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" name="position" id="position"
-                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="position"
-                                    required />
+                                <input type="text" name="race" id="race"
+                                    class="form-control form-control-solid mb-3 mb-lg-0" placeholder="race"  />
                                 <!--end::Input-->
-                                @error('position')
+                                @error('race')
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6">
                                 <!--begin::Label-->
-                                <label class="required fw-semibold fs-6 mb-2">Role</label>
+                                <label class=" fw-semibold fs-6 mb-2">Gender</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                {{-- <input type="text" name="role_guid" id="role_guid" class="form-control form-control-solid mb-3 mb-lg-0"
-                                     required /> --}}
-                                <select class="form-select form-select-solid mb-3 mb-lg-0" name="role_guid"
-                                    id="role_guid" data-placeholder="Select a role" required>
-                                    @foreach ($role as $role)
-                                    <option value="{{ $role->id }}">{{ $role->role_name }}</option>
-                                    @endforeach
+                                <select class="form-select form-select-solid mb-3 mb-lg-0" name="gender" id="genders"
+                                    data-placeholder="Select a gender" >
+                                    <option value="male">male</option>
+                                    <option value="female">female</option>
                                 </select>
                                 <!--end::Input-->
-                                @error('role')
+                                @error('gender')
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                        </div>
+
+                        <!--end::Input group-->
+                        <div class="fv-row mb-7">
+                            <!--begin::Label-->
+                            <label class=" fw-semibold fs-6 mb-2">Position</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="text" name="position" id="position"
+                                class="form-control form-control-solid mb-3 mb-lg-0" placeholder="position"
+                                 />
+                            <!--end::Input-->
+                            @error('position')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+
                         </div>
                     </div>
                     <!--end::Scroll-->
