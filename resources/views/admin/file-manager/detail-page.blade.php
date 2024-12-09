@@ -201,10 +201,10 @@
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td class="fw-bold fs-6 text-gray-800">Company:&nbsp;
+                                                                <td class="fw-bold fs-6 text-gray-800">Shared to:&nbsp;
                                                                 </td>
                                                                 <td class="text-gray-600 fw-semibold fs-6">
-                                                                    {{ $data->org_name }}</span></a>
+                                                                    {{ $shareToName }}</span></a>
                                                                 </td>
                                                             </tr>
                                                             <tr>
