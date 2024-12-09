@@ -175,10 +175,10 @@
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td class="fw-bold fs-6 text-gray-800">Company:&nbsp;
+                                                                <td class="fw-bold fs-6 text-gray-800">Shared to:&nbsp;
                                                                 </td>
                                                                 <td class="text-gray-600 fw-semibold fs-6">
-                                                                    {{ $data->org_name }}</span></a>
+                                                                    {{ $shareToName }}</span></a>
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -217,7 +217,7 @@
                                         <div class="separator separator-dashed"></div>
                                         <!--end::Separator-->
                                     </div>
-                                    
+
                                     <div class="m-0">
                                         <!--begin::Heading-->
                                         <div class="d-flex align-items-center collapsible py-3 toggle mb-0"

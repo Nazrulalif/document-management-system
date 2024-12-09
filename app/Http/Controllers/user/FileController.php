@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\Document;
 use App\Models\documentVersion;
+use App\Models\shared_document;
 use Illuminate\Http\Request;
 
 class FileController extends Controller
@@ -18,6 +19,12 @@ class FileController extends Controller
             ->where('document_versions.uuid', '=', $uuid)
             ->first();
 
+            $sharedToId = Document::where('latest_version_guid', $uuid)->pluck('id')->first();
+
+            $shareToName = shared_document::join('organizations', 'organizations.id', '=', 'shared_documents.org_guid')
+            ->where('shared_documents.doc_guid', $sharedToId)
+            ->pluck('org_name')
+            ->first();
 
         $version = documentVersion::select('*', 'document_versions.uuid as uuid', 'document_versions.created_at as created_at')
             ->join('documents', 'documents.id', '=', 'document_versions.doc_guid')
@@ -46,7 +53,7 @@ class FileController extends Controller
             'doc_summary' => $doc_summary,
             'version' => $version,
             'audit_logs' => $audit_logs,
-
+            'shareToName' => $shareToName,
         ]);
     }
 }
