@@ -26,28 +26,28 @@ class FileManagerController extends Controller
             $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
 
             $folders = Folder::with(['children', 'documents', 'sharedOrganizations']) // Eager load shared organizations
-                ->select('folders.*', 'folders.uuid as uuid', 'folders.id as id', 'folders.folder_name as item_name', 'users.full_name as full_name')
-                ->join('users', 'users.id', '=', 'folders.created_by')
-                ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
-                ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_folders.org_guid')
-                ->where(function ($query) use ($user_orgs) {
-                    $query->whereIn('shared_folders.org_guid', $user_orgs)
-                        ->orWhereNull('shared_folders.org_guid');
-                })
-                ->whereNull('folders.parent_folder_guid')
-                ->groupBy('folders.id')
-                ->orderBy('folders.created_at', 'DESC')
-                ->get()
-                ->map(function ($folder) use ($starredFolders) {
-                    // Aggregating the organization names and GUIDs
-                    $folder->shared_orgs = $folder->sharedOrganizations->pluck('org_name')->implode("\n");
-                    $folder->shared_orgs_guid = $folder->sharedOrganizations->pluck('id')->implode(",");
-                    // Check if the folder is starred
-                    $folder->is_starred = in_array($folder->id, $starredFolders);
-                    $folder->doc_type = null;
+                    ->select('folders.*', 'folders.uuid as uuid', 'folders.id as id', 'folders.folder_name as item_name', 'users.full_name as full_name')
+                    ->join('users', 'users.id', '=', 'folders.created_by')
+                    ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
+                    ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_folders.org_guid')
+                    ->where(function ($query) use ($user_orgs) {
+                        $query->whereIn('shared_folders.org_guid', $user_orgs)
+                            ->orWhereNull('shared_folders.org_guid');
+                    })
+                    ->whereNull('folders.parent_folder_guid')
+                    // ->groupBy('folders.id')
+                    ->orderBy('folders.created_at', 'DESC')
+                    ->get()
+                    ->map(function ($folder) use ($starredFolders) {
+                        // Aggregating the organization names and GUIDs
+                        $folder->shared_orgs = $folder->sharedOrganizations->pluck('org_name')->implode("\n");
+                        $folder->shared_orgs_guid = $folder->sharedOrganizations->pluck('id')->implode(",");
+                        // Check if the folder is starred
+                        $folder->is_starred = in_array($folder->id, $starredFolders);
+                        $folder->doc_type = null;
 
-                    return $folder;
-                });
+                        return $folder;
+                    });
 
             $rootDocuments = Document::with('sharedOrganizations') // Eager load shared organizations
                 ->select('documents.*', 'documents.uuid as uuid', 'documents.id as id', 'documents.doc_title as item_name', 'users.full_name as full_name')

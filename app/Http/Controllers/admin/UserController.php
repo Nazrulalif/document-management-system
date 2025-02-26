@@ -88,42 +88,34 @@ class UserController extends Controller
             'company' => $company,
         ]);
     }
-
+    private function generateSecurePassword($length = 10)
+    {
+        $uppercase = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, length: 2); // 2 uppercase letters
+        $lowercase = substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 3); // 3 lowercase letters
+        $numbers = substr(str_shuffle('0123456789'), 0, 2); // 2 numbers
+        $specialChars = substr(str_shuffle('!@#$%^&*()_-+=<>?'), 0, 2); // 2 special characters
+        $remaining = Str::random($length - 9); // Remaining random characters
+    
+        // Shuffle and return the password
+        return str_shuffle($uppercase . $lowercase . $numbers . $specialChars . $remaining);
+    }
     public function create(Request $request)
     {
         $validatedData = $request->validate([
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
-            // 'ic_number' => 'required|digits_between:6,12', // Ensure IC number has between 6 to 12 digits
-            // 'nationality' => 'required|string|max:255',
-            // 'gender' => 'required|string|max:255',
-            // 'position' => 'required|string|max:255',
             'role_name' => 'required|string|max:255',
-            // 'org_name' => 'required|string|max:255',
             'org_name' => 'required|array',           // Ensure org_name is an array
             'org_name.*' => 'exists:organizations,id',
-            // 'race' => 'required|string|max:255',
         ], [
             'email.unique' => 'The email has already been taken.',
             // 'ic_number.digits_between' => 'The IC number must be between 6 and 12 digits.',
         ]);
 
         try {
-            $generatedPassword = Str::random(10);
+            $generatedPassword = $this->generateSecurePassword();
             // Attempt to create the organization
             $user = User::create([
-                // 'full_name' => $validatedData['full_name'],
-                // 'email' => $validatedData['email'],
-                // 'ic_number' => $validatedData['ic_number'],
-                // 'nationality' => $validatedData['nationality'],
-                // 'gender' => $validatedData['gender'],
-                // 'position' => $validatedData['position'],
-                // 'role_guid' => $validatedData['role_name'],
-                // 'race' => $validatedData['race'],
-                // 'password' => Hash::make($generatedPassword),
-                // 'is_active' => 'Y',
-                // 'is_change_password' => 'N',
-
                 'full_name' => $validatedData['full_name'],
                 'email' => $validatedData['email'],
                 'ic_number' => $request->ic_number,
@@ -133,6 +125,7 @@ class UserController extends Controller
                 'role_guid' => $request->role_name,
                 'race' => $request->race ?? 'not set',
                 'password' => Hash::make($generatedPassword),
+                'password_changed_at' => Carbon::now(),
                 'is_active' => 'Y',
                 'is_change_password' => 'N',
 

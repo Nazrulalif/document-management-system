@@ -30,12 +30,12 @@
                         <div class="card-toolbar">
                             <!--begin::Toolbar-->
                             <div class="d-flex justify-content-end" data-kt-docs-table-toolbar="base">
-                                <button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal"
+                                {{-- <button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal"
                                     data-bs-target="#kt_modal_import_users">
                                     <i class="ki-duotone ki-exit-down fs-2">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
-                                    </i>Import</button>
+                                    </i>Import</button> --}}
                                 <!--begin::Add user-->
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                     data-bs-target="#kt_modal_add_user">

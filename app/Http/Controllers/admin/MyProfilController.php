@@ -7,6 +7,7 @@ use App\Models\Document;
 use App\Models\Folder;
 use App\Models\User;
 use App\Models\User_organization;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -151,7 +152,18 @@ class MyProfilController extends Controller
     {
         // Validation rules with confirmation
         $request->validate([
-            'password' => 'required|string|min:8|confirmed', // Use 'confirmed' to check against 'password_confirmation'
+            'password' => [
+                'required',
+                'string',
+                'min:8', // Minimum 8 characters
+                'confirmed', // Must match password_confirmation
+                'regex:/[A-Z]/', // At least one uppercase letter
+                'regex:/[a-z]/', // At least one lowercase letter
+                'regex:/[0-9]/', // At least one number
+                'regex:/[!@#$%^&*()\-_=+{};:,<.>]/', // At least one special character
+            ],
+        ], [
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
         ]);
 
         $userId = Auth::user()->id;
@@ -159,6 +171,7 @@ class MyProfilController extends Controller
 
         // Update the user's password
         $user->password = Hash::make($request->password);
+        $user->password_changed_at = Carbon::now();
         $user->is_change_password = 'Y';
         $user->save();
 

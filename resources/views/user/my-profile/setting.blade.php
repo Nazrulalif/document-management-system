@@ -199,9 +199,36 @@
                     <!--end::Label-->
                     <!--begin::Col-->
                     <div class="col-lg-8 fv-row">
-                        <input type="password" name="password" class="form-control form-control-lg form-control-solid"
+                        {{-- <input type="password" name="password" class="form-control form-control-lg form-control-solid"
                                placeholder="New Password" required minlength="8" />
-                        <small class="form-text text-muted">Minimum 8 characters long.</small>
+                        <small class="form-text text-muted">Minimum 8 characters long.</small> --}}
+
+                        <div class="fv-row mb-8" data-kt-password-meter="true">
+                            <!--begin::Wrapper-->
+                            <div class="mb-1">
+                                <!--begin::Input wrapper-->
+                                <div class="position-relative mb-3">
+                                    <input class="form-control bg-transparent" type="password" placeholder="Password" name="password" autocomplete="off" />
+                                    <span class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2" data-kt-password-meter-control="visibility">
+                                        <i class="ki-duotone ki-eye-slash fs-2"></i>
+                                        <i class="ki-duotone ki-eye fs-2 d-none"></i>
+                                    </span>
+                                </div>
+                                <!--end::Input wrapper-->
+                                <!--begin::Meter-->
+                                <div class="d-flex align-items-center mb-3" data-kt-password-meter-control="highlight">
+                                    <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+                                    <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+                                    <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2"></div>
+                                    <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px"></div>
+                                </div>
+                                <!--end::Meter-->
+                            </div>
+                            <!--end::Wrapper-->
+                            <!--begin::Hint-->
+                            <div class="text-muted">Use 8 or more characters with a mix of letters, numbers & symbols.</div>
+                            <!--end::Hint-->
+                        </div>
                     </div>
                     <!--end::Col-->
                 </div>
@@ -211,7 +238,7 @@
                     <!--end::Label-->
                     <!--begin::Col-->
                     <div class="col-lg-8 fv-row">
-                        <input type="password" name="password_confirmation" class="form-control form-control-lg form-control-solid"
+                        <input type="password" name="password_confirmation" class="form-control form-control-lg form-control"
                                placeholder="Confirm Password" required minlength="8" />
                     </div>
                     <!--end::Col-->

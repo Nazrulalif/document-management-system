@@ -202,15 +202,15 @@
                     </div>
 
                     @if (Auth::user()->role_guid == 1)
-                    <div class="menu-item pt-5">
+                    {{-- <div class="menu-item pt-5">
                         <!--begin:Menu content-->
                         <div class="menu-content">
                             <span class="menu-heading fw-bold text-uppercase fs-7">System Setting</span>
                         </div>
                         <!--end:Menu content-->
-                    </div>
+                    </div> --}}
 
-                    <div class="menu-item">
+                    {{-- <div class="menu-item">
                         <!--begin:Menu link-->
                         <a class="menu-link {{ (Request::is('admin/system-setting',) ? 'active' : '') }}"
                             href="{{ route('setting.index') }}">
@@ -220,7 +220,7 @@
                             <span class="menu-title">Settings</span>
                         </a>
                         <!--end:Menu link-->
-                    </div>
+                    </div> --}}
 
                     @endif
 

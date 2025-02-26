@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\ResetPassword;
 use App\Models\PasswordResetToken;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -60,8 +61,19 @@ class ForgotPasswordController extends Controller
         // Validate the input
         $request->validate([
             'email' => 'required|email|exists:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'min:8', // Minimum 8 characters
+                'confirmed', // Must match password_confirmation
+                'regex:/[A-Z]/', // At least one uppercase letter
+                'regex:/[a-z]/', // At least one lowercase letter
+                'regex:/[0-9]/', // At least one number
+                'regex:/[!@#$%^&*()\-_=+{};:,<.>]/', // At least one special character
+            ],
             'password_confirmation' => 'required',
+        ], [
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
         ]);
 
 
@@ -78,6 +90,7 @@ class ForgotPasswordController extends Controller
         // Update the user's password
         User::where('email', $request->email)->update([
             'password' => Hash::make($request->password),
+            'password_changed_at' => Carbon::now(),
         ]);
 
         // Delete the password reset token

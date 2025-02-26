@@ -185,7 +185,6 @@ class AuthController extends Controller
             'nationality' => 'required|string|max:255',
             'gender' => 'required|string|max:255',
             'position' => 'required|string|max:255',
-            'org_name' => 'required|string|max:255',
             'race' => 'required|string|max:255',
         ], [
             'email.unique' => 'The email has already been taken.',

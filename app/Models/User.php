@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -35,6 +37,7 @@ class User extends Authenticatable
         'is_change_password',
         'role_guid',
         'profile_picture',
+        'password_changed_at',
     ];
 
     public function organizations()
@@ -42,11 +45,21 @@ class User extends Authenticatable
         return $this->belongsToMany(Organization::class, 'user_organizations', 'user_guid', 'org_guid');
     }
 
+    public function isPasswordExpired()
+    {
+        // if (!$this->password_changed_at) {
+        //     return true; // Force users to change password if it's never been updated
+        // }
 
+        return Carbon::parse($this->password_changed_at)->addDays(90)->isPast();
+    }
+    
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_guid'); // Assuming role_guid is the foreign key
     }
+
+   
 
     protected static function boot()
     {
@@ -82,4 +95,5 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    
 }

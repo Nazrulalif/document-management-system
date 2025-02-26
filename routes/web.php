@@ -12,6 +12,7 @@ use App\Http\Controllers\admin\SettingController;
 use App\Http\Controllers\admin\StarredController as AdminStarredController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ExpiredPasswordController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\mail\UserRegisteredController;
 use App\Http\Controllers\user\FileController as UserFileController;
@@ -64,25 +65,26 @@ Route::get('/logout', function (Request $request) {
             'ip_address' => $request->ip(),
         ]);
 
-        if ($user->login_method == 'azure') {
-            Auth::guard()->logout();
-            $postLogoutRedirectUri = route('login') . "?prompt=login";
+        // if ($user->login_method == 'azure') {
+        //     Auth::guard()->logout();
+        //     $postLogoutRedirectUri = route('login') . "?prompt=login";
 
-            $azureLogoutUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri="
-                . urlencode($postLogoutRedirectUri);
+        //     $azureLogoutUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri="
+        //         . urlencode($postLogoutRedirectUri);
 
-            return redirect($azureLogoutUrl);
-        } else {
+        //     return redirect($azureLogoutUrl);
+        // } else {
 
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
             return redirect(route('login'));
-        }
+        // }
     } catch (\Exception $th) {
         return redirect()->back()->with("error", "Log out failed, kindly contact the Administrator!");
     }
 })->name('logout');
+
 
 //Log in
 Route::get('/login', [AuthController::class, 'index'])->name('login');
@@ -105,6 +107,15 @@ Route::get('/register-success', [AuthController::class, 'register_success'])->na
 
 Route::fallback(function () {
     return redirect('/');
+});
+Route::get('/download-user-manual', function () {
+    $filePath = public_path('assets\media\user-manual\DMS-USER-MANUAL.pdf');
+    
+    return response()->download($filePath, 'DMS-USER-MANUAL.pdf');
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/password-expired', [ExpiredPasswordController::class, 'index'])->name('password.expired');
+    Route::post('/password-expired', [ExpiredPasswordController::class, 'update'])->name('password.update');
 });
 
 Route::get('/file/{encodedPath}', function ($encodedPath) {
@@ -156,8 +167,8 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
         Route::get('/view-role/{uuid}', [RoleController::class, 'view'])->name('role.view');
 
         //system setting
-        route::get('/system-setting', [SettingController::class, 'index'])->name('setting.index');
-        route::post('/system-setting-post', [SettingController::class, 'main_post'])->name('setting.index.post');
+        // route::get('/system-setting', [SettingController::class, 'index'])->name('setting.index');
+        // route::post('/system-setting-post', [SettingController::class, 'main_post'])->name('setting.index.post');
     });
 
     Route::middleware('role:1,2')->group(function () {
@@ -165,7 +176,7 @@ route::prefix('admin')->middleware('isadmin')->group(function () {
         Route::get('/user-list', [UserController::class, 'index'])->name('user.index');
         //add User
         Route::post('/create-user', [UserController::class, 'create'])->name('user.create');
-        Route::post('/import-user', [UserController::class, 'import'])->name('user.import');
+        // Route::post('/import-user', [UserController::class, 'import'])->name('user.import');
         //Deactive User
         Route::post('/user-deactive/{id}', [UserController::class, 'deactive'])->name('user.deactive');
         //bulk deactive user

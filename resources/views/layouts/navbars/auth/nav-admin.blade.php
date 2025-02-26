@@ -143,7 +143,9 @@
                             <a href="{{ route('profile.index') }}" class="menu-link px-5">My Profile</a>
                         </div>
                         <!--end::Menu item-->
-
+                        <div class="menu-item px-5">
+                            <a href="{{ url('/download-user-manual') }}" class="menu-link px-5">User Manual</a>
+                        </div>
                         <!--begin::Menu item-->
                         <div class="menu-item px-5">
                             <a href="{{ route('logout') }}" class="menu-link px-5">Sign Out</a>
