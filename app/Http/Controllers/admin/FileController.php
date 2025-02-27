@@ -17,6 +17,7 @@ use PhpOffice\PhpWord\IOFactory; // For Word documents
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\Element\Text;
 use PhpOffice\PhpSpreadsheet\IOFactory as SpreadsheetIOFactory;
+use GuzzleHttp\Client;
 
 class FileController extends Controller
 {
@@ -31,9 +32,9 @@ class FileController extends Controller
         $sharedToId = Document::where('latest_version_guid', $uuid)->pluck('id')->first();
 
         $shareToName = shared_document::join('organizations', 'organizations.id', '=', 'shared_documents.org_guid')
-        ->where('shared_documents.doc_guid', $sharedToId)
-        ->pluck('org_name')
-        ->first();
+            ->where('shared_documents.doc_guid', $sharedToId)
+            ->pluck('org_name')
+            ->first();
 
         // $version = documentVersion::join('documents', 'documents.id', '=', 'document_versions.doc_guid')
         //     ->where('documents.latest_version_guid', '=', $uuid)
@@ -101,10 +102,8 @@ class FileController extends Controller
         // Return success response
         return redirect()->back()->with(['success' => 'File details updated successfully']);
     }
-
     public function generate_summary($uuid)
     {
-        // // Find the document by UUID
         $document = documentVersion::where('uuid', '=', $uuid)->first();
 
         if (!$document) {
@@ -118,20 +117,34 @@ class FileController extends Controller
             return response()->json(['success' => false, 'message' => 'Document content is empty'], 400);
         }
 
-        try {
-            // Generate summary using Google Gemini package
-            $result = Gemini::geminiPro()->generateContent('Summarize the following text: ', $docContent);
-            $summary = $result->text();
+        $client = new Client([
+            'headers' => [
+                'Content-Type' => 'application/json',
+            ],
+        ]);
 
-            // Return the summary as a JSON response
+        $apiKey = env('GEMINI_API_KEY');
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}";
+        try {
+            $response = $client->post($url, [
+                'json' => [
+                    'contents' => [
+                        ['parts' => [['text' => "Summarize the following text:\n\n{$docContent}"]]]
+                    ]
+                ],
+            ]);
+            $data = json_decode($response->getBody(), true);
+
+            $body = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'No response received';
+
             return response()->json([
                 'success' => true,
-                'summary' => $summary
+                'summary' => $body
             ]);
         } catch (\Exception $e) {
-            // Handle any errors with more detail
             return response()->json(['success' => false, 'message' => 'Sorry, Unable to generate Summary'], 500);
         }
+
     }
 
     public function add_version(Request $request)
