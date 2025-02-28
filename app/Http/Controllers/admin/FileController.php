@@ -18,7 +18,7 @@ use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\Element\Text;
 use PhpOffice\PhpSpreadsheet\IOFactory as SpreadsheetIOFactory;
 use GuzzleHttp\Client;
-
+use GuzzleHttp\Exception\RequestException;
 class FileController extends Controller
 {
     public function index($uuid)
@@ -141,8 +141,26 @@ class FileController extends Controller
                 'success' => true,
                 'summary' => $body
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Sorry, Unable to generate Summary'], 500);
+        } catch (RequestException $e) {
+            // Check if the response has a status code
+            if ($e->hasResponse()) {
+                $statusCode = $e->getResponse()->getStatusCode();
+
+                // Handle rate limit exceeded error (429)
+                if ($statusCode === 429) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Rate limit exceeded. Please wait before trying again.'
+                    ], 429);
+                }
+            }
+
+            // General error handling
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, Unable to generate Summary',
+                'error' => $e->getMessage()
+            ], 500);
         }
 
     }
