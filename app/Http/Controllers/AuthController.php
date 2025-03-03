@@ -46,6 +46,11 @@ class AuthController extends Controller
 
             if ($user->is_active == "Y") {
                 // dd($user->role_guid);
+                if($user->login_method == 'azure'){
+                    Auth::logout();
+                    return redirect(route('login'))->with("error", "Authentication failed, your account is already using Microsoft Azure as a login method.");
+                }
+
                 if ($user->role_guid == 1 || $user->role_guid == 2 || $user->role_guid == 3) {
                     AuditLog::create([
                         'action' => 'Login',
@@ -95,6 +100,11 @@ class AuthController extends Controller
 
             // Find user by email
             $finduser = User::where('email', $azureUser->getEmail())->first();
+
+            if($finduser->login_method == 'email_password'){
+                Auth::logout();
+                return redirect(route('login'))->with("error", "Authentication failed, your account is already using Microsoft Email/Password as a login method.");
+            }
 
             if ($finduser) {
                 // Login the user

@@ -40,14 +40,13 @@
                     a:hover {
                         color: #009ef7;
                     }
-
                 </style>
                 <div id="#kt_app_body_content"
                     style="background-color:#D5D9E2; font-family:Arial,Helvetica,sans-serif; line-height: 1.5; min-height: 100%; font-weight: normal; font-size: 15px; color: #2F3044; margin:0; padding:10px; width:100%;">
                     <div
                         style="background-color:#ffffff; padding: 45px 0 34px 0; border-radius: 24px; margin:40px auto; max-width: 600px;">
-                        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" height="auto"
-                            style="border-collapse:collapse">
+                        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%"
+                            height="auto" style="border-collapse:collapse">
                             <tbody>
                                 <tr>
                                     <td align="center" valign="center" style="text-align:center; padding-bottom: 10px">
@@ -70,7 +69,6 @@
                                                     {{ $generatedPassword }}</p>
                                                 <p style="margin-bottom:2px; color:#7E8299">To access your account,
                                                     click the button below:</p>
-
                                             </div>
                                             <!--end:Text-->
                                             <!--begin:Action-->
@@ -78,6 +76,15 @@
                                                 style="background-color:#50cd89; border-radius:6px;display:inline-block; padding:11px 19px; color: #FFFFFF; font-size: 14px; font-weight:500;">Login
                                                 Now</a>
                                             <!--begin:Action-->
+                                            <div
+                                                style="font-size: 14px; font-weight: 500; margin-top: 27px; font-family:Arial,Helvetica,sans-serif;">
+                                                <p style=""><strong>⚠️ IMPORTANT NOTE!! ⚠️</strong></p>
+                                                <p style="margin-bottom:7px; color:#7E8299">Login Option:</p>
+                                                <p style="margin-bottom:7px; color:#7E8299">Email/Password: Use the credentials provided above.</p>
+                                                <p style="margin-bottom:7px; color:#7E8299">Microsoft SSO: You can use your Microsoft account instead.</p>
+                                                <p style="margin-bottom:7px; color:#7E8299">⚠️ Please note: Once you choose a login method, it cannot be changed later. ⚠️</p>
+                                            </div>
+
                                         </div>
                                         <!--end:Email content-->
                                     </td>
@@ -102,10 +109,9 @@
     <!--begin::Javascript-->
     <script>
         var hostUrl = "assets/";
-
     </script>
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->
-    <script src="{{ asset("assets/plugins/global/plugins.bundle.js") }}"></script>
+    <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
     <!--end::Global Javascript Bundle-->
     <!--end::Javascript-->

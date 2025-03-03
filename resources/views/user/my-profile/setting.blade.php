@@ -180,6 +180,8 @@
     </div>
     <!--end::Content-->
 </div>
+@if (Auth::user()->login_method == 'email_password')
+
 <div class="card mb-5 mb-xl-10" >
     <!--begin::Card header-->
     <div class="card-header border-0 cursor-pointer" >
@@ -200,7 +202,7 @@
                     <!--begin::Col-->
                     <div class="col-lg-8 fv-row">
                         {{-- <input type="password" name="password" class="form-control form-control-lg form-control-solid"
-                               placeholder="New Password" required minlength="8" />
+                            placeholder="New Password" required minlength="8" />
                         <small class="form-text text-muted">Minimum 8 characters long.</small> --}}
 
                         <div class="fv-row mb-8" data-kt-password-meter="true">
@@ -239,7 +241,7 @@
                     <!--begin::Col-->
                     <div class="col-lg-8 fv-row">
                         <input type="password" name="password_confirmation" class="form-control form-control-lg form-control"
-                               placeholder="Confirm Password" required minlength="8" />
+                            placeholder="Confirm Password" required minlength="8" />
                     </div>
                     <!--end::Col-->
                 </div>
@@ -255,5 +257,6 @@
     </div>
     <!--end::Content-->
 </div>
+@endif
 
 @endsection

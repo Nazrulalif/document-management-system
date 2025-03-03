@@ -180,6 +180,8 @@
     </div>
     <!--end::Content-->
 </div>
+@if (Auth::user()->login_method == 'email_password')
+
 <div class="card mb-5 mb-xl-10" >
     <!--begin::Card header-->
     <div class="card-header border-0 cursor-pointer" >
@@ -254,5 +256,6 @@
     </div>
     <!--end::Content-->
 </div>
+@endif
 
 @endsection
