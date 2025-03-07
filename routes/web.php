@@ -99,7 +99,11 @@ Route::get('/auth/microsoft', [AuthController::class, 'azure_redirect'])->name('
 Route::get('/auth/microsoft/callback', [AuthController::class, 'callbackAzure']);
 
 // forget password
-Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('password.request');
+
+//Disable for PNB
+// Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('password.request');
+//Disable for PNB
+
 Route::post('/email-verify', [ForgotPasswordController::class, 'email_verify'])->name('email.verify');
 Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'reset_password'])->name('reset.password');
 Route::post('/new-password', [ForgotPasswordController::class, 'reset_password_post'])->name('reset.password.post');

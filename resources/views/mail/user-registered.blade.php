@@ -61,12 +61,18 @@
                                                 <p
                                                     style="margin-bottom:9px; color:#181C32; font-size: 22px; font-weight:700">
                                                     Your account has been successfully registered!</p>
-                                                <p style="margin-bottom:7px; color:#7E8299">You can now log in using the
+
+                                                <!--Disable text for PNB-->
+
+                                                {{-- <p style="margin-bottom:7px; color:#7E8299">You can now log in using the
                                                     following credentials:</p>
                                                 <p style="margin-bottom:2px; color:#232429 "> <strong> Email:</strong>
                                                     {{ $user->email }} </p>
                                                 <p style="margin-bottom:7px; color:#232429"><strong> Password:</strong>
-                                                    {{ $generatedPassword }}</p>
+                                                    {{ $generatedPassword }}</p> --}}
+
+                                                <!--Disable text for PNB-->
+
                                                 <p style="margin-bottom:2px; color:#7E8299">To access your account,
                                                     click the button below:</p>
                                             </div>
@@ -76,14 +82,18 @@
                                                 style="background-color:#50cd89; border-radius:6px;display:inline-block; padding:11px 19px; color: #FFFFFF; font-size: 14px; font-weight:500;">Login
                                                 Now</a>
                                             <!--begin:Action-->
-                                            <div
+
+                                            <!--Disable text for PNB-->
+                                            {{-- <div
                                                 style="font-size: 14px; font-weight: 500; margin-top: 27px; font-family:Arial,Helvetica,sans-serif;">
                                                 <p style=""><strong>⚠️ IMPORTANT NOTE!! ⚠️</strong></p>
                                                 <p style="margin-bottom:7px; color:#7E8299">Login Option:</p>
                                                 <p style="margin-bottom:7px; color:#7E8299">Email/Password: Use the credentials provided above.</p>
                                                 <p style="margin-bottom:7px; color:#7E8299">Microsoft SSO: You can use your Microsoft account instead.</p>
                                                 <p style="margin-bottom:7px; color:#7E8299">⚠️ Please note: Once you choose a login method, it cannot be changed later. ⚠️</p>
-                                            </div>
+                                            </div> --}}
+                                            <!--Disable text for PNB-->
+
 
                                         </div>
                                         <!--end:Email content-->
