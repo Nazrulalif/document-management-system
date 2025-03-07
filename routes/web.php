@@ -101,7 +101,7 @@ Route::get('/auth/microsoft/callback', [AuthController::class, 'callbackAzure'])
 // forget password
 
 //Disable for PNB
-// Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('password.request');
+Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('password.request');
 //Disable for PNB
 
 Route::post('/email-verify', [ForgotPasswordController::class, 'email_verify'])->name('email.verify');

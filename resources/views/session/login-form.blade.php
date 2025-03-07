@@ -39,7 +39,7 @@
             </div>
 
             {{-- login form : Disable for PNB --}}
-            {{-- <div>
+            <div>
                 <div class="separator separator-content my-14">
                     <span class="w-200px text-gray-500 fw-semibold fs-7">Or with email</span>
                 </div>
@@ -78,7 +78,7 @@
                         <!--end::Indicator progress-->
                     </button>
                 </div>
-            </div> --}}
+            </div>
             {{-- login form : Disable for PNB --}}
 
             <!--end::Submit button-->

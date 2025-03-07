@@ -64,12 +64,12 @@
 
                                                 <!--Disable text for PNB-->
 
-                                                {{-- <p style="margin-bottom:7px; color:#7E8299">You can now log in using the
+                                                <p style="margin-bottom:7px; color:#7E8299">You can now log in using the
                                                     following credentials:</p>
                                                 <p style="margin-bottom:2px; color:#232429 "> <strong> Email:</strong>
                                                     {{ $user->email }} </p>
                                                 <p style="margin-bottom:7px; color:#232429"><strong> Password:</strong>
-                                                    {{ $generatedPassword }}</p> --}}
+                                                    {{ $generatedPassword }}</p>
 
                                                 <!--Disable text for PNB-->
 
@@ -84,14 +84,14 @@
                                             <!--begin:Action-->
 
                                             <!--Disable text for PNB-->
-                                            {{-- <div
+                                            <div
                                                 style="font-size: 14px; font-weight: 500; margin-top: 27px; font-family:Arial,Helvetica,sans-serif;">
                                                 <p style=""><strong>⚠️ IMPORTANT NOTE!! ⚠️</strong></p>
                                                 <p style="margin-bottom:7px; color:#7E8299">Login Option:</p>
                                                 <p style="margin-bottom:7px; color:#7E8299">Email/Password: Use the credentials provided above.</p>
                                                 <p style="margin-bottom:7px; color:#7E8299">Microsoft SSO: You can use your Microsoft account instead.</p>
                                                 <p style="margin-bottom:7px; color:#7E8299">⚠️ Please note: Once you choose a login method, it cannot be changed later. ⚠️</p>
-                                            </div> --}}
+                                            </div>
                                             <!--Disable text for PNB-->
 
 
