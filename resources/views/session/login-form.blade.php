@@ -1,6 +1,7 @@
 @extends('session.index')
 
 @section('login')
+
 <form class="form w-100" id="kt_sign_in_form" action="{{ route('login.post') }}" method="post"
     enctype="multipart/form-data">
 
@@ -16,7 +17,7 @@
     </div>
     <!--begin::Heading-->
     @if ($isParentExist)
-    <div class="row g-3 mb-9">
+    {{-- <div class="row g-3 mb-9">
         <!--begin::Col-->
         <div class="col-md-12">
             <!--begin::Google link=-->
@@ -25,6 +26,15 @@
                 <img alt="Logo" src="assets/media/svg/brand-logos/microsoft-5.svg" class="h-15px me-3">Microsoft Azure</a>
             <!--end::Google link=-->
         </div>
+        <!--end::Col-->
+    </div> --}}
+    <div class="row g-3 mb-9">
+        <!--begin::Col-->
+        <a href="{{ route('saml.login', ['uuid' => env('SAML2_UUID')]) }}"
+            class="btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100">
+            <img alt="Logo" src="{{ asset('assets/media/svg/brand-logos/microsoft-5.svg') }}" class="h-15px me-3">
+            Microsoft Azure
+        </a>
         <!--end::Col-->
     </div>
     <div class="separator separator-content my-14">

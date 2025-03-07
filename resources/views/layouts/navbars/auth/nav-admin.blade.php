@@ -150,6 +150,9 @@
                         <div class="menu-item px-5">
                             <a href="{{ route('logout') }}" class="menu-link px-5">Sign Out</a>
                         </div>
+                        {{-- <div class="menu-item px-5">
+                            <a href="{{ route('saml.logout', ['uuid' => env('SAML2_UUID')]) }}" class="menu-link px-5">Sign Out Azure</a>
+                        </div> --}}
                         <!--end::Menu item-->
                     </div>
                     <!--end::User account menu-->

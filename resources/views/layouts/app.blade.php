@@ -134,6 +134,8 @@
                         toastr[type](message);
                     });
                 </script>
+                {{session()->forget('success');}}
+                {{session()->forget('error');}}
             @endif
             
             </div>

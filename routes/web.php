@@ -41,6 +41,10 @@ use Illuminate\Support\Facades\Storage;
 |---------------------------------------------------------------------------
 */
 
+Route::get('/welcome', function () {
+    return view('welcome');
+})->name('welcome');
+
 //Landing page
 Route::get('/', function () {
     if (Auth::check()) {
@@ -74,7 +78,7 @@ Route::get('/logout', function (Request $request) {
 
         //     return redirect($azureLogoutUrl);
         // } else {
-
+            Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
@@ -139,7 +143,7 @@ Route::get('/file/{encodedPath}', function ($encodedPath) {
 })->where('encodedPath', '.*'); // Allow all characters in the encoded path
 
 // Admin Routes
-route::prefix('admin')->middleware('isadmin')->group(function () {
+route::prefix('admin')->middleware(['web', 'auth', 'isadmin'])->group(function () {
 
     // Dasboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard.admin');

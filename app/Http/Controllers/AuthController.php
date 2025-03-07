@@ -26,7 +26,6 @@ class AuthController extends Controller
         }
         $isParentExist = Organization::where('is_parent', 'Y')->first();
 
-
         return view('session/login-form', compact('isParentExist'));
     }
 
@@ -46,7 +45,7 @@ class AuthController extends Controller
 
             if ($user->is_active == "Y") {
                 // dd($user->role_guid);
-                if($user->login_method == 'azure'){
+                if($user->login_method == 'azure' || $user->login_method == 'azure_saml'){
                     Auth::logout();
                     return redirect(route('login'))->with("error", "Authentication failed, your account is already using Microsoft Azure as a login method.");
                 }
