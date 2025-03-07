@@ -85,6 +85,7 @@
                                                 <p style="margin-bottom:7px; color:#7E8299">⚠️ Please note: Once you choose a login method, it cannot be changed later. ⚠️</p>
                                             </div>
 
+                                            test
                                         </div>
                                         <!--end:Email content-->
                                     </td>
