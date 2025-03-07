@@ -33,7 +33,7 @@
                     class="btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100">
                     <img alt="Logo" src="{{ asset('assets/media/svg/brand-logos/microsoft-5.svg') }}"
                         class="h-15px me-3">
-                    Microsoft Azure SAML
+                    Microsoft Azure Saml2
                 </a>
                 <!--end::Col-->
             </div>
