@@ -195,7 +195,7 @@ return [
         */
 
         'assertionConsumerService' => [
-            'url' => '',
+            'url' => env('SAML2_SP_REPLYURL',''),
         ],
 
         /*
