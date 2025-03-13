@@ -76,6 +76,7 @@ return [
 
     'loginRoute' => env('SAML2_LOGIN_URL'),
 
+    'baseurl' => 'http://127.0.0.1:8080/saml2/3555fb6d-6409-4dca-b197-6e2369baa282',
     /*
     |--------------------------------------------------------------------------
     | Logout redirection URL.
