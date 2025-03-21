@@ -124,7 +124,7 @@
                     <!--begin::Col-->
                     <div class="col-lg-8 fv-row">
                         <input type="email" name="email" class="form-control form-control-lg form-control-solid"
-                            placeholder="email" value="{{ $data->email }}" />
+                            placeholder="email" value="{{ $data->email }}" readonly/>
                     </div>
                     <!--end::Col-->
                 </div>

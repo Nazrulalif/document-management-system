@@ -82,11 +82,16 @@
                                             View
                                         </a>
                                         @endif
-                                        <a href="{{ url('/file/' . base64_encode($data->file_path)) }}"
+                                        <a href=""
                                             download="{{ basename($data->doc_title) }}" target="_blank"
                                             class="btn btn-sm btn-primary mt-5">
                                             Download
                                         </a>
+                                        {{-- <a href="{{ url('/file/' . base64_encode($data->file_path)) }}"
+                                            download="{{ basename($data->doc_title) }}" target="_blank"
+                                            class="btn btn-sm btn-primary mt-5">
+                                            Download
+                                        </a> --}}
                                     </div>
                                     @endif
 

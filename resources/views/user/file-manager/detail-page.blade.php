@@ -49,17 +49,30 @@
                                     @if ($data->doc_type == 'images')
                                     <div class="d-flex flex-end">
                                         <a href="{{ url('/file/' . base64_encode($data->file_path)) }}"
-                                            download="{{ basename($data->file_path) }}" target="_blank"
+                                            download="{{ basename($data->doc_title) }}" target="_blank"
                                             class="btn btn-sm btn-primary mt-5">
                                             Download
                                         </a>
                                     </div>
                                     @else
                                     <div class="d-flex flex-end">
-                                        <a href="{{ url('/file/' . base64_encode($data->file_path)) }}" target="_blank"
+                                        @if ($data->doc_type == 'pdf')
+                                        <a href="{{ url('/file/' . base64_encode($data->file_path)) }}"
+                                             target="_blank"
+                                            class="btn btn-sm btn-secondary mt-5 me-3" >
+                                            View
+                                        </a>
+                                        @endif
+                                         <a href=""
+                                            download="{{ basename($data->doc_title) }}" target="_blank"
                                             class="btn btn-sm btn-primary mt-5">
                                             Download
                                         </a>
+                                        {{-- <a href="{{ url('/file/' . base64_encode($data->file_path)) }}"
+                                            download="{{ basename($data->doc_title) }}" target="_blank"
+                                            class="btn btn-sm btn-primary mt-5">
+                                            Download
+                                        </a> --}}
                                     </div>
                                     @endif
 
