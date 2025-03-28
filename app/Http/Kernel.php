@@ -37,6 +37,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\CheckPasswordExpiry::class, // Custom middleware
+            \App\Http\Middleware\SessionTimeout::class,
 
         ],
 

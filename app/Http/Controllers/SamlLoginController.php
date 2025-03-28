@@ -34,7 +34,7 @@ class SamlLoginController extends Controller
         try {
             if ($finduser->is_active === 'Y') {
                 Auth::login($finduser, true);
-
+                session(['azure_user' => true]);
                 // Log the login action
                 AuditLog::create([
                     'action' => 'Login',
