@@ -191,8 +191,8 @@ var KTDatatablesServerSide = function () {
 
         table = dt.$;
         
-        // dt.search('').draw();
-        // dt.column(2).search('').draw(); 
+        dt.search('').draw();
+        dt.column(2).search('').draw(); 
 
         dt.on('draw', function () {
             let itemCount = dt.rows({
