@@ -398,7 +398,8 @@
                                                                 data-change-title="{{ $item->change_title ? $item->change_title : 'First Version' }}"
                                                                 data-change-description="{{ $item->change_description }}"
                                                                 data-created-by="{{ $item->full_name }}"
-                                                                data-file="{{url('/file/' . base64_encode($data->file_path)) }}"
+                                                                data-file="{{url('/file/' . base64_encode($item->file_path)) }}"
+                                                                data-download="{{ basename($data->doc_title ) }}"
                                                                 data-created-at="{{ $item->created_at->format('d-m-Y') }}">{{($item->change_title ? $item->change_title : 'First Version')}}</a>
                                                             @endif
                                                         </div>
@@ -468,13 +469,14 @@
             var versionDescription = button.data('change-description');
             var createdBy = button.data('created-by');
             var file = button.data('file');
-
+            var download = button.data('download');
             // Update the modal's content
             var modal = $(this);
             modal.find('#modalVersionTitle').text(versionTitle);
             modal.find('#modalVersionDescription').text(versionDescription);
             modal.find('#modalCreatedBy').text(createdBy);
             modal.find('#modalfile').attr('href', file);
+            modal.find('#modalfile').attr('download', download);
         });
     });
 

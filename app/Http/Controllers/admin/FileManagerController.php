@@ -19,6 +19,7 @@ use App\Models\User_organization;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Smalot\PdfParser\Parser;
 use PhpOffice\PhpWord\IOFactory; // For Word documents
@@ -32,14 +33,16 @@ class FileManagerController extends Controller
 {
     public function index(Request $request)
     {
-
         if ($request->ajax()) {
             // Fetch starred folders and documents for the authenticated user
-            $starredFolders = Starred_folder::where('user_guid', Auth::user()->id)->pluck('folder_guid')->toArray();
-            $starredDocs = Starred_document::where('user_guid', Auth::user()->id)->pluck('doc_guid')->toArray();
+            $starredFolders = Starred_folder::where('user_guid', Auth::user()->id)
+                ->pluck('folder_guid')
+                ->toArray();
+            $starredDocs = Starred_document::where('user_guid', Auth::user()->id)
+                ->pluck('doc_guid')
+                ->toArray();
 
             if (Auth::user()->role_guid == 1) {
-
                 // Fetch folders and documents
                 $folders = Folder::select('folders.uuid as uuid', 'folders.id as id', 'folders.folder_name as item_name', 'users.full_name as full_name')
                     ->join('users', 'users.id', '=', 'folders.created_by')
@@ -52,7 +55,7 @@ class FileManagerController extends Controller
                     ->map(function ($folder) use ($starredFolders) {
                         // Aggregating the organization names and GUIDs
                         $folder->shared_orgs = $folder->sharedOrganizations->pluck('org_name')->implode("\n");
-                        $folder->shared_orgs_guid = $folder->sharedOrganizations->pluck('id')->implode(",");
+                        $folder->shared_orgs_guid = $folder->sharedOrganizations->pluck('id')->implode(',');
                         // Check if the folder is starred
                         $folder->is_starred = in_array($folder->id, $starredFolders);
                         $folder->doc_type = null;
@@ -70,7 +73,7 @@ class FileManagerController extends Controller
                     ->map(function ($document) use ($starredDocs) {
                         // Aggregating the organization names and GUIDs
                         $document->shared_orgs = $document->sharedOrganizations->pluck('org_name')->implode("\n");
-                        $document->shared_orgs_guid = $document->sharedOrganizations->pluck('id')->implode(",");
+                        $document->shared_orgs_guid = $document->sharedOrganizations->pluck('id')->implode(',');
                         // Check if the document is starred
                         $document->is_starred = in_array($document->id, $starredDocs);
                         return $document;
@@ -85,8 +88,7 @@ class FileManagerController extends Controller
                     ->leftJoin('shared_folders', 'shared_folders.folder_guid', '=', 'folders.id')
                     ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_folders.org_guid')
                     ->where(function ($query) use ($user_orgs) {
-                        $query->whereIn('shared_folders.org_guid', $user_orgs)
-                            ->orWhereNull('shared_folders.org_guid');
+                        $query->whereIn('shared_folders.org_guid', $user_orgs)->orWhereNull('shared_folders.org_guid');
                     })
                     ->whereNull('folders.parent_folder_guid')
                     // ->groupBy('folders.id')
@@ -95,7 +97,7 @@ class FileManagerController extends Controller
                     ->map(function ($folder) use ($starredFolders) {
                         // Aggregating the organization names and GUIDs
                         $folder->shared_orgs = $folder->sharedOrganizations->pluck('org_name')->implode("\n");
-                        $folder->shared_orgs_guid = $folder->sharedOrganizations->pluck('id')->implode(",");
+                        $folder->shared_orgs_guid = $folder->sharedOrganizations->pluck('id')->implode(',');
                         // Check if the folder is starred
                         $folder->is_starred = in_array($folder->id, $starredFolders);
                         $folder->doc_type = null;
@@ -109,8 +111,7 @@ class FileManagerController extends Controller
                     ->leftJoin('shared_documents', 'shared_documents.doc_guid', '=', 'documents.id')
                     ->leftJoin('organizations as share_name', 'share_name.id', '=', 'shared_documents.org_guid')
                     ->where(function ($query) use ($user_orgs) {
-                        $query->whereIn('shared_documents.org_guid', $user_orgs)
-                            ->orWhereNull('shared_documents.org_guid');
+                        $query->whereIn('shared_documents.org_guid', $user_orgs)->orWhereNull('shared_documents.org_guid');
                     })
                     ->whereNull('documents.folder_guid')
                     ->orderBy('documents.created_at', 'DESC')
@@ -118,7 +119,7 @@ class FileManagerController extends Controller
                     ->map(function ($document) use ($starredDocs) {
                         // Aggregating the organization names and GUIDs
                         $document->shared_orgs = $document->sharedOrganizations->pluck('org_name')->implode("\n");
-                        $document->shared_orgs_guid = $document->sharedOrganizations->pluck('id')->implode(",");
+                        $document->shared_orgs_guid = $document->sharedOrganizations->pluck('id')->implode(',');
                         // Check if the document is starred
                         $document->is_starred = in_array($document->id, $starredDocs);
                         return $document;
@@ -129,9 +130,7 @@ class FileManagerController extends Controller
             $data = $folders->concat($rootDocuments);
 
             // Return data via DataTables
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->make(true);
+            return DataTables::of($data)->addIndexColumn()->make(true);
         }
 
         // Retrieve full organization records instead of just IDs
@@ -148,7 +147,6 @@ class FileManagerController extends Controller
                 ->where('user_organizations.user_guid', Auth::user()->id)
                 ->get();
         }
-
 
         return view('admin.file-manager.file-manager', compact('company', 'user_orgs'));
     }
@@ -204,7 +202,9 @@ class FileManagerController extends Controller
 
     public function show_folder(Request $request, $uuid)
     {
-        $folder = Folder::where('uuid', $uuid)->with(['children', 'documents', 'creator'])->first();
+        $folder = Folder::where('uuid', $uuid)
+            ->with(['children', 'documents', 'creator'])
+            ->first();
 
         if (!$folder) {
             return redirect()->route('fileManager.index')->with('error', 'Folder not found or has been deleted.');
@@ -212,8 +212,12 @@ class FileManagerController extends Controller
 
         if ($request->ajax()) {
             // Fetch starred folders and documents for the authenticated user
-            $starredFolders = Starred_folder::where('user_guid', Auth::user()->id)->pluck('folder_guid')->toArray();
-            $starredDocs = Starred_document::where('user_guid', Auth::user()->id)->pluck('doc_guid')->toArray();
+            $starredFolders = Starred_folder::where('user_guid', Auth::user()->id)
+                ->pluck('folder_guid')
+                ->toArray();
+            $starredDocs = Starred_document::where('user_guid', Auth::user()->id)
+                ->pluck('doc_guid')
+                ->toArray();
 
             // Prepare the children folders
             $subfolders = $folder->children->map(function ($childFolder) use ($starredFolders) {
@@ -258,14 +262,11 @@ class FileManagerController extends Controller
                 ];
             });
 
-
             // Merge subfolders and documents
             $data = $subfolders->concat($documents);
 
             // Return data via DataTables
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->make(true);
+            return DataTables::of($data)->addIndexColumn()->make(true);
         }
 
         // Additional data for non-AJAX requests
@@ -281,7 +282,6 @@ class FileManagerController extends Controller
         // Passing the folder to the view
         return view('admin.file-manager.file-manager-item', compact('uuid', 'folder', 'folder_id', 'path', 'company', 'folder_shared_id', 'user_orgs'));
     }
-
 
     public function getFolderPath(Folder $folder)
     {
@@ -303,7 +303,6 @@ class FileManagerController extends Controller
         ]);
 
         try {
-
             $folder = Folder::create([
                 'folder_name' => $request->new_folder_name,
                 'parent_folder_guid' => $request->new_folder_id,
@@ -383,43 +382,40 @@ class FileManagerController extends Controller
 
     private function deleteFolderContents($folder)
     {
-        // Get all documents related to this folder
-        $documents = Document::join('document_versions', 'document_versions.doc_guid', '=', 'documents.id')
-            ->where('documents.folder_guid', '=', $folder->id)
-            ->get();
+        try {
+            $documents = Document::with('versions')->where('folder_guid', $folder->id)->get();
 
-        foreach ($documents as $doc) {
-            $filePath = $doc->file_path;
+            foreach ($documents as $doc) {
+                foreach ($doc->versions as $version) {
+                    if ($version->file_path && Storage::exists($version->file_path)) {
+                        Storage::delete($version->file_path);
+                    }
+                }
 
-            // Delete the file from storage if it exists
-            if (Storage::exists($filePath)) {
-                Storage::delete($filePath);
+                $doc->versions()->delete();
+                Starred_document::where('doc_guid', $doc->id)->delete();
+
+                $doc->delete();
             }
-            Starred_document::where('doc_guid', $doc->id)->delete();
 
-            // Delete the document itself
-            Document::where('documents.folder_guid', '=', $folder->id)
-                ->where('documents.id', '=', $doc->id)
-                ->delete();
+            shared_folder::where('folder_guid', $folder->id)->delete();
 
-            // Delete associated document versions
-            DocumentVersion::where('doc_guid', $doc->id)->delete();
-        }
+            $subfolders = Folder::where('parent_folder_guid', $folder->id)->get();
 
-        // Find all subfolders of the current folder
-        $subfolders = Folder::where('parent_folder_guid', $folder->id)->get();
+            foreach ($subfolders as $subfolder) {
+                $this->deleteFolderContents($subfolder);
+                $subfolder->delete();
+            }
+        } catch (\Throwable $e) {
+            Log::error('Error deleting folder contents: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
-        // Recursively delete each subfolder and its contents
-        foreach ($subfolders as $subfolder) {
-            // Recursively delete contents of the subfolder
-            $this->deleteFolderContents($subfolder); // Recursive call for nested subfolders
-
-            // Delete the subfolder itself
-            $subfolder->delete();
+            abort(500, 'An error occurred while deleting the folder contents.');
         }
     }
-
-
 
     public function rename(Request $request, $id)
     {
@@ -472,7 +468,7 @@ class FileManagerController extends Controller
             // Update or create shared organization for each subfolder in shared_folders table
             shared_folder::updateOrCreate(
                 ['folder_guid' => $subfolder->id], // Match on folder_guid
-                ['org_guid' => $newOrgGuid]        // Update org_guid
+                ['org_guid' => $newOrgGuid], // Update org_guid
             );
 
             // Update or create shared organization for files in shared_files table
@@ -495,12 +491,10 @@ class FileManagerController extends Controller
             // Update or create shared organization entry for each file in shared_files table
             shared_document::updateOrCreate(
                 ['doc_guid' => $file->id], // Match on file_guid
-                ['org_guid' => $newOrgGuid] // Update org_guid
+                ['org_guid' => $newOrgGuid], // Update org_guid
             );
         }
     }
-
-
 
     public function rename_file(Request $request, $id)
     {
@@ -529,17 +523,14 @@ class FileManagerController extends Controller
             $newSharedOrgs = $request->input('org_name_edit');
 
             $existingSharedOrgs->update([
-                'org_guid' => $newSharedOrgs
+                'org_guid' => $newSharedOrgs,
             ]);
-
 
             return response()->json(['success' => true, 'message' => 'File updated successfully.']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Failed to update file. Please try again.']);
         }
     }
-
-
 
     public function deleteSelected(Request $request)
     {
@@ -595,15 +586,13 @@ class FileManagerController extends Controller
         $ids = $request->input('ids');
 
         // Fetch all document versions for the given IDs
-        $documents = documentVersion::join('documents', 'documents.id', '=', 'document_versions.doc_guid')
-            ->whereIn('documents.id', $ids)
-            ->get();
+        $documents = documentVersion::join('documents', 'documents.id', '=', 'document_versions.doc_guid')->whereIn('documents.id', $ids)->get();
 
         // Iterate over each document
         foreach ($documents as $document) {
             $filePath = $document->file_path;
             AuditLog::create([
-                'action' => "Deleted",
+                'action' => 'Deleted',
                 'model' => 'File',
                 'changes' => $document->doc_title,
                 'user_guid' => Auth::user()->id,
@@ -615,7 +604,6 @@ class FileManagerController extends Controller
             }
 
             Starred_document::where('doc_guid', $document->doc_guid)->delete();
-
 
             // Find the document in the documents table and delete it
             Document::where('id', $document->doc_guid)->delete();
@@ -644,10 +632,7 @@ class FileManagerController extends Controller
 
     public function destroy_file($id)
     {
-
-        $document = documentVersion::join('documents', 'documents.id', '=', 'document_versions.doc_guid')
-            ->where('documents.id', '=', $id)
-            ->first();
+        $document = documentVersion::join('documents', 'documents.id', '=', 'document_versions.doc_guid')->where('documents.id', '=', $id)->first();
 
         $documentId = Document::find($id);
 
@@ -740,7 +725,7 @@ class FileManagerController extends Controller
                     $pdf = $pdfParser->parseContent($fileContent);
                     $docContent = $pdf->getText(); // Extract the text from the PDF
                 } catch (\Exception $e) {
-                    $docContent = "Sorry, unable to extract the text";
+                    $docContent = 'Sorry, unable to extract the text';
                 }
             }
 
@@ -749,18 +734,16 @@ class FileManagerController extends Controller
                 try {
                     $docContent = $this->extractTextFromDocx($file); // Extract text from DOCX
                 } catch (\Exception $e) {
-                    $docContent = "Sorry, unable to extract the text";
+                    $docContent = 'Sorry, unable to extract the text';
                 }
             }
-
 
             // Handle Excel file
             if (in_array($extension, ['xlsx', 'xls', 'csv'])) {
                 try {
                     $docContent = $this->extractTextFromExcel($file); // Extract text from Excel
-
                 } catch (\Exception $e) {
-                    $docContent = "Sorry, unable to extract the text";
+                    $docContent = 'Sorry, unable to extract the text';
                 }
             }
 
@@ -768,9 +751,8 @@ class FileManagerController extends Controller
             if (in_array($extension, ['jpeg', 'jpg', 'png']) && $request->has('ocr_content')) {
                 try {
                     $docContent = $request->input('ocr_content'); // Use the extracted OCR content from the request
-
                 } catch (\Exception $e) {
-                    $docContent = "Sorry, unable to extract the text";
+                    $docContent = 'Sorry, unable to extract the text';
                 }
             }
 
@@ -799,8 +781,6 @@ class FileManagerController extends Controller
                 'latest_version_guid' => $documentVersion->uuid,
             ]);
 
-
-
             $documentVersion->doc_guid = $newFile->id;
             $documentVersion->save();
 
@@ -828,8 +808,6 @@ class FileManagerController extends Controller
                     'file_count' => $fileCount,
                 ]);
             }
-
-
 
             return back()->with('success', 'File uploaded successfully.');
         }
@@ -906,7 +884,7 @@ class FileManagerController extends Controller
 
     /**
      * Get the folder name based on file type (extension)
-     * 
+     *
      * @param string $extension
      * @return string
      */

@@ -83,7 +83,7 @@ class ModelDocument
         AuditLog::create([
             'action' => 'Deleted',
             'model' => 'File',
-            'doc_guid' => $document->id,
+            // 'doc_guid' => $document->id,
             'changes' => $document->doc_title,
             'user_guid' => Auth::check() ? Auth::user()->id : null,
             'ip_address' => request()->ip(),

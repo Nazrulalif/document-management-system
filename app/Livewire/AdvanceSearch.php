@@ -59,9 +59,15 @@ class AdvanceSearch extends Component
 
     public function render()
     {
+
+        $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
+
         $results = $this->search();
 
-        $companyList = Organization::all();
+        // $companyList = Organization::all();
+        $companyList = Organization::when(Auth::user()->role_guid != 1, function ($query) use ($user_orgs) {
+            return $query->whereIn('id', $user_orgs);
+        })->get();
 
         return view('livewire.advance-search', [
             'results' => $results,
