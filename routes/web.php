@@ -242,6 +242,8 @@ route::prefix('admin')->middleware(['web', 'auth', 'isadmin'])->group(function (
     //destroy file
     route::post('/file-detail-destroy/{uuid}', [FileController::class, 'destroy_file'])->name('file.detail.destroy');
 
+    route::post('/old-version/destroy/{uuid}', [FileController::class, 'destroy_old_version'])->name('file.oldVersion.destroy');
+
     //advance search
     route::get('/advance-search', [SearchController::class, 'index'])->name('search.index');
 

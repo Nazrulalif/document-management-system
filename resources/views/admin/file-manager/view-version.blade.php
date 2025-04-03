@@ -32,11 +32,26 @@
                     </div>
                     <div class="fv-row mb-7">
                         <h4 class="text-gray-700 fw-bold">Files</h4>
-                        <a href="/" target="_blank" class="btn btn-primary" id="modalfile" style="display: flow-root">
-                            <i class="ki-duotone ki-fasten fs-2x"><span class="path1"></span><span
-                                    class="path2"></span></i>
-                            <span class="fw-bold">Download</span>
-                        </a>
+                        <div class="row mb-2">
+                            <a href="/" target="_blank" class="btn btn-primary" id="modalfile" style="display: flow-root">
+                                <i class="ki-duotone ki-fasten fs-2x"><span class="path1"></span><span
+                                        class="path2"></span></i>
+                                <span class="fw-bold">Download</span>
+                            </a>
+                        </div>
+
+                        <div class="row">
+                            <button class="btn btn-danger" id="modaldelete" style="display: flow-root">
+                                <i class="ki-duotone ki-trash fs-2x">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                    <span class="path4"></span>
+                                    <span class="path5"></span>
+                                </i>
+                                <span class="fw-bold">Delete</span>
+                            </button>
+                        </div>
                     </div>
 
                 </div>

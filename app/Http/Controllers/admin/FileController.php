@@ -387,6 +387,40 @@ class FileController extends Controller
         return isset($folders[$extension]) ? $folders[$extension] : 'other';
     }
 
+    public function destroy_old_version($uuid){
+
+        try {
+            $data = DocumentVersion::where('uuid', '=', $uuid)->first();
+            $doc = Document::where('id', '=', $data->doc_guid)->first();
+
+            if (!$data) {
+                return response()->json(['success' => false, 'message' => 'File not found']);
+            }
+    
+            $data->delete();
+            $filePath = $data->file_path;
+            if (Storage::exists($filePath)) {
+                Storage::delete($filePath); // Delete the file from 'public' disk
+            }
+
+            AuditLog::create([
+                'action' => 'Deleted',
+                'model' => 'File version',
+                'doc_guid' => $doc->id,
+                'changes' => 'Version File: ' . $doc->doc_title,
+                'user_guid' => Auth::user()->id,
+                'ip_address' => request()->ip(),
+            ]);
+            logger()->info('File deleted successfully: ' . $filePath);
+            return response()->json(['success' => true, 'message' => 'File deleted successfully']);
+        } catch (\Exception $e) {
+            // Handle the exception (e.g., log it, return an error response)
+            logger()->error('Error deleting file: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error deleting file: ' . $e->getMessage()]);
+        }
+
+    }
+
     public function destroy_file($uuid)
     {
         // Find the document version by UUID
@@ -399,7 +433,7 @@ class FileController extends Controller
             'action' => 'Deleted',
             'model' => 'File version',
             'doc_guid' => $document->id,
-            'changes' => $document->doc_title,
+            'changes' => 'Version File: ' . $document->doc_title,
             'user_guid' => Auth::user()->id,
             'ip_address' => request()->ip(),
         ]);
