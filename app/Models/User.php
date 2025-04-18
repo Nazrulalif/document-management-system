@@ -38,6 +38,7 @@ class User extends Authenticatable
         'role_guid',
         'profile_picture',
         'password_changed_at',
+        'last_login_at',
     ];
 
     public function organizations()

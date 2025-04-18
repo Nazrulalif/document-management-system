@@ -38,6 +38,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\CheckPasswordExpiry::class, // Custom middleware
             \App\Http\Middleware\SessionTimeout::class,
+            \App\Http\Middleware\EnsureSingleSession::class, // Custom middleware
 
         ],
 

@@ -16,6 +16,8 @@ use App\Observers\ModelRole;
 use App\Observers\ModelUser;
 use Illuminate\Support\ServiceProvider;
 
+use Illuminate\Support\Facades\Cache;
+use App\Services\DormantUserService;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -36,5 +38,9 @@ class AppServiceProvider extends ServiceProvider
         Role::observe(ModelRole::class);
         Folder::observe(ModelFolder::class);
         Document::observe(ModelDocument::class);
+
+        if (Cache::add('dormant-check-done', true, now()->addDay())) {
+            app(DormantUserService::class)->disableDormantUsers();
+        }
     }
 }

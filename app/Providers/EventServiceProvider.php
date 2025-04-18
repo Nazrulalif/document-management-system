@@ -33,6 +33,12 @@ class EventServiceProvider extends ServiceProvider
         SignedIn::class => [
             SamlLoginListener::class,
         ],
+        \Illuminate\Auth\Events\Login::class => [
+            \App\Listeners\UpdateLastLoginAt::class,
+            \App\Listeners\TrackUserSession::class,
+
+        ],
+       
     ];
 
     /**
