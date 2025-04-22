@@ -88,6 +88,59 @@ class UserController extends Controller
             'company' => $company,
         ]);
     }
+
+    public function deactivated_index(Request $request){
+        
+        if ($request->ajax()) {
+
+            if (Auth::user()->role_guid == 1) {
+                $data = User::select('users.*', 'roles.role_name as role_name')
+                    ->join('roles', 'users.role_guid', '=', 'roles.id')
+                    ->where('users.id', '!=', Auth::user()->id)
+                    ->where('users.is_active', '=', 'N')
+                    ->orderBy('users.id', 'DESC')
+                    ->with(['organizations' => function ($query) {
+                        $query->where('is_operation', 'Y'); // Only include active organizations
+                    }])
+                    ->get();
+            } else {
+                $user_orgs = User_organization::where('user_guid', Auth::user()->id)->pluck('org_guid');
+
+                $data = User::select('users.*', 'roles.role_name as role_name')
+                    ->join('roles', 'users.role_guid', '=', 'roles.id')
+                    ->where('users.id', '!=', Auth::user()->id)
+                    ->where('users.is_active', '=', 'N')
+                    ->whereHas('organizations', function ($query) use ($user_orgs) {
+                        $query->whereIn('organizations.id', $user_orgs); // Check if user belongs to any of the user's organizations
+                    })
+                    ->orderBy('users.id', 'DESC')
+                    ->with('organizations') // Assuming the relationship is defined in the User model
+                    ->get();
+            }
+
+
+
+            // Format the date and time for each record
+            $formatted_data = $data->map(function ($item) {
+                $item->formatted_date = Carbon::parse($item->created_at)->format('d-m-Y');
+                $item->last_login_at = $item->last_login_at
+                ? Carbon::parse($item->last_login_at)->format('d-m-Y')
+                : 'Not logged in yet';
+                $item->company_list = $item->organizations->pluck('org_name')->implode('<br>'); // Concatenate organization names
+                return $item;
+            });
+
+            return DataTables::of($formatted_data)
+                ->addIndexColumn()
+                ->addColumn('company_list', function ($row) {
+                    return $row->company_list; // This will display the list of companies with line breaks
+                })
+                ->rawColumns(['company_list']) // Enable HTML rendering for this column
+                ->make(true);
+        }
+
+        return view('admin.user.deactivated-list');
+    }
     private function generateSecurePassword($length = 10)
     {
         $uppercase = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, length: 2); // 2 uppercase letters
@@ -175,6 +228,32 @@ class UserController extends Controller
         $user = User::find($id);
 
         $user->is_active = 'N';
+        $user->save();
+
+        // Get current counts
+        $userCount = User::where('is_active', '=', 'Y')->count();
+        // Get today's stat entry (or create a new one if it doesn't exist)
+        $todayStats = Stat::whereDate('created_at', Carbon::today())->first();
+
+        if (!$todayStats) {
+            // Create a new stat entry for today if it doesn't exist
+            Stat::create([
+                'user_count' => $userCount,
+            ]);
+        } else {
+            // Update today's counts if the entry already exists
+            $todayStats->update([
+                'user_count' => $userCount,
+            ]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function activate($id){
+        $user = User::find($id);
+
+        $user->is_active = 'Y';
         $user->save();
 
         // Get current counts

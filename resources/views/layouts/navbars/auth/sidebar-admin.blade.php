@@ -97,11 +97,11 @@
                     @if(Auth::user()->role_guid != 3)
                     <div data-kt-menu-trigger="click"
                         class="menu-item menu-accordion {{ (Request::is('admin/company-list', 'admin/company-detail/*', 
-                    'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*',
+                    'admin/user-list', 'admin/deactivated-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*',
                     'admin/user-setting/*','admin/user-file/*', 'admin/company-file/*', 'admin/company-setting/*') ? 'hover show' : '') }}">
                         <!--begin:Menu link-->
                         <span class="menu-link {{ (Request::is('admin/company-list', 'admin/company-detail/*', 
-                        'admin/user-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*', 
+                        'admin/user-list', 'admin/deactivated-list', 'admin/user-detail/*', 'admin/role-list', 'admin/view-role/*', 
                         'admin/company-file/*', 'admin/company-setting/*') ? 'active' : '') }}">
                             <span class="menu-icon">
                                 <i class="ki-outline ki-user fs-2">
@@ -132,7 +132,7 @@
                                 @endif
 
                                 <!--begin:Menu link-->
-                                <a class="menu-link {{ (Request::is('admin/user-list', 'admin/user-detail/*',
+                                <a class="menu-link {{ (Request::is('admin/user-list', 'admin/deactivated-list', 'admin/user-detail/*',
                             'admin/user-setting/*','admin/user-file/*') ? 'active' : '') }}"
                                     href="{{ route('user.index') }}">
                                     <span class="menu-bullet">

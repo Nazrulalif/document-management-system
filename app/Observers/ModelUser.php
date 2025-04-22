@@ -53,7 +53,7 @@ class ModelUser
 
         foreach ($changes as $key => $newValue) {
             // Skip timestamps and other fields to ignore
-            if (in_array($key, ['created_at', 'updated_at', 'password', 'is_change_password ', 'login_method', 'remember_token'])) {
+            if (in_array($key, ['created_at', 'updated_at', 'password', 'is_change_password ', 'login_method', 'remember_token', 'last_login_at'])) {
                 continue;
             }
 

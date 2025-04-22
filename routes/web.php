@@ -182,11 +182,16 @@ route::prefix('admin')->middleware(['web', 'auth', 'isadmin'])->group(function (
     Route::middleware('role:1,2')->group(function () {
         //User list
         Route::get('/user-list', [UserController::class, 'index'])->name('user.index');
+        //deactivated user list
+        Route::get('/deactivated-list', [UserController::class, 'deactivated_index'])->name('user.deactivated.index');
+
         //add User
         Route::post('/create-user', [UserController::class, 'create'])->name('user.create');
         // Route::post('/import-user', [UserController::class, 'import'])->name('user.import');
         //Deactive User
         Route::post('/user-deactive/{id}', [UserController::class, 'deactive'])->name('user.deactive');
+        //activate User
+        Route::post('/user-activate/{id}', [UserController::class, 'activate'])->name('user.activate');
         //bulk deactive user
         route::get('/download-template', [UserController::class, 'downloadTemplate'])->name('download.template');
         Route::post('/user-bulk-deactive', [UserController::class, 'bulk_deactive'])->name('user.bulk.deactive');
