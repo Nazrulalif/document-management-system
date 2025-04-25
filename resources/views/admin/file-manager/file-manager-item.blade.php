@@ -38,13 +38,19 @@
                                         <span class="path2"></span>
                                     </i>New Folder</button>
                                 <!--begin::Add user-->
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                {{-- <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                     data-bs-target="#kt_modal_upload_file">
                                     <i class="ki-duotone ki-folder-up fs-2">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
-                                    </i>Upload Files</button>
+                                    </i>Upload Files</button> --}}
                                 <!--end::Add user-->
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#kt_modal_drag_drop">
+                                    <i class="ki-duotone ki-folder-up fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>Upload Files</button>
                             </div>
                             <!--end::Toolbar-->
                             <!--begin::Group actions-->
@@ -58,8 +64,9 @@
                             <!--end::Group actions-->
                             <!--begin::Modal - Add task-->
                             @include('admin.file-manager.add-folder-item')
+                            @include('admin.file-manager.drag-drop-file-item')
                             @include('admin.file-manager.edit-folder-item')
-                            @include('admin.file-manager.add-file-item')
+                            {{-- @include('admin.file-manager.add-file-item') --}}
                             @include('admin.file-manager.rename-file-item')
                             <!--end::Modal - Add task-->
                         </div>

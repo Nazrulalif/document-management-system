@@ -71,7 +71,9 @@
                                     <div class="ms-4">
                                         <h3 class="fs-5 fw-bold text-gray-900 mb-1">Drop files here or click to upload.
                                         </h3>
-                                        <span class="fs-7 fw-semibold text-gray-500">Upload up to 1 file only</span>
+                                        <span class="fs-7 fw-semibold text-gray-500">Upload up to 1 file only</span> <br>
+                                        <span class="fs-7 fw-semibold text-gray-500">Max file size is 100MB per
+                                            file.</span>
                                     </div>
                                 </div>
                             </div>
@@ -140,8 +142,8 @@
         autoProcessQueue: false, // Prevent automatic file upload
         url: "/admin/add-version", // Laravel route for handling file upload
         paramName: "file", // The name that will be used to transfer the file
-        maxFiles: 102400, // Allow only one file
-        maxFilesize: 10, // Maximum file size in MB
+        maxFiles: 1, // Allow only one file
+        maxFilesize: 102400, // Maximum file size in MB
         addRemoveLinks: true, // Show remove link
         headers: {
             'X-CSRF-TOKEN': "{{ csrf_token() }}" // CSRF token for Laravel

@@ -73,13 +73,22 @@
                                         <span class="path2"></span>
                                     </i>New Folder</button>
                                 <!--begin::Add user-->
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                {{-- <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal"
                                     data-bs-target="#kt_modal_upload_file">
                                     <i class="ki-duotone ki-folder-up fs-2">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
-                                    </i>Upload Files</button>
+                                    </i>Upload Files</button> --}}
                                 <!--end::Add user-->
+
+                                <!--begin::Upload file drag and Drop-->
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#kt_modal_drag_drop">
+                                <i class="ki-duotone ki-folder-up fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>Upload Files</button>
+                                <!--end::Upload file drag and Drop-->
                             </div>
                             <!--end::Toolbar-->
                             <!--begin::Group actions-->
@@ -93,8 +102,9 @@
                             <!--end::Group actions-->
                             <!--begin::Modal - Add task-->
                             @include('admin.file-manager.add-folder')
+                            @include('admin.file-manager.drag-drop-file')
                             @include('admin.file-manager.edit-folder')
-                            @include('admin.file-manager.add-file')
+                            {{-- @include('admin.file-manager.add-file') --}}
                             @include('admin.file-manager.rename-file')
                             <!--end::Modal - Add task-->
                         </div>
