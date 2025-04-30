@@ -358,7 +358,7 @@ var handleEditRows = () => {
     
     var handleEditFileFormSubmission = () => {
         // Get the form element
-        const editForm = document.getElementById('kt_modal_edit_file_form');
+        const editForm = document.getElementById('kt_modal_edit_file_forms');
 
         if (!editForm) {
             console.error('Edit form not found!');
@@ -413,7 +413,7 @@ var handleEditRows = () => {
                 },
                 error: function (xhr, error) {
                     Swal.fire({
-                        text: "There was an error updating the folder. Please try again.",
+                        text: "There was an error updating the file. Please try again.",
                         icon: "error",
                         buttonsStyling: false,
                         confirmButtonText: "Ok, got it!",

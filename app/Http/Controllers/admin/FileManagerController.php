@@ -206,6 +206,19 @@ class FileManagerController extends Controller
             ->with(['children', 'documents', 'creator'])
             ->first();
 
+        $sharedOrgIds = shared_folder::where('folder_guid', $folder->id)
+            ->pluck('org_guid'); // Use org_guid directly
+        
+        $userOrgIds = User_organization::where('user_guid', Auth::user()->id)
+            ->pluck('org_guid'); // Same, just the GUIDs
+        
+        // Check if any intersection exists
+        if (Auth::user()->role_guid != 1 && $sharedOrgIds->intersect($userOrgIds)->isEmpty()) {
+            return redirect()->route('fileManager.index')->with('error', 'You do not have permission to access this folder.');
+        }
+        
+        
+
         if (!$folder) {
             return redirect()->route('fileManager.index')->with('error', 'Folder not found or has been deleted.');
         }
@@ -299,12 +312,22 @@ class FileManagerController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'new_folder_name' => 'required',
+            'new_folder_name' =>  [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[a-zA-Z0-9_\.\-\s]+$/', // allows letters, numbers, dot, dash, underscore, and space
+            ],
+        ],
+        [
+            'new_folder_name.regex' => 'Folder name can only contain letters, numbers, dot, dash, underscore, and space.',
         ]);
 
+        $rawInput = $request->new_folder_name;
+        $decoded = html_entity_decode(urldecode($rawInput), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         try {
             $folder = Folder::create([
-                'folder_name' => $request->new_folder_name,
+                'folder_name' => $decoded,
                 'parent_folder_guid' => $request->new_folder_id,
                 'created_by' => Auth::user()->id,
                 'is_meeting' => 'N',
@@ -427,14 +450,29 @@ class FileManagerController extends Controller
         }
 
         // Validate the request
+        // $validatedData = $request->validate([
+        //     'folder_name' => 'required|string|max:255',
+        // ]);
+
         $validatedData = $request->validate([
-            'folder_name' => 'required|string|max:255',
+            'folder_name' =>  [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[a-zA-Z0-9_\.\-\s]+$/', // allows letters, numbers, dot, dash, underscore, and space
+            ],
+        ],
+        [
+            'folder_name.regex' => 'Folder name can only contain letters, numbers, dot, dash, underscore, and space.',
         ]);
+
+        $rawInput = $request->folder_name;
+        $decoded = html_entity_decode(urldecode($rawInput), ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
         try {
             // Update the folder name
             $folder->update([
-                'folder_name' => $validatedData['folder_name'],
+                'folder_name' => $decoded,
             ]);
 
             // Retrieve existing shared organizations for the main folder
@@ -506,14 +544,29 @@ class FileManagerController extends Controller
         }
 
         // Validate the request
+        // $validatedData = $request->validate([
+        //     'edit_file' => 'required|string|max:255',
+        // ]);
+
         $validatedData = $request->validate([
-            'edit_file' => 'required|string|max:255',
+            'edit_file' =>  [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[a-zA-Z0-9_\.\-\s]+$/', // allows letters, numbers, dot, dash, underscore, and space
+            ],
+        ],
+        [
+            'edit_file.regex' => 'Folder name can only contain letters, numbers, dot, dash, underscore, and space.',
         ]);
+
+        $rawInput = $request->edit_file;
+        $decoded = html_entity_decode(urldecode($rawInput), ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
         try {
             // Update the folder name
             $file->update([
-                'doc_title' => $validatedData['edit_file'],
+                'doc_title' => $decoded,
             ]);
 
             // Retrieve existing shared organizations

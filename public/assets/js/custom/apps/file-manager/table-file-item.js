@@ -334,7 +334,7 @@ var KTDatatablesServerSide = function () {
 
     var handleEditFileFormSubmission = () => {
         // Get the form element
-        const editForm = document.getElementById('kt_modal_edit_file_form');
+        const editForm = document.getElementById('kt_modal_edit_file_forms');
 
         if (!editForm) {
             console.error('Edit form not found!');

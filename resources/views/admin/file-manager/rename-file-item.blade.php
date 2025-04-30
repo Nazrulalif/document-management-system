@@ -19,7 +19,7 @@
             <!--begin::Modal body-->
             <div class="modal-body px-5 my-7">
                 <!--begin::Form-->
-                <form id="kt_modal_edit_file_form" class="form" autocomplete="off" action=""
+                <form id="kt_modal_edit_file_forms" class="form" autocomplete="off" action=""
                     enctype="multipart/form-data">
                     @csrf
                     <!--begin::Scroll-->
@@ -111,7 +111,7 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('kt_modal_edit_folder');
+        const form = document.getElementById('kt_modal_edit_file');
         const submitButton = document.getElementById('button_submit');
 
         form.addEventListener('submit', function (event) {

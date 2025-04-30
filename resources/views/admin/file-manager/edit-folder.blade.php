@@ -34,7 +34,7 @@
                                 class="form-control form-control-solid mb-3 mb-lg-0" required />
                             <input type="hidden" id="folderId" name="folderId"> 
                         </div>
-                        @if (Auth::user()->role_guid === 1 && !Request::is('admin/file-manager/*'))
+                        @if (Auth::user()->role_guid == 1 && !Request::is('admin/file-manager/*'))
                         <div class="fv-row mb-7">
                             <!--begin::Label-->
                             <label class="required fw-semibold fs-6 mb-2">Share to</label>

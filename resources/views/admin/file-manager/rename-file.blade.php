@@ -19,7 +19,7 @@
             <!--begin::Modal body-->
             <div class="modal-body px-5 my-7">
                 <!--begin::Form-->
-                <form id="kt_modal_edit_file_form" class="form" autocomplete="off" action=""
+                <form id="kt_modal_edit_file_forms" class="form" autocomplete="off" action=""
                     enctype="multipart/form-data">
                     @csrf
                     <!--begin::Scroll-->
@@ -34,7 +34,7 @@
                                 class="form-control form-control-solid mb-3 mb-lg-0" required />
                             <input type="hidden" id="fileId" name="fileId"> <!-- Changed to hidden input -->
                         </div>
-                        @if (Auth::user()->role_guid === 1 && !Request::is('admin/file-manager/*'))
+                        @if (Auth::user()->role_guid == 1 && !Request::is('admin/file-manager/*'))
                         <div class="fv-row mb-7">
                             <!--begin::Label-->
                             <label class="required fw-semibold fs-6 mb-2">Share to</label>
@@ -121,7 +121,7 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('kt_modal_edit_folder');
+        const form = document.getElementById('kt_modal_edit_file_forms');
         const submitButton = document.getElementById('button_submit');
 
         form.addEventListener('submit', function (event) {

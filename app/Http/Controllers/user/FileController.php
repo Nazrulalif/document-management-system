@@ -7,6 +7,8 @@ use App\Models\AuditLog;
 use App\Models\Document;
 use App\Models\documentVersion;
 use App\Models\shared_document;
+use App\Models\User_organization;
+use Auth;
 use Illuminate\Http\Request;
 
 class FileController extends Controller
@@ -32,6 +34,18 @@ class FileController extends Controller
             ->where('documents.latest_version_guid', '=', $uuid)
             ->orderBy('document_versions.created_at', 'desc')
             ->get();
+
+        $sharedOrgIds = shared_document::where('doc_guid', $file->doc_guid)
+            ->pluck('org_guid'); // Use org_guid directly
+
+        
+        $userOrgIds = User_organization::where('user_guid', Auth::user()->id)
+            ->pluck('org_guid'); // Same, just the GUIDs
+        
+        // Check if any intersection exists
+        if (Auth::user()->role_guid != 1 && $sharedOrgIds->intersect($userOrgIds)->isEmpty()) {
+            return redirect()->route('file-manager.user')->with('error', 'You do not have permission to access this file.');
+        }
 
 
         if (!$file) {

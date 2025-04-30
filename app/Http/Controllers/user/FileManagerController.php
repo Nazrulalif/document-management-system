@@ -139,6 +139,18 @@ class FileManagerController extends Controller
         $folder_id = Folder::where('uuid', $uuid)->first();
         $folder = Folder::where('uuid', $uuid)->with(['children', 'documents', 'creator'])->first();
 
+        $sharedOrgIds = shared_folder::where('folder_guid', $folder->id)
+        ->pluck('org_guid'); // Use org_guid directly
+    
+        $userOrgIds = User_organization::where('user_guid', Auth::user()->id)
+            ->pluck('org_guid'); // Same, just the GUIDs
+        
+        // Check if any intersection exists
+        if (Auth::user()->role_guid != 1 && $sharedOrgIds->intersect($userOrgIds)->isEmpty()) {
+            return redirect()->route('file-manager.user')->with('error', 'You do not have permission to access this folder.');
+        }
+    
+
         if (!$folder) {
             return redirect()->route('file-manager.user')->with('error', 'Folder not found or has been deleted.');
         }

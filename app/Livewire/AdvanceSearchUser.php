@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
+use Illuminate\Support\HtmlString;
 
 class AdvanceSearchUser extends Component
 {
@@ -133,7 +134,17 @@ class AdvanceSearchUser extends Component
 
         // Highlight the search term in folder names
         foreach ($folders as $folder) {
-            $folder->highlighted_title = str_ireplace($this->query, '<strong>' . $this->query . '</strong>', $folder->folder_name);
+           // $folder->highlighted_title = str_ireplace($this->query, '<strong>' . $this->query . '</strong>', $folder->folder_name);
+           $rawName = mb_convert_encoding($folder->folder_name, 'UTF-8', 'auto');
+           $query = mb_convert_encoding($this->query, 'UTF-8', 'auto');
+       
+           $highlighted = preg_replace_callback(
+               '/' . preg_quote($query, '/') . '/i',
+               fn($match) => '<strong>' . e($match[0]) . '</strong>',
+               e($rawName) // Escape entire string *after* replacement logic
+           );
+       
+           $folder->highlighted_title = new HtmlString($highlighted);
         }
 
         return $folders; // Return the paginated folders
@@ -189,30 +200,49 @@ class AdvanceSearchUser extends Component
         $this->fileCount = $documents->total(); // Update file count
 
         foreach ($documents as $document) {
-            $content = mb_convert_encoding($document->doc_content,  'UTF-8', 'auto');
-            $query = mb_convert_encoding($this->query,  'UTF-8', 'auto');
-
-            $position = stripos($content, $query);
-
+            $docContent = e(mb_convert_encoding($document->doc_content, 'UTF-8', 'auto'));
+            $query = e(mb_convert_encoding($this->query, 'UTF-8', 'auto'));
+        
+            // Highlight content preview
+            $position = stripos($docContent, $query);
             if ($position !== false) {
                 $before = 50;
                 $after = 50;
                 $start = max($position - $before, 0);
-                $end = min($position + strlen($query) + $after, strlen($content));
-                $excerpt = mb_substr($content, $start, $end - $start, 'UTF-8');
-                $highlightedExcerpt = str_ireplace($query, '<mark>' . $query . '</mark>', $excerpt);
-                $document->highlighted_content = '... ' . $highlightedExcerpt . ' ...';
+                $end = min($position + strlen($query) + $after, strlen($docContent));
+                $excerpt = mb_substr($docContent, $start, $end - $start, 'UTF-8');
+        
+                $highlightedExcerpt = preg_replace_callback(
+                    '/' . preg_quote($query, '/') . '/i',
+                    fn ($match) => '<mark>' . e($match[0]) . '</mark>',
+                    $excerpt
+                );
+        
+                $document->highlighted_content = new HtmlString('... ' . $highlightedExcerpt . ' ...');
             } else {
-                $document->highlighted_content = Str::limit($content, 200);
+                $document->highlighted_content = new HtmlString(e(Str::limit($docContent, 200)));
             }
-
-            $title = mb_convert_encoding($document->doc_title, 'UTF-8', 'auto');
-            $document->highlighted_title = str_ireplace($query, '<strong>' . $query . '</strong>', $title);
-
+        
+            // Highlight title
+            $title = e(mb_convert_encoding($document->doc_title, 'UTF-8', 'auto'));
+            $highlightedTitle = preg_replace_callback(
+                '/' . preg_quote($query, '/') . '/i',
+                fn ($match) => '<strong>' . e($match[0]) . '</strong>',
+                $title
+            );
+            $document->highlighted_title = new HtmlString($highlightedTitle);
+        
+            // Highlight keywords
             $keywords = explode(', ', $document->doc_keyword);
             $highlightedKeywords = array_map(function ($keyword) use ($query) {
-                return str_ireplace($query, '<mark>' . $query . '</mark>', trim($keyword));
+                $escaped = e($keyword);
+                return new HtmlString(preg_replace_callback(
+                    '/' . preg_quote($query, '/') . '/i',
+                    fn ($match) => '<mark>' . e($match[0]) . '</mark>',
+                    $escaped
+                ));
             }, $keywords);
+        
             $document->highlighted_keywords = $highlightedKeywords;
         }
 

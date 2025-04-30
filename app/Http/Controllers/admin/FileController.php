@@ -8,6 +8,7 @@ use App\Models\Document;
 use App\Models\documentVersion;
 use App\Models\shared_document;
 use App\Models\Starred_document;
+use App\Models\User_organization;
 use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +48,18 @@ class FileController extends Controller
             ->orderBy('document_versions.created_at', 'desc')
             ->get();
 
+        $sharedOrgIds = shared_document::where('doc_guid', $file->doc_guid)
+            ->pluck('org_guid'); // Use org_guid directly
+
+        
+        $userOrgIds = User_organization::where('user_guid', Auth::user()->id)
+            ->pluck('org_guid'); // Same, just the GUIDs
+        
+        // Check if any intersection exists
+        if (Auth::user()->role_guid != 1 && $sharedOrgIds->intersect($userOrgIds)->isEmpty()) {
+            return redirect()->route('fileManager.index')->with('error', 'You do not have permission to access this file.');
+        }
+
         // Check if the document exists
         if (!$file) {
             return redirect()->route('fileManager.index')->with('error', 'File not found or has been deleted.');
@@ -73,6 +86,21 @@ class FileController extends Controller
 
     public function update(Request $request, $uuid)
     {
+        $request->validate([
+            'doc_title' =>  [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[a-zA-Z0-9_\.\-\s]+$/', // allows letters, numbers, dot, dash, underscore, and space
+            ],
+            
+        ],
+        [
+            'doc_title.regex' => 'File name can only contain letters, numbers, dot, dash, underscore, and space.',
+        ]);
+
+        $rawInput = $request->doc_title;
+        $decoded = html_entity_decode(urldecode($rawInput), ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
         // $file = Document::where('uuid', '=', $uuid)->first();
         $file = Document::where('latest_version_guid', '=', $uuid)->first();
@@ -91,7 +119,7 @@ class FileController extends Controller
         }
 
         $file->update([
-            'doc_title' => request('doc_title'),
+            'doc_title' =>  $decoded,
             'doc_description' => request('doc_description'),
             'doc_summary' => request('doc_summary'),
             'doc_author' => request('doc_author'),
