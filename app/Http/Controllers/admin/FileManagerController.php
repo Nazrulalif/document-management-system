@@ -316,11 +316,11 @@ class FileManagerController extends Controller
                 'required',
                 'string',
                 'max:100',
-                'regex:/^[a-zA-Z0-9_\.\-\s]+$/', // allows letters, numbers, dot, dash, underscore, and space
+                'regex:/^[a-zA-Z0-9_\.\-\s,\(\)]+$/', // allows letters, numbers, dot, dash, underscore, and space
             ],
         ],
         [
-            'new_folder_name.regex' => 'Folder name can only contain letters, numbers, dot, dash, underscore, and space.',
+            'new_folder_name.regex' => 'Folder name can only contain letters, numbers, dot, dash, underscore, space, comma, and brackets.',
         ]);
 
         $rawInput = $request->new_folder_name;
@@ -459,11 +459,11 @@ class FileManagerController extends Controller
                 'required',
                 'string',
                 'max:100',
-                'regex:/^[a-zA-Z0-9_\.\-\s]+$/', // allows letters, numbers, dot, dash, underscore, and space
+                'regex:/^[a-zA-Z0-9_\.\-\s,\(\)]+$/', // allows letters, numbers, dot, dash, underscore, and space
             ],
         ],
         [
-            'folder_name.regex' => 'Folder name can only contain letters, numbers, dot, dash, underscore, and space.',
+            'folder_name.regex' => 'Folder name can only contain letters, numbers, dot, dash, underscore, space, comma, and brackets.',
         ]);
 
         $rawInput = $request->folder_name;
@@ -553,11 +553,11 @@ class FileManagerController extends Controller
                 'required',
                 'string',
                 'max:100',
-                'regex:/^[a-zA-Z0-9_\.\-\s]+$/', // allows letters, numbers, dot, dash, underscore, and space
+                'regex:/^[a-zA-Z0-9_\.\-\s,\(\)]+$/', // allows letters, numbers, dot, dash, underscore, and space
             ],
         ],
         [
-            'edit_file.regex' => 'Folder name can only contain letters, numbers, dot, dash, underscore, and space.',
+            'edit_file.regex' => 'File name can only contain letters, numbers, dot, dash, underscore, space, comma, and brackets.',
         ]);
 
         $rawInput = $request->edit_file;

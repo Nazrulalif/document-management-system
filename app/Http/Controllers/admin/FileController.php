@@ -91,12 +91,10 @@ class FileController extends Controller
                 'required',
                 'string',
                 'max:100',
-                'regex:/^[a-zA-Z0-9_\.\-\s]+$/', // allows letters, numbers, dot, dash, underscore, and space
+                'regex:/^[a-zA-Z0-9_\.\-\s,\(\)]+$/', // added comma, open and close brackets
             ],
-            
-        ],
-        [
-            'doc_title.regex' => 'File name can only contain letters, numbers, dot, dash, underscore, and space.',
+        ], [
+            'doc_title.regex' => 'File name can only contain letters, numbers, dot, dash, underscore, space, comma, and brackets.',
         ]);
 
         $rawInput = $request->doc_title;
