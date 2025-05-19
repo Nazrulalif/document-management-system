@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
-
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 class Handler extends ExceptionHandler
 {
     /**
@@ -12,11 +12,7 @@ class Handler extends ExceptionHandler
      *
      * @var array<int, string>
      */
-    protected $dontFlash = [
-        'current_password',
-        'password',
-        'password_confirmation',
-    ];
+    protected $dontFlash = ['current_password', 'password', 'password_confirmation'];
 
     /**
      * Register the exception handling callbacks for the application.
@@ -26,5 +22,24 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof TooManyRequestsHttpException) {
+            if ($request->expectsJson()) {
+                return response()->json(
+                    [
+                        'throttle_error' => true,
+                        'error' => 'You are doing that too often. Please slow down.',
+                    ],
+                    429,
+                );
+            }
+
+            return back()->with('error', 'You are doing that too often. Please slow down.');
+        }
+
+        return parent::render($request, $exception);
     }
 }

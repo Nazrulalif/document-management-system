@@ -163,7 +163,7 @@ route::prefix('admin')->middleware(['web', 'auth', 'isadmin'])->group(function (
         Route::post('/company-deactivate/{uuid}', [CompanyController::class, 'deactivate'])->name('company.deactivate');
         Route::post('/company-destroy/{id}', [CompanyController::class, 'destroy'])->name('company.destroy');
         Route::post('/company-bulk-destroy', [CompanyController::class, 'bulk_destroy'])->name('company.bulk.destroy');
-        Route::post('/create-company', [CompanyController::class, 'create'])->name('company.create');
+        Route::post('/create-company', [CompanyController::class, 'create'])->middleware('throttle:10,1')->name('company.create');
         Route::post('/company-update/{id}', [CompanyController::class, 'update'])->name('company.update');
         Route::get('/company-show/{id}', [CompanyController::class, 'show'])->name('company.show');
 
@@ -186,7 +186,7 @@ route::prefix('admin')->middleware(['web', 'auth', 'isadmin'])->group(function (
         Route::get('/deactivated-list', [UserController::class, 'deactivated_index'])->name('user.deactivated.index');
 
         //add User
-        Route::post('/create-user', [UserController::class, 'create'])->name('user.create');
+        Route::post('/create-user', [UserController::class, 'create'])->middleware('throttle:10,1')->name('user.create');
         // Route::post('/import-user', [UserController::class, 'import'])->name('user.import');
         //Deactive User
         Route::post('/user-deactive/{id}', [UserController::class, 'deactive'])->name('user.deactive');
@@ -220,7 +220,7 @@ route::prefix('admin')->middleware(['web', 'auth', 'isadmin'])->group(function (
     route::get('/file-manager/fetch-data', [FileManagerController::class, 'fetchData'])->name('fileManager.fetchData');
     route::get('/file-manager/{uuid}', [FileManagerController::class, 'show_folder'])->name('folder.show');
     //create folder
-    Route::post('/create-folder', [FileManagerController::class, 'create'])->name('folder.create');
+    Route::post('/create-folder', [FileManagerController::class, 'create'])->middleware('throttle:10,1')->name('folder.create');
     // rename folder and file
     Route::post('/folder-rename/{id}', [FileManagerController::class, 'rename'])->name('folder.rename');
     Route::post('/file-rename/{id}', [FileManagerController::class, 'rename_file'])->name('file.rename');
@@ -230,7 +230,7 @@ route::prefix('admin')->middleware(['web', 'auth', 'isadmin'])->group(function (
     // delete folder by selected rows
     route::post('/folder/delete-selected', [FileManagerController::class, 'deleteSelected']);
     // upload file
-    route::post('/file-upload', [FileManagerController::class, 'upload_file'])->name('file.upload');
+    route::post('/file-upload', [FileManagerController::class, 'upload_file'])->middleware('throttle:10,1')->name('file.upload');
     // delete file
     route::post('/file-destroy/{id}', [FileManagerController::class, 'destroy_file'])->name('file.destroy');
     //delete file
