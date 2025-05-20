@@ -318,9 +318,13 @@ class FileManagerController extends Controller
                 'max:100',
                 'regex:/^[a-zA-Z0-9_\.\-\s,\(\)]+$/', // allows letters, numbers, dot, dash, underscore, and space
             ],
+            'g-recaptcha-response' => 'required|captcha',
+
         ],
         [
             'new_folder_name.regex' => 'Folder name can only contain letters, numbers, dot, dash, underscore, space, comma, and brackets.',
+            'g-recaptcha-response.required' => 'Please complete the reCAPTCHA.',
+            'g-recaptcha-response.captcha' => 'reCAPTCHA validation failed. Please try again.',
         ]);
 
         $rawInput = $request->new_folder_name;
@@ -745,8 +749,15 @@ class FileManagerController extends Controller
         // Validate the file input
         $request->validate([
             'file' => 'required|mimes:jpg,jpeg,png,pdf,doc,docx,pptx,xlsx,csv|max:102400', // 100MB Max
+            'g-recaptcha-response' => 'required|captcha',
+        ],[
+            'file.required' => 'Please select a file to upload.',
+            'file.mimes' => 'Only jpg, jpeg, png, pdf, doc, docx, pptx, xlsx, and csv files are allowed.',
+            'file.max' => 'The file size must not exceed 100MB.',
+            'g-recaptcha-response.required' => 'Please complete the reCAPTCHA.',
+            'g-recaptcha-response.captcha' => 'reCAPTCHA validation failed. Please try again.',
         ]);
-
+        
         $orgNames = $request->input('org_name_file');
 
         // Handle the uploaded file

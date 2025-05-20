@@ -1,3 +1,6 @@
+<?php
+use Anhskohbo\NoCaptcha\Facades\NoCaptcha;
+?>
 <div class="modal fade" id="kt_modal_drag_drop" tabindex="-1" aria-hidden="true">
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
@@ -60,6 +63,9 @@
                             <!--end::Dropzone-->
                         </div>
                         <!--end::Input group-->
+                        <div class="fv-row my-4">
+                            {!! NoCaptcha::display() !!}
+                        </div>
                     </div>
 
                     <!--end::Input group-->
@@ -80,6 +86,9 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
+@push('scripts')
+    {!! NoCaptcha::renderJs() !!}
+@endpush
 <script>
     Dropzone.autoDiscover = false; // Disable auto-discover of dropzones
     // Function to perform OCR on image files (reused from Code 2)
@@ -144,6 +153,7 @@
 
                 formData.append("org_name_file", selectedOrgs);
                 formData.append('folder_id', folderId);
+                formData.append("g-recaptcha-response", grecaptcha.getResponse());
 
                 // If OCR text is available, include it
                 if (file.ocrText) {

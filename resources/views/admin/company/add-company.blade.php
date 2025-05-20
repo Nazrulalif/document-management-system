@@ -1,3 +1,6 @@
+<?php
+use Anhskohbo\NoCaptcha\Facades\NoCaptcha;
+?>
 <div class="modal fade" id="kt_modal_add_company" tabindex="-1" aria-hidden="true">
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
@@ -111,6 +114,9 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="fv-row mb-2">
+                            {!! NoCaptcha::display() !!}
+                        </div>
                     </div>
                     <!--end::Scroll-->
                     <!--begin::Actions-->
@@ -132,7 +138,9 @@
     </div>
     <!--end::Modal dialog-->
 </div>
-
+@push('scripts')
+    {!! NoCaptcha::renderJs() !!}
+@endpush
 <script>
     // Element to indecate
     var button = document.querySelector("#kt_button_submit");

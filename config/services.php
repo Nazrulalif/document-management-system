@@ -39,4 +39,10 @@ return [
         // 'proxy' => env('PROXY')  // optionally
     ],
 
+    'nocaptcha' => [
+        'sitekey' => env('NOCAPTCHA_SITEKEY'),
+        'secret' => env('NOCAPTCHA_SECRET'),
+    ],
+
+
 ];

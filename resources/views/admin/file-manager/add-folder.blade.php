@@ -1,3 +1,6 @@
+<?php
+use Anhskohbo\NoCaptcha\Facades\NoCaptcha;
+?>
 <div class="modal fade" id="kt_modal_add_folder" tabindex="-1" aria-hidden="true">
     <!--begin::Modal dialog-->
     <div class="modal-dialog modal-dialog-centered mw-650px">
@@ -59,6 +62,10 @@
                         </select>
                     </div>
                     @endif
+
+                    <div class="fv-row my-2">
+                        {!! NoCaptcha::display() !!}
+                    </div>
                    
                     </div>
                     <!--end::Scroll-->
@@ -82,7 +89,9 @@
     <!--end::Modal dialog-->
 </div>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-
+@push('scripts')
+    {!! NoCaptcha::renderJs() !!}
+@endpush
 <script>
     // Element to indecate
     var button = document.querySelector("#button_submit");

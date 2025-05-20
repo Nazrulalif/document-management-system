@@ -254,7 +254,13 @@ class CompanyController extends Controller
             // 'nature_of_business' => 'required|string|max:255',
             // 'org_number' => 'required|string|max:255',
             // 'reg_date' => 'required|date',
-        ]);
+            'g-recaptcha-response' => 'required|captcha',
+
+        ],
+    [
+        'g-recaptcha-response.required' => 'Please complete the reCAPTCHA.',
+        'g-recaptcha-response.captcha' => 'reCAPTCHA validation failed. Please try again.',
+    ]);
 
         // Attempt to create the organization
         Organization::create([

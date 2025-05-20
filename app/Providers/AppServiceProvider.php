@@ -18,6 +18,9 @@ use Illuminate\Support\ServiceProvider;
 
 use Illuminate\Support\Facades\Cache;
 use App\Services\DormantUserService;
+
+use Illuminate\Support\Facades\URL;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -41,6 +44,10 @@ class AppServiceProvider extends ServiceProvider
 
         if (Cache::add('dormant-check-done', true, now()->addDay())) {
             app(DormantUserService::class)->disableDormantUsers();
+        }
+
+        if (env('APP_ENV') !== 'local') {
+            URL::forceScheme('https');
         }
     }
 }

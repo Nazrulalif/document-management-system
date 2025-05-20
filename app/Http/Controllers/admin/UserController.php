@@ -160,9 +160,13 @@ class UserController extends Controller
             'role_name' => 'required|string|max:255',
             'org_name' => 'required|array',           // Ensure org_name is an array
             'org_name.*' => 'exists:organizations,id',
+            'g-recaptcha-response' => 'required|captcha',
+
         ], [
             'email.unique' => 'The email has already been taken.',
             // 'ic_number.digits_between' => 'The IC number must be between 6 and 12 digits.',
+            'g-recaptcha-response.required' => 'Please complete the reCAPTCHA.',
+            'g-recaptcha-response.captcha' => 'reCAPTCHA validation failed. Please try again.',
         ]);
 
         try {
