@@ -87,7 +87,7 @@ use Anhskohbo\NoCaptcha\Facades\NoCaptcha;
                         <!--end::Input group-->
 
                     <div class="fv-row my-4">
-                        {!! NoCaptcha::display() !!}
+                         {!! NoCaptcha::display(['data-callback' => 'onCaptchaSuccess']) !!}
                     </div>
 
                     <!--end::Input group-->
@@ -113,6 +113,14 @@ use Anhskohbo\NoCaptcha\Facades\NoCaptcha;
     {!! NoCaptcha::renderJs() !!}
 @endpush
 <script>
+     let recaptchaResponse = '';
+
+    function onCaptchaSuccess(token) {
+        // Called automatically by Google when user completes captcha
+        recaptchaResponse = token;
+        // console.log('Captcha solved, token:', recaptchaResponse);
+    }
+
     Dropzone.autoDiscover = false; // Disable auto-discover of dropzones
     // Function to perform OCR on image files (reused from Code 2)
     function startOCR(file, callback) {
@@ -174,7 +182,7 @@ use Anhskohbo\NoCaptcha\Facades\NoCaptcha;
                 }
 
                 formData.append("org_name_file", selectedOrgs);
-                formData.append("g-recaptcha-response", grecaptcha.getResponse());
+               formData.append("g-recaptcha-response", recaptchaResponse);
 
                 // If OCR text is available, include it
                 if (file.ocrText) {
