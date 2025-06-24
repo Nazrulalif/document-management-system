@@ -8,7 +8,7 @@
         <!--begin::Heading-->
         <div class="text-center mb-11">
             <!--begin::Title-->
-            <h1 class="text-gray-900 fw-bolder mb-3">Sign In</h1>
+            <h1 class="text-gray-900 fw-bolder mb-3">Sign Ins</h1>
             <!--end::Title-->
             <!--begin::Subtitle-->
             <div class="text-gray-500 fw-semibold fs-6">Document Management System</div>
