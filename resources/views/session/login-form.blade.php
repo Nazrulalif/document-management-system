@@ -29,20 +29,20 @@
     </div> --}}
             <div class="row g-3 mb-9">
                 <!--begin::Col-->
-                <a href="{{ route('saml.login', ['uuid' => env('SAML2_UUID')]) }}"
+                {{-- <a href="{{ route('saml.login', ['uuid' => env('SAML2_UUID')]) }}"
                     class="btn btn-flex btn-outline btn-text-gray-700 btn-active-color-primary bg-state-light flex-center text-nowrap w-100">
                     <img alt="Logo" src="{{ asset('assets/media/svg/brand-logos/microsoft-5.svg') }}"
                         class="h-15px me-3">
                     Microsoft Azure
-                </a>
+                </a> --}}
                 <!--end::Col-->
             </div>
 
             {{-- login form : Disable for PNB --}}
             <div>
-                <div class="separator separator-content my-14">
+                {{-- <div class="separator separator-content my-14">
                     <span class="w-200px text-gray-500 fw-semibold fs-7">Or with email</span>
-                </div>
+                </div> --}}
                 <!--begin::Input group=-->
                 <div class="fv-row mb-8">
                     <!--begin::Email-->

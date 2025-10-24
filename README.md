@@ -1,137 +1,112 @@
 # Document Management System (DMS)
 
-<p align="center">
-    <a href="https://laravel.com" target="_blank">
-        <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg"
-            width="400" alt="Laravel Logo">
-    </a>
-</p>
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Laravel](https://img.shields.io/badge/Framework-Laravel-red)](https://laravel.com)
 
-## About DMS
+Document Management System (DMS) is a Laravel-based web application for corporate document management across multiple organizations. It provides document upload/versioning, sharing, tagging, auditing, SSO support and integration points for SFTP and AI services.
 
-The Document Management System (DMS) is a comprehensive solution designed for corporate entities to efficiently manage
-and control their documents and records across various companies under their umbrella. This system integrates seamlessly
-with the existing Corporate Information System (CIS), enhancing its capabilities by adding robust document version
-control, secure file storage, and user access management.
+## Table of contents
 
-The DMS allows for the streamlined upload, organization, and retrieval of documents, ensuring that every version of a
-document is tracked and accessible, thereby facilitating better compliance and audit trails. By centralizing document
-management, the DMS helps companies maintain accurate records, manage sensitive information securely, and provide
-controlled access to essential corporate documents. This ensures that all critical documentation is easily accessible
-and properly managed, supporting the efficient operation and oversight of multiple business entities.
+-   [Features](#features)
+-   [Tech stack](#tech-stack)
+-   [Prerequisites](#prerequisites)
+-   [Quickstart (local)](#quickstart-local)
+-   [Configuration notes](#configuration-notes)
+-   [Running the app](#running-the-app)
+-   [Testing](#testing)
+-   [Deployment notes (SQL Server / Windows)](#deployment-notes-sql-server--windows)
+-   [Environment variables highlights](#environment-variables-highlights)
+-   [Contributing](#contributing)
+-   [License](#license)
+
+## Features
+
+-   Document upload, versioning and storage
+-   Folder management and sharing (documents & folders)
+-   Starred documents and folders
+-   Document tagging and search
+-   Audit logs and user activity tracking
+-   Import users via CSV
+-   SAML / Azure SSO and Microsoft integration
+-   Optional SFTP storage driver
+-   Gemini AI integration (optional)
+
+## Tech stack
+
+-   Backend: PHP (Laravel 10)
+-   Frontend: Blade + optional Vite + JS
+-   Database: MySQL / PostgreSQL / SQLite / SQL Server (configurable)
 
 ## Prerequisites
 
-Before you begin, ensure you have met the following requirements:
-
 -   PHP >= 8.1
--   Laravel 10
--   Laragon(preferred)/XAMPP
--   Gemini
--   Mailtrap (If to use email delivery platform to test, send and control email infrastructure in one place)
--   Microsoft Azure SSO
--   SFTP (If to use SFTP, ensure your machine has install openSSH Server)
+-   Composer
+-   Node.js & npm (optional, for asset building)
+-   Database: SQLite (default for local dev in `.env.example`) or MySQL / SQL Server
 
-## Installation situation
+## Quickstart (local)
 
--   Install in localhost (personal PC)
--   Install in KCTECH Server using SQL SERVER
-
-## Installation in localhost (personal PC)
-
-**OPTION 1: Download zip file**
-
-**OPTION 2: Clone repository into your local file:**
+Clone the repository and install dependencies:
 
 ```bash
-git clone {{ Clone with HTTPS }}
+git clone <repo-url>
+cd document-management-system
+composer install
 ```
 
-Follow these steps to install and set up the DMS:
-
-1. **Rename `.env.example` to `.env`**
-
-2. **Run the Composer update:**
-   _(download composer `exe` if you don't have it installed yet.https://getcomposer.org/download/)_
+Copy the environment file and set credentials:
 
 ```bash
-composer update
+cp .env.example .env
+# Edit .env to set DB and other settings
 ```
 
-3. **Comment these line in `database/seeders/role.php`**
-
-```bash
-DB::unprepared('SET IDENTITY_INSERT roles ON');
-```
-
-```bash
-DB::unprepared('SET IDENTITY_INSERT roles OFF');
-```
-
-4. **In `database/migration` need to Comment/Uncomment some foreign key based on server you use. It in this file:**
-
--   folders table
--   documents table
--   document versions table
--   starred folders table
--   starred documents table
-
-5. **Migrate database:**
-
-```bash
-php artisan migrate
-```
-
-6. **Seed the factory for system roles:**
-
-```bash
-php artisan db:seed role
-```
-
-7. **Generate app key:**
+Generate the app key, migrate and seed (role seeder is required):
 
 ```bash
 php artisan key:generate
+php artisan migrate
+php artisan db:seed --class=RoleSeeder
 ```
 
-8. **Create uploads folders:**
+Create the storage symlink for public uploads:
 
 ```bash
 php artisan storage:link
 ```
 
-9. **Setup file sistem that you want to use in `.env`**
+Install frontend dependencies and build (optional for development):
 
 ```bash
-# use public to save file in other server
-FILESYSTEM_DISK=sftp
+npm install
+npm run dev
 ```
+
+Start the development server:
 
 ```bash
-# use public to save file in public file
-FILESYSTEM_DISK=public
+php artisan serve --port=8080
 ```
 
-10. **Setup configuration SFTP in `.env` (Skip if use public filesystem)**
+Run the queue worker (if email/async jobs are used):
 
 ```bash
-SFTP_HOST=127.0.0.1
-SFTP_USERNAME=
-SFTP_PASSWORD=
-SFTP_PORT=
-SFTP_ROOT=
+php artisan queue:work
 ```
 
-11. **Paste the Gemini API key in the `.env` file.**
-    _(Refer to the section "Get Gemini API" below)_
+Notes:
 
-12. **[Optional] If using Mailtrap, Paste the Mailtrap username and password in the `.env` file.**
-    _(Refer to the section "Get Mailtrap API" below)_
+-   If you use SQLite for local dev, ensure `DB_CONNECTION=sqlite` in `.env` and an empty DB file or configured path.
+-   For SQL Server deployment follow the Windows-specific steps below.
 
-13. **Paste the Microsoft Azure client ID, client secret, redirect URI and tenant ID in the `.env` file.**
-    _(Refer to the section "Get Microsoft Azure API Configuration" below)_
+## Configuration notes
 
-14. **Clear configuration:**
+-   Check `config/filesystems.php` and `FILESYSTEM_DISK` in `.env` to choose between `public` and `sftp` storage.
+-   SFTP configuration lives in `.env` (SFTP_HOST, SFTP_USERNAME, SFTP_PASSWORD, SFTP_PORT, SFTP_ROOT).
+-   Gemini AI integration requires `GEMINI_API_KEY` in `.env`.
+-   Azure SSO requires `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_REDIRECT_URI` and `AZURE_TENANT_ID`.
+
+After changing `.env` values, clear cached config:
 
 ```bash
 php artisan config:clear
@@ -139,175 +114,44 @@ php artisan cache:clear
 php artisan route:clear
 ```
 
-15. **Run the Laravel development server:**
+## Running tests
+
+Run the test suite with:
 
 ```bash
-php artisan serve --port=8080
+php artisan test
 ```
 
-16. **Run the mail queue:**
+## Environment variables highlights
 
-```bash
-php artisan queue:work
-```
+Key variables from `.env.example` you will likely set:
 
-## Installation in KCTECH Server using SQL Server
+-   `DB_CONNECTION`, `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
+-   `FILESYSTEM_DISK` (public or sftp)
+-   `SFTP_HOST`, `SFTP_USERNAME`, `SFTP_PASSWORD`, `SFTP_PORT`, `SFTP_ROOT`
+-   `GEMINI_API_KEY` (for AI features)
+-   `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_REDIRECT_URI`, `AZURE_TENANT_ID` (for Azure SSO)
+-   Mail settings (MAIL_MAILER, MAIL_HOST, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, MAIL_ENCRYPTION)
 
-### NOTE: Laravel must install in `C:\Users\CISAdmin\Documents\applications\`.
+See `.env.example` for full details and example values.
 
-**OPTION 1: Download zip file**
+## Contributing
 
-**OPTION 2: Clone repository:**
+Contributions are welcome. Please follow these steps:
 
-```bash
-git clone {{ Clone with HTTPS }}
-```
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feat/my-feature`
+3. Commit changes and push: `git push origin feat/my-feature`
+4. Open a pull request describing the change and include any migration notes or config updates.
 
-Follow these steps to install and set up the DMS:
+Please open an issue to discuss larger changes before implementing them.
 
-1. **Rename `.env.example` to `.env`**
+## License
 
-2. **Run the Composer update:**
-   _(download composer `exe` if you don't have it installed yet.https://getcomposer.org/download/)_
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
-```bash
-C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe C:\ProgramData\ComposerSetup\bin\composer.phar update
-```
+## Acknowledgements
 
-3. **Uncomment these line in `database/seeders/role.php` if using sqlsvr**
-
-```bash
-DB::unprepared('SET IDENTITY_INSERT roles ON');
-```
-
-```bash
-DB::unprepared('SET IDENTITY_INSERT roles OFF');
-```
-
-4. **In `database/migration` need to Comment/Uncomment some foreign key based on server you use. It in this file:**
-
--   folders table
--   documents table
--   document versions table
--   starred folders table
--   starred documents table
-
-5. **Migrate database:**
-
-```bash
-C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan migrate
-```
-
-6. **Seed the factory for system roles:**
-
-```bash
-C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan db:seed role
-```
-
-7. **Generate app key:**
-
-```bash
-C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan key:generate
-```
-
-8. **Create uploads folders:**
-
-```bash
-C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan storage:link
-```
-
-9. **Paste the Gemini API key in the .env file.**
-   _(Refer to the section "Get Gemini API" below)_
-
-10. **[Optional] If using Mailtrap, Paste the Mailtrap username and password in the `.env` file.**
-    _(Refer to the section "Get Mailtrap API" below)_
-
-11. **Paste the Microsoft Azure client ID, client secret, redirect URI and tenant ID in the `.env` file.**
-    _(Refer to the section "Get Microsoft Azure API Configuration" below)_
-
-12. **Clear configuration:**
-
-```bash
-C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan config:clear
-C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan cache:clear
-C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan route:clear
-```
-
-13. **Run the Laravel development server:**
-
-```bash
-C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan serve --port=8080
-```
-
-14. **Run the mail queue:**
-
-```bash
-C:\Users\CISAdmin\Documents\applications\php-8.1.30\php.exe artisan queue:work
-```
-
-## Get Gemini API
-
-To obtain your Gemini API key, follow these instructions:
-
-1. Sign up or log in to your Gemini account. (https://aistudio.google.com/app/apikey)
-2. Navigate to the API section in your account settings.
-3. Create a new API key and copy it.
-4. Paste the key into your `.env` file under the GEMINI_API_KEY.
-
-## Get Mailtrap API
-
-To get your Mailtrap API credentials:
-
-1. Log in to your Mailtrap account. (https://mailtrap.io/)
-2. Go to the email testing > inboxes > my inbox > integration > SMTP.
-3. Copy the host, username, password, port (2525 or 587) and encryption (tls) provided for SMTP.
-4. Paste them into your `.env` file under the appropriate variables.
-
-_p/s: run this command to check connection port with mailtrap:_
-
-```bash
-telnet sandbox.smtp.mailtrap.io 587
-```
-
-## Get Microsoft Azure API Configuration
-
-To get your Microsoft Azure API credentials:
-
-### Step 1: Register Your App in Microsoft Azure
-
-1. Sign in to the Azure Portal. (https://azure.microsoft.com/)
-2. In the left sidebar, go to Microsoft Entra ID.
-3. Click App registrations > New registration.
-4. Fill in the app details.
-
-### Step 2: Get the Client ID and Tenant ID
-
-1. After registering, go to Overview.
-2. Copy the following:
-    - Application (client) ID: This is your Client ID.
-    - Directory (tenant) ID: This is your Tenant ID. (use 'common' for testing)
-
-### Step 3: Create a Client Secret
-
-1. In the Certificates & secrets section (left menu), click New client secret.
-2. Add a description (e.g., MyAppSecret).
-3. Set an expiration period (1 year, 2 years, etc.).
-4. Click Add.
-5. Copy the value of the secret immediately — it will not be shown again. This is your Client Secret.
-
-### Step 4: Configure the Redirect URI
-
-1. In the Authentication section (left menu), click Add a platform.
-2. Choose Web.
-3. Add the redirect URI (http://localhost:8000/auth/microsoft/callback).
-4. Enable ID tokens (used for implicit and hybrid flows).
-5. Click Save.
-
-### Step 5: Paste Credentials in `.env` File
-
-```bash
-AZURE_CLIENT_ID=<your-client-id>
-AZURE_CLIENT_SECRET=<your-client-secret>
-AZURE_REDIRECT_URI=http://localhost:8000/auth/microsoft/callback
-AZURE_TENANT_ID=<your-tenant-id>
-```
+-   Built with Laravel
+-   Uses Gemini for optional AI features
+-   Thanks to contributors and the open-source community

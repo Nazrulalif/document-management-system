@@ -45,7 +45,7 @@ class AuthController extends Controller
 
             if ($user->is_active == "Y") {
                 // dd($user->role_guid);
-                if($user->login_method == 'azure' || $user->login_method == 'azure_saml'){
+                if ($user->login_method == 'azure' || $user->login_method == 'azure_saml') {
                     Auth::logout();
                     return redirect(route('login'))->with("error", "Authentication failed, your account is already using Microsoft Azure as a login method.");
                 }
@@ -100,7 +100,7 @@ class AuthController extends Controller
             // Find user by email
             $finduser = User::where('email', $azureUser->getEmail())->first();
 
-            if($finduser->login_method == 'email_password'){
+            if ($finduser->login_method == 'email_password') {
                 Auth::logout();
                 return redirect(route('login'))->with("error", "Authentication failed, your account is already using Microsoft Email/Password as a login method.");
             }
@@ -216,7 +216,7 @@ class AuthController extends Controller
                 'is_operation' => 'Y',
             ]);
 
-            $generatedPassword = Str::random(10);
+            $generatedPassword = 'password';
 
             // Create the user
             $user = User::create([
