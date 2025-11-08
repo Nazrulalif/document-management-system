@@ -11,6 +11,8 @@ Document Management System (DMS) is a Laravel-based web application for corporat
 -   [Tech stack](#tech-stack)
 -   [Prerequisites](#prerequisites)
 -   [Quickstart (local)](#quickstart-local)
+-   [Demo Accounts](#demo-accounts)
+-   [User Roles](#user-roles)
 -   [Configuration notes](#configuration-notes)
 -   [Running the app](#running-the-app)
 -   [Testing](#testing)
@@ -61,13 +63,18 @@ cp .env.example .env
 # Edit .env to set DB and other settings
 ```
 
-Generate the app key, migrate and seed (role seeder is required):
+Generate the app key, migrate and seed the database:
 
 ```bash
 php artisan key:generate
 php artisan migrate
-php artisan db:seed --class=RoleSeeder
+php artisan db:seed
 ```
+
+This will seed:
+- **Roles**: Super Admin, Company Admin, Contributor, Viewer
+- **Organizations**: Headquarters and 3 departments (Sales, IT, HR)
+- **Users**: 10 demo users across all role types (see [Demo Accounts](#demo-accounts))
 
 Create the storage symlink for public uploads:
 
@@ -98,6 +105,47 @@ Notes:
 
 -   If you use SQLite for local dev, ensure `DB_CONNECTION=sqlite` in `.env` and an empty DB file or configured path.
 -   For SQL Server deployment follow the Windows-specific steps below.
+
+## Demo Accounts
+
+After running the seeders, you can log in with these demo accounts (all use password: `password`):
+
+| Role | Email | Description |
+|------|-------|-------------|
+| **Super Admin** | superadmin@example.com | Full system access, manages all organizations and users |
+| **Company Admin** | admin@example.com | Manages users, documents, and folders within Sales Department |
+| **Company Admin** | admin.it@example.com | Manages users, documents, and folders within IT Department |
+| **Contributor** | company@example.com | Can create, edit, and manage documents in Sales Department |
+| **Contributor** | contributor.it@example.com | Can create, edit, and manage documents in IT Department |
+| **Viewer** | viewer1@example.com | Read-only access in Sales Department |
+| **Viewer** | viewer2@example.com | Read-only access in IT Department |
+| **Viewer** | viewer3@example.com | Read-only access in HR Department |
+
+**Default Password**: `password` (for all demo accounts)
+
+## User Roles
+
+The system supports 4 role types with different permission levels:
+
+1. **Super Admin**
+   - Full system access and control
+   - Can manage all organizations, users, and settings
+   - Access to all documents across all organizations
+
+2. **Company Admin**
+   - Organization-level administrator
+   - Can manage users, documents, and folders within their organization
+   - Can configure organization settings
+
+3. **Contributor**
+   - Can create, edit, and manage documents and folders
+   - Can upload new documents and create new versions
+   - Can share documents within their organization
+
+4. **Viewer**
+   - Read-only access to documents and folders
+   - Can view and download documents based on permissions
+   - Cannot create, edit, or delete documents
 
 ## Configuration notes
 

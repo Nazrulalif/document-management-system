@@ -37,6 +37,23 @@
                 </a> --}}
                 <!--end::Col-->
             </div>
+            <div class="alert alert-warning alert-dismissible d-flex align-items-center p-5 mb-10">
+                <div class="d-flex flex-column w-100">
+                    <h5 class="mb-3">Demo Accounts (Password: password)</h5>
+                    <div class="row mb-2">
+                        <div class="col-12"><strong>Super Admin:</strong> superadmin@example.com</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-12"><strong>Company Admin:</strong> admin@example.com</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-12"><strong>Contributor:</strong> company@example.com</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12"><strong>Viewer:</strong> viewer1@example.com</div>
+                    </div>
+                </div>
+            </div>
 
             {{-- login form : Disable for PNB --}}
             <div>

@@ -54,13 +54,13 @@ class User extends Authenticatable
 
         return Carbon::parse($this->password_changed_at)->addDays(90)->isPast();
     }
-    
+
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_guid'); // Assuming role_guid is the foreign key
     }
 
-   
+
 
     protected static function boot()
     {
@@ -96,5 +96,4 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    
 }

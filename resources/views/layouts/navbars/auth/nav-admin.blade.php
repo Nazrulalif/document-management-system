@@ -18,10 +18,10 @@
         <!--begin::Mobile logo-->
         <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
             @php
-            // Retrieve the logos from the database directly in the view
-            $favicon = \App\Models\SystemSetting::where('name', 'favicon')->first();
+                // Retrieve the logos from the database directly in the view
+                $favicon = \App\Models\SystemSetting::where('name', 'favicon')->first();
             @endphp
-            
+
             <a href="{{ route('dashboard.admin') }}" class="d-lg-none">
                 <img alt="Logo"
                     src="{{ $favicon && $favicon->attribute ? url('/file/' . base64_encode($favicon->attribute)) : asset('assets/media/logos/docms-favicon.svg') }}"
@@ -143,9 +143,9 @@
                             <a href="{{ route('profile.index') }}" class="menu-link px-5">My Profile</a>
                         </div>
                         <!--end::Menu item-->
-                        <div class="menu-item px-5">
+                        {{-- <div class="menu-item px-5">
                             <a href="{{ url('/download-user-manual') }}" class="menu-link px-5">User Manual</a>
-                        </div>
+                        </div> --}}
                         <!--begin::Menu item-->
                         <div class="menu-item px-5">
                             <a href="{{ route('logout') }}" class="menu-link px-5">Sign Out</a>
